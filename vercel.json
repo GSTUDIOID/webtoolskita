@@ -20,7 +20,7 @@
       "dest": "/index1.html"
     },
     {
-      "src": "/sitemap\.xml",
+      "src": "/sitemap\\.xml",
       "dest": "/api/index.js"
     },
     {
