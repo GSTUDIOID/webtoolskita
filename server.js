@@ -99,12 +99,32 @@ function getFirebaseCredential() {
 }
 
 
-initializeApp({
-    credential: getFirebaseCredential()
-});
+let firebaseApp;
 
+try {
 
-const firebaseAuth = getAuth();
+    firebaseApp =
+        initializeApp({
+            credential:
+                getFirebaseCredential()
+        });
+
+    console.log(
+        "Firebase Admin: initialized successfully."
+    );
+
+} catch (error) {
+
+    console.error(
+        "Firebase Admin initialization failed:",
+        error.message
+    );
+
+    throw error;
+}
+
+const firebaseAuth =
+    getAuth(firebaseApp);
 
 
 // =====================================================
