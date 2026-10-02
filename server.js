@@ -19,7 +19,9 @@ const os = require("os");
 
 const {
     initializeApp,
-    cert
+    cert,
+ getApps,
+    getApp
 } = require("firebase-admin/app");
 
 const {
@@ -98,20 +100,30 @@ function getFirebaseCredential() {
     );
 }
 
-
 let firebaseApp;
 
 try {
 
-    firebaseApp =
-        initializeApp({
-            credential:
-                getFirebaseCredential()
-        });
+    if (getApps().length > 0) {
 
-    console.log(
-        "Firebase Admin: initialized successfully."
-    );
+        firebaseApp = getApp();
+
+        console.log(
+            "Firebase Admin: existing app reused successfully."
+        );
+
+    } else {
+
+        firebaseApp =
+            initializeApp({
+                credential:
+                    getFirebaseCredential()
+            });
+
+        console.log(
+            "Firebase Admin: initialized successfully."
+        );
+    }
 
 } catch (error) {
 
@@ -125,7 +137,6 @@ try {
 
 const firebaseAuth =
     getAuth(firebaseApp);
-
 
 // =====================================================
 // CODEGUARD
