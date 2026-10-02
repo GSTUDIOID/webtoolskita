@@ -42,16 +42,67 @@ const SERVICE_ACCOUNT_PATH = process.env.FIREBASE_SERVICE_ACCOUNT
     ? path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT)
     : path.join(__dirname, "webtoolskita-firebase-adminsdk-fbsvc-6e2aa7d0e8.json");
 
-
 // =====================================================
 // FIREBASE ADMIN
 // =====================================================
 
+function getFirebaseCredential() {
+
+    // Vercel / production:
+    // gunakan credential JSON dari Environment Variable.
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+
+        try {
+
+            const serviceAccount =
+                JSON.parse(
+                    process.env.FIREBASE_SERVICE_ACCOUNT_JSON
+                );
+
+            return cert(serviceAccount);
+
+        } catch (error) {
+
+            console.error(
+                "Firebase: FIREBASE_SERVICE_ACCOUNT_JSON tidak valid."
+            );
+
+            throw error;
+        }
+    }
+
+
+    // Local development:
+    // gunakan file credential Firebase lokal.
+    const serviceAccountPath =
+        process.env.FIREBASE_SERVICE_ACCOUNT
+            ? path.resolve(
+                process.env.FIREBASE_SERVICE_ACCOUNT
+            )
+            : path.join(
+                __dirname,
+                "webtoolskita-firebase-adminsdk-fbsvc-6e2aa7d0e8.json"
+            );
+
+
+    if (!fs.existsSync(serviceAccountPath)) {
+
+        throw new Error(
+            "Firebase service account tidak ditemukan."
+        );
+    }
+
+
+    return cert(
+        require(serviceAccountPath)
+    );
+}
+
+
 initializeApp({
-    credential: cert(
-        require(SERVICE_ACCOUNT_PATH)
-    )
+    credential: getFirebaseCredential()
 });
+
 
 const firebaseAuth = getAuth();
 
