@@ -239,10 +239,10 @@ app.use(express.static(__dirname));
 // DATABASE
 // =====================================================
 
-const databaseFolder = path.join(
-    __dirname,
-    "database"
-);
+const databaseFolder =
+    process.env.VERCEL
+        ? path.join("/tmp", "database")
+        : path.join(__dirname, "database");
 
 const dbPath = path.join(
     databaseFolder,
