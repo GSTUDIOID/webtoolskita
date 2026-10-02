@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WebToolsKita • VIP Tool 6</title>
+<style>
+:root{--bg:#060a0f;--panel:#0d141c;--line:#1c2a36;--text:#eef5f8;--muted:#8798a7;--green:#46d88a;--blue:#5fb4ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#102019 0,#060a0f 42%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:24px 18px 50px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.back{color:#a9bac7;text-decoration:none;font-size:13px;font-weight:700}.badge{border:1px solid #6d5b25;background:#241d0b;color:#f4cf63;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900}.hero,.panel,.help{border:1px solid var(--line);background:rgba(13,20,28,.94);border-radius:19px}.hero{padding:26px;margin-bottom:16px}.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.hero h1{margin:9px 0 8px;font-size:clamp(28px,5vw,44px)}.hero p{margin:0;color:var(--muted);line-height:1.65}.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{overflow:hidden}.head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.head span{font-size:11px;color:var(--muted)}textarea{display:block;width:100%;min-height:480px;resize:vertical;border:0;outline:0;background:#080e14;color:#eaf4f8;padding:20px;font:14px/1.7 ui-monospace,Consolas,monospace}.preview{min-height:480px;padding:20px;background:#080e14;overflow:auto}.preview h1{font-size:30px}.preview h2{font-size:24px}.preview h3{font-size:20px}.preview p,.preview li{line-height:1.7;color:#c5d1d9}.preview a{color:var(--blue)}.preview blockquote{border-left:3px solid var(--green);padding-left:14px;color:#aebdc7}.preview code{background:#14202a;padding:2px 6px;border-radius:6px}.preview pre{background:#05090d;border:1px solid var(--line);padding:14px;border-radius:10px;overflow:auto}.bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-top:1px solid var(--line)}button{border:1px solid #294033;background:#102019;color:#dff8e9;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}button.primary{background:var(--green);color:#06110b;border-color:var(--green)}.stats{margin-left:auto;color:var(--muted);font-size:12px;display:flex;gap:10px;align-items:center}.help{margin-top:16px;padding:15px 17px;color:var(--muted);font-size:12px;line-height:1.6}.footer{text-align:center;color:#617282;font-size:12px;margin-top:25px}@media(max-width:800px){.layout{grid-template-columns:1fr}.preview,textarea{min-height:360px}.stats{width:100%;margin-left:0}}
+</style></head>
+<body><main class="wrap">
+<div class="top"><a class="back" href="index3.html">← Kembali ke Menu</a><span class="badge">VIP TOOL 6</span></div>
+<section class="hero"><div class="eyebrow">WebToolsKita • VIP Editor</div><h1>Markdown Editor</h1><p>Tulis Markdown dan lihat hasilnya secara langsung. Semua proses berjalan di browser.</p></section>
+<section class="layout">
+<div class="panel"><div class="head"><strong>Markdown</strong><span>LIVE</span></div>
+<textarea id="input" spellcheck="false" placeholder="# Judul
+
+Tulis Markdown di sini...
+
+**tebal** dan *miring*
+
+- Item pertama
+- Item kedua"></textarea>
+<div class="bar"><button class="primary" id="copy">Copy Markdown</button><button id="download">Download .md</button><button id="sample">Contoh</button><button id="clear">Bersihkan</button><div class="stats"><span id="words">0 kata</span><span id="chars">0 karakter</span></div></div></div>
+<div class="panel"><div class="head"><strong>Preview</strong><span>LIVE PREVIEW</span></div><div id="preview" class="preview"></div><div class="bar"><button id="copyHtml">Copy HTML</button></div></div>
+</section>
+<div class="help">Markdown dasar: <b># Heading</b>, <b>**bold**</b>, <b>*italic*</b>, <b>`code`</b>, link, blockquote, list, dan fenced code block. Preview diproses secara lokal.</div>
+<div class="footer">WebToolsKita • VIP Tool 6 • Markdown Editor</div></main>
+<script>
+const input=document.getElementById("input"),preview=document.getElementById("preview");
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+function inline(s){s=esc(s);s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');s=s.replace(/`([^`]+)`/g,"<code>$1</code>");s=s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");s=s.replace(/\*([^*]+)\*/g,"<em>$1</em>");return s}
+function md(s){let lines=s.replace(/\r/g,"").split("\n"),out=[],i=0,code=false,c=[];while(i<lines.length){let l=lines[i];if(l.startsWith("```")){if(!code){code=true;c=[]}else{out.push("<pre><code>"+esc(c.join("\n"))+"</code></pre>");code=false}i++;continue}if(code){c.push(l);i++;continue}if(!l.trim()){i++;continue}if(/^###\s/.test(l)){out.push("<h3>"+inline(l.slice(4))+"</h3>");i++;continue}if(/^##\s/.test(l)){out.push("<h2>"+inline(l.slice(3))+"</h2>");i++;continue}if(/^#\s/.test(l)){out.push("<h1>"+inline(l.slice(2))+"</h1>");i++;continue}if(/^>\s?/.test(l)){out.push("<blockquote>"+inline(l.replace(/^>\s?/,""))+"</blockquote>");i++;continue}if(/^[-*]\s+/.test(l)){let a=[];while(i<lines.length&&/^[-*]\s+/.test(lines[i])){a.push("<li>"+inline(lines[i].replace(/^[-*]\s+/,""))+"</li>");i++}out.push("<ul>"+a.join("")+"</ul>");continue}if(/^\d+\.\s+/.test(l)){let a=[];while(i<lines.length&&/^\d+\.\s+/.test(lines[i])){a.push("<li>"+inline(lines[i].replace(/^\d+\.\s+/,""))+"</li>");i++}out.push("<ol>"+a.join("")+"</ol>");continue}out.push("<p>"+inline(l)+"</p>");i++}return out.join("")}
+function render(){preview.innerHTML=md(input.value);let t=input.value.trim();document.getElementById("words").textContent=(t?t.split(/\s+/).length:0)+" kata";document.getElementById("chars").textContent=input.value.length+" karakter"}
+input.addEventListener("input",render);document.getElementById("clear").onclick=()=>{input.value="";render()};document.getElementById("sample").onclick=()=>{input.value="# Markdown Editor\n\n## Selamat datang\n\nTulis **Markdown** di panel kiri dan lihat hasilnya di sebelah kanan.\n\n- Live preview\n- Copy Markdown\n- Download .md";render()};document.getElementById("copy").onclick=async()=>{await navigator.clipboard.writeText(input.value);alert("Markdown berhasil disalin.")};document.getElementById("copyHtml").onclick=async()=>{await navigator.clipboard.writeText(preview.innerHTML);alert("HTML preview berhasil disalin.")};document.getElementById("download").onclick=()=>{let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([input.value],{type:"text/markdown"}));a.download="markdown-document.md";a.click()};render();
+</script></body></html>

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>System Monitor V3 - WebToolsKita</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(123,44,255,.12),transparent 32%),
+    #050505;
+  color:#f4f1f8;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+.container{
+  width:min(1400px,calc(100% - 36px));
+  margin:0 auto;
+  padding:38px 0 30px;
+}
+
+.back{
+  display:inline-block;
+  color:#777;
+  text-decoration:none;
+  font-size:12px;
+  margin-bottom:24px;
+  transition:.2s;
+}
+
+.back:hover{
+  color:#b66cff;
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:34px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:40px;
+  font-weight:800;
+  color:#b66cff;
+  text-shadow:0 0 28px rgba(123,44,255,.18);
+}
+
+.hero p{
+  margin:10px 0 0;
+  color:#777;
+  font-size:14px;
+}
+
+.panel{
+  background:linear-gradient(145deg,#0c0c0c,#100b16);
+  border:1px solid #292035;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:inset 0 0 35px rgba(123,44,255,.025);
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:13px 16px;
+  border:1px solid #292035;
+  border-radius:14px;
+  background:#080808;
+  margin-bottom:18px;
+}
+
+.status-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.status-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#7b2cff;
+  box-shadow:0 0 12px rgba(123,44,255,.8);
+}
+
+.status-time{
+  color:#666;
+  font-size:11px;
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+.metric{
+  min-height:190px;
+  padding:20px;
+  border:1px solid #292035;
+  border-radius:16px;
+  background:linear-gradient(145deg,#0b0b0b,#100b16);
+}
+
+.metric-title{
+  color:#b66cff;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.5px;
+  margin-bottom:22px;
+}
+
+.metric-value{
+  font-size:31px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.metric-sub{
+  color:#777;
+  font-size:12px;
+  line-height:1.5;
+  min-height:38px;
+}
+
+.bar{
+  height:8px;
+  margin-top:18px;
+  background:#1c1c1c;
+  border:1px solid #292035;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.bar-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#7b2cff,#b66cff);
+  border-radius:999px;
+  transition:width .5s ease;
+}
+
+.section-title{
+  color:#b66cff;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.5px;
+  margin-bottom:14px;
+  text-transform:uppercase;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.info{
+  min-height:62px;
+  padding:12px 14px;
+  border:1px solid #292035;
+  border-radius:12px;
+  background:#070707;
+}
+
+.info-label{
+  color:#5f5f5f;
+  font-size:10px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.info-value{
+  color:#ddd;
+  font-size:12px;
+  line-height:1.45;
+  word-break:break-word;
+}
+
+.actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:18px;
+}
+
+button{
+  border:1px solid #332541;
+  border-radius:11px;
+  padding:11px 18px;
+  color:#eee;
+  background:#15101b;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  transition:.2s;
+}
+
+button:hover{
+  border-color:#7b2cff;
+  background:#1b1027;
+}
+
+button.primary{
+  background:#7b2cff;
+  border-color:#7b2cff;
+  color:#fff;
+}
+
+button.primary:hover{
+  background:#923dff;
+}
+
+.accuracy{
+  margin-top:18px;
+  padding:13px 14px;
+  border:1px solid #292035;
+  border-radius:12px;
+  background:#080808;
+  color:#777;
+  font-size:11px;
+  line-height:1.6;
+}
+
+.accuracy strong{
+  color:#aaa;
+}
+
+.note{
+  margin-top:12px;
+  padding:12px 14px;
+  border:1px solid #292035;
+  border-radius:12px;
+  background:#080808;
+  color:#666;
+  font-size:11px;
+  line-height:1.6;
+}
+
+footer{
+  text-align:center;
+  padding:10px 0 5px;
+  color:#555;
+  font-size:11px;
+}
+
+footer a{
+  color:#666;
+  text-decoration:none;
+}
+
+footer a:hover{
+  color:#b66cff;
+}
+
+@media(max-width:900px){
+  .metrics{
+    grid-template-columns:1fr;
+  }
+
+  .metric{
+    min-height:160px;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:32px;
+  }
+}
+
+@media(max-width:600px){
+  .container{
+    width:min(100% - 22px,1400px);
+    padding-top:22px;
+  }
+
+  .panel{
+    padding:14px;
+    border-radius:15px;
+  }
+
+  .hero h1{
+    font-size:28px;
+  }
+
+  .hero p{
+    font-size:12px;
+  }
+
+  .status{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+
+  button{
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <a class="back" href="index3.html">← Kembali ke Advance Tools</a>
+
+  <div class="hero">
+    <h1>System Monitor</h1>
+    <p>Pemeriksaan informasi browser, RAM, storage, CPU, perangkat, dan koneksi.</p>
+  </div>
+
+  <section class="panel">
+
+    <div class="status">
+      <div class="status-left">
+        <span class="status-dot"></span>
+        <span id="statusText">Pemeriksaan sistem aktif</span>
+      </div>
+
+      <div class="status-time" id="statusTime">
+        Menunggu pemeriksaan
+      </div>
+    </div>
+
+    <div class="metrics">
+
+      <div class="metric">
+        <div class="metric-title">MEMORY / RAM</div>
+
+        <div class="metric-value" id="ramValue">
+          N/A
+        </div>
+
+        <div class="metric-sub" id="ramInfo">
+          Memeriksa informasi memory yang tersedia dari browser.
+        </div>
+
+        <div class="bar">
+          <div class="bar-fill" id="ramBar"></div>
+        </div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-title">BROWSER STORAGE</div>
+
+        <div class="metric-value" id="storageValue">
+          N/A
+        </div>
+
+        <div class="metric-sub" id="storageInfo">
+          Memeriksa quota dan penggunaan storage browser.
+        </div>
+
+        <div class="bar">
+          <div class="bar-fill" id="storageBar"></div>
+        </div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-title">CPU</div>
+
+        <div class="metric-value" id="cpuValue">
+          N/A
+        </div>
+
+        <div class="metric-sub" id="cpuInfo">
+          Memeriksa jumlah logical processor.
+        </div>
+
+        <div class="bar">
+          <div class="bar-fill" id="cpuBar"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="panel">
+
+    <div class="section-title">
+      Device Information
+    </div>
+
+    <div class="info-grid">
+
+      <div class="info">
+        <div class="info-label">Physical / Device Memory</div>
+        <div class="info-value" id="deviceMemory">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">JavaScript Heap</div>
+        <div class="info-value" id="jsHeap">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Logical CPU</div>
+        <div class="info-value" id="logicalCpu">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Browser</div>
+        <div class="info-value" id="browser">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Platform</div>
+        <div class="info-value" id="platform">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Operating System</div>
+        <div class="info-value" id="os">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Screen</div>
+        <div class="info-value" id="screenInfo">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Viewport</div>
+        <div class="info-value" id="viewport">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Device Pixel Ratio</div>
+        <div class="info-value" id="dpr">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Network</div>
+        <div class="info-value" id="network">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Online Status</div>
+        <div class="info-value" id="online">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Battery</div>
+        <div class="info-value" id="battery">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">WebGL Renderer</div>
+        <div class="info-value" id="webgl">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Language</div>
+        <div class="info-value" id="language">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Timezone</div>
+        <div class="info-value" id="timezone">
+          Memeriksa...
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-label">Cookies</div>
+        <div class="info-value" id="cookies">
+          Memeriksa...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="refreshBtn">
+        ↻ Periksa Ulang
+      </button>
+    </div>
+
+    <div class="accuracy">
+      <strong>Akurasi V3:</strong>
+      System Monitor hanya menampilkan data yang benar-benar dapat diberikan oleh
+      browser. Informasi seperti RAM fisik, kapasitas disk/SSD, dan beberapa detail
+      hardware tidak dapat dibaca secara langsung oleh halaman web biasa.
+      Jika browser tidak menyediakan API tersebut, hasil akan ditampilkan sebagai
+      <strong>Tidak tersedia</strong>, bukan ditebak.
+    </div>
+
+    <div class="note">
+      <strong>Catatan:</strong>
+      Browser Storage adalah quota dan penggunaan storage untuk origin website ini,
+      bukan kapasitas seluruh hard disk komputer. Device Memory juga bukan pembacaan
+      RAM fisik secara langsung.
+    </div>
+
+  </section>
+
+  <footer>
+    <div>
+      <a href="index3.html">← Kembali ke Advance Tools</a>
+    </div>
+    <div style="margin-top:8px;">
+      © 2026 WebToolsKita
+    </div>
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+
+function formatBytes(bytes){
+  if (!Number.isFinite(bytes) || bytes < 0){
+    return "Tidak tersedia";
+  }
+
+  if (bytes < 1024){
+    return bytes.toFixed(0) + " B";
+  }
+
+  if (bytes < 1024 * 1024){
+    return (bytes / 1024).toFixed(1) + " KB";
+  }
+
+  if (bytes < 1024 * 1024 * 1024){
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+
+function detectBrowser(){
+  const ua = navigator.userAgent;
+
+  if (/Firefox\/\d+/i.test(ua)){
+    return "Mozilla Firefox";
+  }
+
+  if (/Edg\/\d+/i.test(ua)){
+    return "Microsoft Edge";
+  }
+
+  if (/OPR\/\d+/i.test(ua)){
+    return "Opera";
+  }
+
+  if (/Chrome\/\d+/i.test(ua)){
+    return "Google Chrome";
+  }
+
+  if (/Safari\/\d+/i.test(ua) && !/Chrome/i.test(ua)){
+    return "Safari";
+  }
+
+  return "Browser tidak teridentifikasi";
+}
+
+function detectOS(){
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+
+  if (/Windows/i.test(ua) || /Win/i.test(platform)){
+    return "Windows";
+  }
+
+  if (/Android/i.test(ua)){
+    return "Android";
+  }
+
+  if (/iPhone|iPad|iPod/i.test(ua)){
+    return "iOS / iPadOS";
+  }
+
+  if (/Mac OS X/i.test(ua) || /Mac/i.test(platform)){
+    return "macOS";
+  }
+
+  if (/Linux/i.test(ua)){
+    return "Linux";
+  }
+
+  return "Tidak teridentifikasi";
+}
+
+function setBar(id, percent){
+  const element = $(id);
+
+  if (!element){
+    return;
+  }
+
+  if (!Number.isFinite(percent)){
+    element.style.width = "0%";
+    return;
+  }
+
+  const safe = Math.max(0,Math.min(100,percent));
+  element.style.width = safe.toFixed(1) + "%";
+}
+
+function updateTime(){
+  const now = new Date();
+
+  $("statusTime").textContent =
+    "Diperiksa " +
+    now.toLocaleTimeString("id-ID",{
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit"
+    });
+}
+
+async function checkDeviceMemory(){
+
+  if (typeof navigator.deviceMemory === "number"){
+    const memory = navigator.deviceMemory;
+
+    $("ramValue").textContent =
+      memory + " GB";
+
+    $("ramInfo").textContent =
+      "Estimasi deviceMemory yang diberikan browser.";
+
+    $("deviceMemory").textContent =
+      memory + " GB (browser estimate)";
+
+    /*
+      deviceMemory bukan pembacaan RAM fisik.
+      Jangan menganggap angka ini sebagai kapasitas RAM
+      komputer yang sebenarnya.
+    */
+
+    setBar(
+      "ramBar",
+      Math.min(100,(memory / 32) * 100)
+    );
+
+    return;
+  }
+
+  $("ramValue").textContent = "N/A";
+
+  $("ramInfo").textContent =
+    "Browser tidak mengekspos navigator.deviceMemory.";
+
+  $("deviceMemory").textContent =
+    "Tidak tersedia dari browser.";
+
+  setBar("ramBar",0);
+}
+
+function checkJSHeap(){
+
+  /*
+    performance.memory hanya tersedia di beberapa browser.
+    Firefox biasanya tidak menyediakan API ini.
+  */
+
+  if (
+    performance &&
+    performance.memory &&
+    Number.isFinite(performance.memory.usedJSHeapSize)
+  ){
+
+    const used = performance.memory.usedJSHeapSize;
+    const total = performance.memory.jsHeapSizeLimit;
+
+    $("jsHeap").textContent =
+      formatBytes(used) +
+      " digunakan dari " +
+      formatBytes(total);
+
+    return;
+  }
+
+  $("jsHeap").textContent =
+    "Tidak tersedia di browser ini.";
+}
+
+async function checkStorage(){
+
+  if (
+    !navigator.storage ||
+    !navigator.storage.estimate
+  ){
+
+    $("storageValue").textContent = "N/A";
+
+    $("storageInfo").textContent =
+      "Storage API tidak tersedia.";
+
+    setBar("storageBar",0);
+
+    return;
+  }
+
+  try{
+
+    const estimate =
+      await navigator.storage.estimate();
+
+    const usage = Number(estimate.usage) || 0;
+    const quota = Number(estimate.quota) || 0;
+
+    if (!quota){
+
+      $("storageValue").textContent = "N/A";
+
+      $("storageInfo").textContent =
+        "Browser tidak memberikan quota storage.";
+
+      setBar("storageBar",0);
+
+      return;
+    }
+
+    const percent =
+      (usage / quota) * 100;
+
+    $("storageValue").textContent =
+      percent.toFixed(2) + "%";
+
+    $("storageInfo").textContent =
+      formatBytes(usage) +
+      " digunakan dari " +
+      formatBytes(quota) +
+      " browser quota";
+
+    setBar("storageBar",percent);
+
+  }catch(error){
+
+    $("storageValue").textContent = "N/A";
+
+    $("storageInfo").textContent =
+      "Gagal membaca Storage API.";
+
+    setBar("storageBar",0);
+
+    console.warn("Storage API:",error);
+  }
+}
+
+function checkCPU(){
+
+  const cpu =
+    Number(navigator.hardwareConcurrency);
+
+  if (
+    Number.isFinite(cpu) &&
+    cpu > 0
+  ){
+
+    $("cpuValue").textContent =
+      cpu;
+
+    $("cpuInfo").textContent =
+      "Logical processor yang dilaporkan browser.";
+
+    $("logicalCpu").textContent =
+      cpu + " logical processor";
+
+    /*
+      Ini bukan penggunaan CPU realtime.
+      hardwareConcurrency hanya jumlah logical processor.
+    */
+
+    setBar(
+      "cpuBar",
+      Math.min(100,(cpu / 16) * 100)
+    );
+
+    return;
+  }
+
+  $("cpuValue").textContent = "N/A";
+
+  $("cpuInfo").textContent =
+    "Browser tidak memberikan jumlah logical processor.";
+
+  $("logicalCpu").textContent =
+    "Tidak tersedia";
+
+  setBar("cpuBar",0);
+}
+
+function checkDisplay(){
+
+  const screenWidth =
+    window.screen.width;
+
+  const screenHeight =
+    window.screen.height;
+
+  const availWidth =
+    window.screen.availWidth;
+
+  const availHeight =
+    window.screen.availHeight;
+
+  $("screenInfo").textContent =
+    screenWidth +
+    " × " +
+    screenHeight +
+    " px • tersedia " +
+    availWidth +
+    " × " +
+    availHeight +
+    " px";
+
+  $("viewport").textContent =
+    window.innerWidth +
+    " × " +
+    window.innerHeight +
+    " px";
+
+  $("dpr").textContent =
+    Number(window.devicePixelRatio || 1)
+      .toFixed(2);
+}
+
+function checkNetwork(){
+
+  if (!navigator.onLine){
+
+    $("online").textContent =
+      "Offline";
+
+    $("network").textContent =
+      "Offline";
+
+    return;
+  }
+
+  $("online").textContent =
+    "Online";
+
+  if (navigator.connection){
+
+    const c =
+      navigator.connection;
+
+    const parts = [];
+
+    if (c.effectiveType){
+      parts.push(c.effectiveType);
+    }
+
+    if (Number.isFinite(c.downlink)){
+      parts.push(
+        c.downlink + " Mbps"
+      );
+    }
+
+    if (Number.isFinite(c.rtt)){
+      parts.push(
+        c.rtt + " ms RTT"
+      );
+    }
+
+    $("network").textContent =
+      parts.length
+        ? "Online • " + parts.join(" • ")
+        : "Online • detail jaringan tersedia terbatas";
+
+  }else{
+
+    $("network").textContent =
+      "Online • Network Information API tidak tersedia";
+  }
+}
+
+async function checkBattery(){
+
+  if (!navigator.getBattery){
+
+    $("battery").textContent =
+      "Battery API tidak tersedia.";
+
+    return;
+  }
+
+  try{
+
+    const battery =
+      await navigator.getBattery();
+
+    const level =
+      Math.round(battery.level * 100);
+
+    const charging =
+      battery.charging
+        ? "sedang mengisi"
+        : "tidak mengisi";
+
+    $("battery").textContent =
+      level + "% • " + charging;
+
+  }catch(error){
+
+    $("battery").textContent =
+      "Tidak dapat membaca Battery API.";
+
+    console.warn("Battery API:",error);
+  }
+}
+
+function checkWebGL(){
+
+  try{
+
+    const canvas =
+      document.createElement("canvas");
+
+    const gl =
+      canvas.getContext("webgl") ||
+      canvas.getContext("experimental-webgl");
+
+    if (!gl){
+
+      $("webgl").textContent =
+        "WebGL tidak tersedia.";
+
+      return;
+    }
+
+    const debugInfo =
+      gl.getExtension(
+        "WEBGL_debug_renderer_info"
+      );
+
+    if (debugInfo){
+
+      const renderer =
+        gl.getParameter(
+          debugInfo.UNMASKED_RENDERER_WEBGL
+        );
+
+      const vendor =
+        gl.getParameter(
+          debugInfo.UNMASKED_VENDOR_WEBGL
+        );
+
+      $("webgl").textContent =
+        vendor +
+        " • " +
+        renderer;
+
+    }else{
+
+      const renderer =
+        gl.getParameter(
+          gl.RENDERER
+        );
+
+      $("webgl").textContent =
+        renderer ||
+        "Renderer tidak diekspos browser.";
+    }
+
+  }catch(error){
+
+    $("webgl").textContent =
+      "Tidak dapat membaca WebGL.";
+
+    console.warn("WebGL:",error);
+  }
+}
+
+function checkLanguage(){
+
+  $("language").textContent =
+    navigator.language ||
+    "Tidak tersedia";
+
+  try{
+
+    $("timezone").textContent =
+      Intl.DateTimeFormat()
+        .resolvedOptions()
+        .timeZone ||
+      "Tidak tersedia";
+
+  }catch(error){
+
+    $("timezone").textContent =
+      "Tidak tersedia";
+  }
+}
+
+function checkCookies(){
+
+  if (navigator.cookieEnabled){
+
+    $("cookies").textContent =
+      "Enabled";
+
+  }else{
+
+    $("cookies").textContent =
+      "Disabled";
+  }
+}
+
+function checkBasicInfo(){
+
+  $("browser").textContent =
+    detectBrowser();
+
+  $("platform").textContent =
+    navigator.platform ||
+    "Tidak tersedia";
+
+  $("os").textContent =
+    detectOS();
+}
+
+async function runCheck(){
+
+  $("statusText").textContent =
+    "Pemeriksaan sistem aktif";
+
+  updateTime();
+
+  checkBasicInfo();
+  checkDisplay();
+  checkCPU();
+  checkNetwork();
+  checkWebGL();
+  checkLanguage();
+  checkCookies();
+
+  await Promise.allSettled([
+    checkDeviceMemory(),
+    checkJSHeap(),
+    checkStorage(),
+    checkBattery()
+  ]);
+
+  $("statusText").textContent =
+    "Pemeriksaan sistem selesai";
+
+  updateTime();
+}
+
+$("refreshBtn").addEventListener(
+  "click",
+  runCheck
+);
+
+window.addEventListener(
+  "online",
+  checkNetwork
+);
+
+window.addEventListener(
+  "offline",
+  checkNetwork
+);
+
+window.addEventListener(
+  "resize",
+  checkDisplay
+);
+
+runCheck();
+</script>
+
+</body>
+</html>

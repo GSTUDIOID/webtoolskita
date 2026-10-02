@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Color Converter — WebToolsKita</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    padding:30px 16px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:520px;
+    height:520px;
+    top:-280px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:#7b2cff;
+    filter:blur(180px);
+    opacity:.13;
+    pointer-events:none;
+}
+
+.container{
+    width:100%;
+    max-width:1000px;
+    margin:auto;
+    position:relative;
+    z-index:1;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:-1.5px;
+    background:linear-gradient(90deg,#fff,#b66cff,#7b2cff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#888;
+    font-size:13px;
+}
+
+.panel{
+    border:1px solid #292035;
+    border-radius:16px;
+    background:linear-gradient(145deg,#0d0d0d,#100b16);
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:inset 0 0 30px rgba(123,44,255,.035);
+}
+
+.color-preview{
+    width:180px;
+    height:180px;
+    margin:0 auto 18px;
+    border-radius:18px;
+    background:#7b2cff;
+    border:1px solid #3b3150;
+    box-shadow:0 0 35px rgba(123,44,255,.18);
+    transition:.2s ease;
+}
+
+.picker-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.color-picker{
+    width:75px;
+    height:45px;
+    padding:3px;
+    border:1px solid #30263c;
+    border-radius:9px;
+    background:#111;
+    cursor:pointer;
+}
+
+.picker-label{
+    color:#777;
+    font-size:11px;
+}
+
+.fields{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+}
+
+.field{
+    min-width:0;
+}
+
+.field label{
+    display:block;
+    color:#b66cff;
+    font-size:10px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.field input{
+    width:100%;
+    padding:12px;
+    border-radius:9px;
+    border:1px solid #30263c;
+    background:#080808;
+    color:#ddd;
+    outline:none;
+    font-family:monospace;
+    font-size:12px;
+}
+
+.field input:focus{
+    border-color:#7b2cff;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:16px;
+}
+
+.button{
+    padding:11px 16px;
+    border-radius:9px;
+    border:1px solid #30263c;
+    background:#111;
+    color:#ccc;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+.button:hover{
+    color:#fff;
+    border-color:#7b2cff;
+    background:#17111e;
+    transform:translateY(-1px);
+}
+
+.button.primary{
+    background:#7b2cff;
+    border-color:#9b5cff;
+    color:#fff;
+}
+
+.button.primary:hover{
+    background:#8d45ff;
+}
+
+.status{
+    margin-top:14px;
+    padding:10px 12px;
+    border-radius:9px;
+    border:1px solid #292035;
+    background:#090909;
+    color:#777;
+    font-size:10px;
+    text-align:center;
+}
+
+.status.success{
+    color:#b66cff;
+    border-color:#4a315f;
+}
+
+.status.error{
+    color:#ff9999;
+    border-color:#5a3030;
+}
+
+.palette-title{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:12px;
+}
+
+.palette{
+    display:grid;
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:10px;
+}
+
+.palette-item{
+    border:1px solid #292035;
+    border-radius:11px;
+    overflow:hidden;
+    background:#090909;
+}
+
+.palette-color{
+    height:70px;
+    cursor:pointer;
+}
+
+.palette-info{
+    padding:8px;
+}
+
+.palette-code{
+    color:#aaa;
+    font-family:monospace;
+    font-size:9px;
+    text-align:center;
+}
+
+.palette-remove{
+    display:block;
+    width:100%;
+    margin-top:6px;
+    padding:5px;
+    border:0;
+    border-top:1px solid #292035;
+    background:transparent;
+    color:#666;
+    font-size:9px;
+    cursor:pointer;
+}
+
+.palette-remove:hover{
+    color:#ff8888;
+}
+
+.empty{
+    grid-column:1/-1;
+    padding:25px;
+    text-align:center;
+    color:#555;
+    font-size:10px;
+    border:1px dashed #30263c;
+    border-radius:10px;
+}
+
+.info{
+    color:#666;
+    font-size:10px;
+    line-height:1.6;
+}
+
+.back{
+    display:block;
+    text-align:center;
+    margin-top:24px;
+    color:#777;
+    text-decoration:none;
+    font-size:12px;
+}
+
+.back:hover{
+    color:#b66cff;
+}
+
+.footer{
+    text-align:center;
+    color:#444;
+    font-size:11px;
+    margin-top:10px;
+}
+
+@media(max-width:700px){
+
+    body{
+        padding:22px 12px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .fields{
+        grid-template-columns:1fr;
+    }
+
+    .palette{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+}
+
+@media(max-width:400px){
+
+    .palette{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="header">
+
+    <h1 class="logo">
+        Color Converter
+    </h1>
+
+    <p class="subtitle">
+        Konversi warna HEX, RGB, HSL dan HSV dengan cepat.
+    </p>
+
+</header>
+
+
+<section class="panel">
+
+    <div
+        id="preview"
+        class="color-preview"
+    ></div>
+
+
+    <div class="picker-row">
+
+        <input
+            id="colorPicker"
+            class="color-picker"
+            type="color"
+            value="#7b2cff"
+        >
+
+        <span class="picker-label">
+            Pilih warna secara langsung
+        </span>
+
+    </div>
+
+
+    <div class="fields">
+
+        <div class="field">
+
+            <label>
+                HEX
+            </label>
+
+            <input
+                id="hex"
+                type="text"
+                value="#7B2CFF"
+                placeholder="#7B2CFF"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                RGB
+            </label>
+
+            <input
+                id="rgb"
+                type="text"
+                value="123, 44, 255"
+                placeholder="123, 44, 255"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                HSL
+            </label>
+
+            <input
+                id="hsl"
+                type="text"
+                value="265, 100%, 59%"
+                placeholder="265, 100%, 59%"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                HSV
+            </label>
+
+            <input
+                id="hsv"
+                type="text"
+                value="265, 83%, 100%"
+                placeholder="265, 83%, 100%"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                RED
+            </label>
+
+            <input
+                id="red"
+                type="number"
+                min="0"
+                max="255"
+                value="123"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                GREEN
+            </label>
+
+            <input
+                id="green"
+                type="number"
+                min="0"
+                max="255"
+                value="44"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="buttons">
+
+        <button
+            id="convertButton"
+            class="button primary"
+        >
+            ⚡ Convert
+        </button>
+
+        <button
+            id="randomButton"
+            class="button"
+        >
+            ✦ Random
+        </button>
+
+        <button
+            id="copyButton"
+            class="button"
+        >
+            ⧉ Copy HEX
+        </button>
+
+        <button
+            id="saveButton"
+            class="button"
+        >
+            ＋ Save Color
+        </button>
+
+        <button
+            id="clearButton"
+            class="button"
+        >
+            × Reset
+        </button>
+
+    </div>
+
+
+    <div
+        id="status"
+        class="status"
+    >
+        Pilih warna atau masukkan nilai warna.
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="palette-title">
+        MY COLOR PALETTE
+    </div>
+
+    <div
+        id="palette"
+        class="palette"
+    >
+
+        <div class="empty">
+            Belum ada warna yang disimpan.
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="info">
+
+        <strong style="color:#b66cff;">
+            Color Converter
+        </strong>
+
+        membantu mengubah warna antara beberapa format populer:
+
+        <br><br>
+
+        HEX untuk CSS dan web development.
+
+        <br>
+
+        RGB untuk sistem warna berbasis red, green, blue.
+
+        <br>
+
+        HSL untuk hue, saturation dan lightness.
+
+        <br>
+
+        HSV untuk hue, saturation dan value.
+
+        <br><br>
+
+        Semua proses dilakukan langsung di browser.
+
+    </div>
+
+</section>
+
+
+<a
+    href="index3.html"
+    class="back"
+>
+    ← Kembali ke Advance Tools
+</a>
+
+<div class="footer">
+    © 2026 WebToolsKita
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const preview =
+    document.getElementById(
+        "preview"
+    );
+
+const colorPicker =
+    document.getElementById(
+        "colorPicker"
+    );
+
+const hex =
+    document.getElementById(
+        "hex"
+    );
+
+const rgb =
+    document.getElementById(
+        "rgb"
+    );
+
+const hsl =
+    document.getElementById(
+        "hsl"
+    );
+
+const hsv =
+    document.getElementById(
+        "hsv"
+    );
+
+const red =
+    document.getElementById(
+        "red"
+    );
+
+const green =
+    document.getElementById(
+        "green"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const palette =
+    document.getElementById(
+        "palette"
+    );
+
+const convertButton =
+    document.getElementById(
+        "convertButton"
+    );
+
+const randomButton =
+    document.getElementById(
+        "randomButton"
+    );
+
+const copyButton =
+    document.getElementById(
+        "copyButton"
+    );
+
+const saveButton =
+    document.getElementById(
+        "saveButton"
+    );
+
+const clearButton =
+    document.getElementById(
+        "clearButton"
+    );
+
+
+let currentHex =
+    "#7B2CFF";
+
+
+let savedColors =
+    [];
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(
+    message,
+    type=""
+){
+
+    status.textContent =
+        message;
+
+    status.className =
+        "status";
+
+    if(type){
+
+        status.classList.add(
+            type
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RGB → HSL
+===================================================== */
+
+function rgbToHsl(
+    r,
+    g,
+    b
+){
+
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+
+    const max =
+        Math.max(
+            r,
+            g,
+            b
+        );
+
+    const min =
+        Math.min(
+            r,
+            g,
+            b
+        );
+
+
+    let h = 0;
+
+    let s = 0;
+
+    const l =
+        (max + min) / 2;
+
+
+    if(
+        max !== min
+    ){
+
+        const d =
+            max - min;
+
+
+        s =
+            l > .5
+                ? d /
+                  (
+                    2 -
+                    max -
+                    min
+                  )
+                : d /
+                  (
+                    max +
+                    min
+                  );
+
+
+        switch(max){
+
+            case r:
+
+                h =
+                    (
+                        g - b
+                    ) / d +
+                    (
+                        g < b
+                            ? 6
+                            : 0
+                    );
+
+                break;
+
+
+            case g:
+
+                h =
+                    (
+                        b - r
+                    ) / d +
+                    2;
+
+                break;
+
+
+            case b:
+
+                h =
+                    (
+                        r - g
+                    ) / d +
+                    4;
+
+                break;
+
+        }
+
+
+        h /= 6;
+
+    }
+
+
+    return {
+        h:
+            Math.round(
+                h * 360
+            ),
+
+        s:
+            Math.round(
+                s * 100
+            ),
+
+        l:
+            Math.round(
+                l * 100
+            )
+    };
+
+}
+
+
+/* =====================================================
+   RGB → HSV
+===================================================== */
+
+function rgbToHsv(
+    r,
+    g,
+    b
+){
+
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+
+    const max =
+        Math.max(
+            r,
+            g,
+            b
+        );
+
+    const min =
+        Math.min(
+            r,
+            g,
+            b
+        );
+
+
+    const d =
+        max - min;
+
+
+    let h = 0;
+
+
+    if(
+        d !== 0
+    ){
+
+        switch(max){
+
+            case r:
+
+                h =
+                    (
+                        (
+                            g - b
+                        ) / d
+                    ) %
+                    6;
+
+                break;
+
+
+            case g:
+
+                h =
+                    (
+                        b - r
+                    ) / d +
+                    2;
+
+                break;
+
+
+            case b:
+
+                h =
+                    (
+                        r - g
+                    ) / d +
+                    4;
+
+                break;
+
+        }
+
+
+        h *= 60;
+
+
+        if(
+            h < 0
+        ){
+
+            h += 360;
+
+        }
+
+    }
+
+
+    const s =
+        max === 0
+            ? 0
+            : d / max;
+
+
+    return {
+        h:
+            Math.round(h),
+
+        s:
+            Math.round(
+                s * 100
+            ),
+
+        v:
+            Math.round(
+                max * 100
+            )
+    };
+
+}
+
+
+/* =====================================================
+   RGB → HEX
+===================================================== */
+
+function rgbToHex(
+    r,
+    g,
+    b
+){
+
+    return "#" +
+        [r,g,b]
+            .map(
+                value =>
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Math.round(
+                                value
+                            )
+                        )
+                    )
+                    .toString(16)
+                    .padStart(
+                        2,
+                        "0"
+                    )
+            )
+            .join("")
+            .toUpperCase();
+
+}
+
+
+/* =====================================================
+   HEX → RGB
+===================================================== */
+
+function hexToRgb(
+    value
+){
+
+    let clean =
+        value
+            .trim()
+            .replace(
+                "#",
+                ""
+            );
+
+
+    if(
+        /^[0-9a-fA-F]{3}$/.test(
+            clean
+        )
+    ){
+
+        clean =
+            clean
+                .split("")
+                .map(
+                    char =>
+                        char + char
+                )
+                .join("");
+
+    }
+
+
+    if(
+        !/^[0-9a-fA-F]{6}$/.test(
+            clean
+        )
+    ){
+
+        throw new Error(
+            "HEX harus menggunakan format #RRGGBB."
+        );
+
+    }
+
+
+    return {
+        r:
+            parseInt(
+                clean.slice(
+                    0,
+                    2
+                ),
+                16
+            ),
+
+        g:
+            parseInt(
+                clean.slice(
+                    2,
+                    4
+                ),
+                16
+            ),
+
+        b:
+            parseInt(
+                clean.slice(
+                    4,
+                    6
+                ),
+                16
+            )
+    };
+
+}
+
+
+/* =====================================================
+   UPDATE FROM RGB
+===================================================== */
+
+function updateFromRgb(
+    r,
+    g,
+    b
+){
+
+    r =
+        Math.max(
+            0,
+            Math.min(
+                255,
+                Math.round(
+                    Number(r)
+                )
+            )
+        );
+
+    g =
+        Math.max(
+            0,
+            Math.min(
+                255,
+                Math.round(
+                    Number(g)
+                )
+            )
+        );
+
+    b =
+        Math.max(
+            0,
+            Math.min(
+                255,
+                Math.round(
+                    Number(b)
+                )
+            )
+        );
+
+
+    const newHex =
+        rgbToHex(
+            r,
+            g,
+            b
+        );
+
+
+    const hslValue =
+        rgbToHsl(
+            r,
+            g,
+            b
+        );
+
+
+    const hsvValue =
+        rgbToHsv(
+            r,
+            g,
+            b
+        );
+
+
+    currentHex =
+        newHex;
+
+
+    hex.value =
+        newHex;
+
+    rgb.value =
+        `${r}, ${g}, ${b}`;
+
+    hsl.value =
+        `${hslValue.h}, ${hslValue.s}%, ${hslValue.l}%`;
+
+    hsv.value =
+        `${hsvValue.h}, ${hsvValue.s}%, ${hsvValue.v}%`;
+
+    red.value =
+        r;
+
+    green.value =
+        g;
+
+
+    colorPicker.value =
+        newHex;
+
+
+    preview.style.background =
+        newHex;
+
+
+    preview.style.boxShadow =
+        `0 0 35px ${newHex}55`;
+
+}
+
+
+/* =====================================================
+   CONVERT HEX
+===================================================== */
+
+function convertHex(){
+
+    try{
+
+        const value =
+            hex.value.trim();
+
+
+        const color =
+            hexToRgb(
+                value
+            );
+
+
+        updateFromRgb(
+            color.r,
+            color.g,
+            color.b
+        );
+
+
+        setStatus(
+            "Warna berhasil dikonversi.",
+            "success"
+        );
+
+    }catch(error){
+
+        setStatus(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RGB INPUT
+===================================================== */
+
+function convertRgb(){
+
+    const values =
+        rgb.value
+            .split(",")
+            .map(
+                value =>
+                    Number(
+                        value.trim()
+                    )
+            );
+
+
+    if(
+        values.length !== 3 ||
+        values.some(
+            value =>
+                !Number.isFinite(
+                    value
+                )
+        )
+    ){
+
+        setStatus(
+            "Format RGB harus seperti: 123, 44, 255",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    updateFromRgb(
+        values[0],
+        values[1],
+        values[2]
+    );
+
+
+    setStatus(
+        "RGB berhasil dikonversi.",
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   COLOR PICKER
+===================================================== */
+
+colorPicker.addEventListener(
+    "input",
+    () => {
+
+        try{
+
+            const color =
+                hexToRgb(
+                    colorPicker.value
+                );
+
+
+            updateFromRgb(
+                color.r,
+                color.g,
+                color.b
+            );
+
+
+            setStatus(
+                "Color picker diperbarui.",
+                "success"
+            );
+
+        }catch(error){
+
+            setStatus(
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CONVERT BUTTON
+===================================================== */
+
+convertButton.addEventListener(
+    "click",
+    () => {
+
+        const value =
+            hex.value.trim();
+
+
+        /*
+         * Jika HEX berubah,
+         * gunakan HEX sebagai
+         * sumber utama.
+         */
+
+        if(
+            value
+        ){
+
+            convertHex();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RANDOM COLOR
+===================================================== */
+
+randomButton.addEventListener(
+    "click",
+    () => {
+
+        const r =
+            Math.floor(
+                Math.random() * 256
+            );
+
+        const g =
+            Math.floor(
+                Math.random() * 256
+            );
+
+        const b =
+            Math.floor(
+                Math.random() * 256
+            );
+
+
+        updateFromRgb(
+            r,
+            g,
+            b
+        );
+
+
+        setStatus(
+            "Warna random berhasil dibuat.",
+            "success"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   COPY HEX
+===================================================== */
+
+copyButton.addEventListener(
+    "click",
+    async () => {
+
+        try{
+
+            await navigator
+                .clipboard
+                .writeText(
+                    currentHex
+                );
+
+
+            copyButton.textContent =
+                "✓ Copied";
+
+
+            setStatus(
+                currentHex +
+                " berhasil disalin.",
+                "success"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    copyButton.textContent =
+                        "⧉ Copy HEX";
+
+                },
+                1500
+            );
+
+        }catch{
+
+            hex.select();
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            setStatus(
+                "HEX berhasil disalin.",
+                "success"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   SAVE COLOR
+===================================================== */
+
+saveButton.addEventListener(
+    "click",
+    () => {
+
+        if(
+            !savedColors.includes(
+                currentHex
+            )
+        ){
+
+            savedColors.push(
+                currentHex
+            );
+
+            renderPalette();
+
+
+            setStatus(
+                currentHex +
+                " ditambahkan ke palette.",
+                "success"
+            );
+
+        }else{
+
+            setStatus(
+                "Warna tersebut sudah ada di palette."
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RENDER PALETTE
+===================================================== */
+
+function renderPalette(){
+
+    palette.innerHTML =
+        "";
+
+
+    if(
+        savedColors.length === 0
+    ){
+
+        palette.innerHTML =
+            `
+            <div class="empty">
+                Belum ada warna yang disimpan.
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    savedColors.forEach(
+        (
+            color,
+            index
+        ) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "palette-item";
+
+
+            item.innerHTML =
+                `
+                <div
+                    class="palette-color"
+                    style="background:${color};"
+                    title="Klik untuk menggunakan warna ini"
+                ></div>
+
+                <div class="palette-info">
+
+                    <div class="palette-code">
+                        ${color}
+                    </div>
+
+                </div>
+
+                <button
+                    class="palette-remove"
+                    type="button"
+                >
+                    Hapus
+                </button>
+                `;
+
+
+            const colorBox =
+                item.querySelector(
+                    ".palette-color"
+                );
+
+
+            const removeButton =
+                item.querySelector(
+                    ".palette-remove"
+                );
+
+
+            colorBox.addEventListener(
+                "click",
+                () => {
+
+                    const rgbValue =
+                        hexToRgb(
+                            color
+                        );
+
+
+                    updateFromRgb(
+                        rgbValue.r,
+                        rgbValue.g,
+                        rgbValue.b
+                    );
+
+
+                    setStatus(
+                        color +
+                        " dipilih dari palette.",
+                        "success"
+                    );
+
+                }
+            );
+
+
+            removeButton.addEventListener(
+                "click",
+                () => {
+
+                    savedColors.splice(
+                        index,
+                        1
+                    );
+
+
+                    renderPalette();
+
+                }
+            );
+
+
+            palette.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    () => {
+
+        updateFromRgb(
+            123,
+            44,
+            255
+        );
+
+
+        setStatus(
+            "Warna dikembalikan ke default."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   RGB LIVE INPUT
+===================================================== */
+
+rgb.addEventListener(
+    "change",
+    () => {
+
+        convertRgb();
+
+    }
+);
+
+
+/* =====================================================
+   HEX LIVE INPUT
+===================================================== */
+
+hex.addEventListener(
+    "change",
+    () => {
+
+        convertHex();
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+updateFromRgb(
+    123,
+    44,
+    255
+);
+
+</script>
+
+</body>
+</html>

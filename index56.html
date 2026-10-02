@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Regex Tester — WebToolsKita</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    padding:30px 16px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:520px;
+    height:520px;
+    top:-280px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:#7b2cff;
+    filter:blur(180px);
+    opacity:.13;
+    pointer-events:none;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    position:relative;
+    z-index:1;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:-1.5px;
+    background:linear-gradient(
+        90deg,
+        #fff,
+        #b66cff,
+        #7b2cff
+    );
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#888;
+    font-size:13px;
+}
+
+.panel{
+    border:1px solid #292035;
+    border-radius:16px;
+    background:linear-gradient(
+        145deg,
+        #0d0d0d,
+        #100b16
+    );
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:
+        inset 0 0 30px
+        rgba(123,44,255,.035);
+}
+
+.section-title{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:9px;
+}
+
+.regex-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:10px;
+}
+
+.input{
+    width:100%;
+    padding:13px;
+    border-radius:10px;
+    border:1px solid #30263c;
+    background:#080808;
+    color:#ddd;
+    outline:none;
+    font-family:Consolas,Monaco,"Courier New",monospace;
+    font-size:12px;
+}
+
+.input:focus{
+    border-color:#7b2cff;
+}
+
+.flags{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:11px;
+}
+
+.flag{
+    position:relative;
+}
+
+.flag input{
+    display:none;
+}
+
+.flag label{
+    display:block;
+    padding:8px 11px;
+    border:1px solid #30263c;
+    border-radius:8px;
+    background:#0a0a0a;
+    color:#777;
+    font-size:10px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.flag input:checked + label{
+    color:#fff;
+    border-color:#7b2cff;
+    background:#1a1025;
+}
+
+textarea{
+    width:100%;
+    resize:vertical;
+    padding:13px;
+    border-radius:10px;
+    border:1px solid #30263c;
+    background:#080808;
+    color:#ddd;
+    outline:none;
+    font-family:Consolas,Monaco,"Courier New",monospace;
+    font-size:11px;
+    line-height:1.6;
+}
+
+textarea:focus{
+    border-color:#7b2cff;
+}
+
+.test-input{
+    min-height:180px;
+}
+
+.replace-input{
+    min-height:80px;
+}
+
+.actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:13px;
+}
+
+.button{
+    padding:11px 16px;
+    border-radius:9px;
+    border:1px solid #30263c;
+    background:#111;
+    color:#ccc;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+.button:hover{
+    color:#fff;
+    border-color:#7b2cff;
+    background:#17111e;
+    transform:translateY(-1px);
+}
+
+.button.primary{
+    background:#7b2cff;
+    border-color:#9b5cff;
+    color:#fff;
+}
+
+.button.primary:hover{
+    background:#8d45ff;
+}
+
+.status{
+    margin-top:13px;
+    padding:10px 12px;
+    border-radius:9px;
+    border:1px solid #292035;
+    background:#090909;
+    color:#777;
+    font-size:10px;
+    text-align:center;
+    line-height:1.5;
+}
+
+.status.success{
+    color:#b66cff;
+    border-color:#4a315f;
+    background:#120b18;
+}
+
+.status.error{
+    color:#ff9b9b;
+    border-color:#5a3030;
+    background:#180b0b;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:10px;
+    margin-top:14px;
+}
+
+.stat{
+    padding:12px;
+    border:1px solid #292035;
+    border-radius:10px;
+    background:#090909;
+    text-align:center;
+}
+
+.stat-label{
+    color:#555;
+    font-size:9px;
+    font-weight:800;
+    margin-bottom:5px;
+}
+
+.stat-value{
+    color:#b66cff;
+    font-size:17px;
+    font-weight:900;
+}
+
+.result{
+    margin-top:15px;
+}
+
+.result-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+}
+
+.result-title span:first-child{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+}
+
+.result-title span:last-child{
+    color:#555;
+    font-size:9px;
+}
+
+.match-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.match{
+    padding:12px;
+    border:1px solid #292035;
+    border-radius:10px;
+    background:#090909;
+}
+
+.match-head{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:7px;
+}
+
+.match-number{
+    color:#b66cff;
+    font-size:10px;
+    font-weight:800;
+}
+
+.match-position{
+    color:#555;
+    font-size:9px;
+}
+
+.match-value{
+    color:#ddd;
+    font-family:Consolas,Monaco,"Courier New",monospace;
+    font-size:11px;
+    word-break:break-all;
+    line-height:1.6;
+}
+
+.group{
+    margin-top:7px;
+    padding:8px;
+    border-radius:7px;
+    background:#0e0e0e;
+    border:1px solid #211a29;
+}
+
+.group-label{
+    color:#666;
+    font-size:9px;
+    margin-bottom:3px;
+}
+
+.group-value{
+    color:#aaa;
+    font-family:monospace;
+    font-size:10px;
+    word-break:break-all;
+}
+
+.empty{
+    padding:18px;
+    text-align:center;
+    color:#555;
+    border:1px dashed #292035;
+    border-radius:10px;
+    font-size:10px;
+}
+
+.info{
+    color:#666;
+    font-size:10px;
+    line-height:1.6;
+}
+
+.back{
+    display:block;
+    text-align:center;
+    margin-top:24px;
+    color:#777;
+    text-decoration:none;
+    font-size:12px;
+}
+
+.back:hover{
+    color:#b66cff;
+}
+
+.footer{
+    text-align:center;
+    color:#444;
+    font-size:11px;
+    margin-top:10px;
+}
+
+@media(max-width:750px){
+
+    body{
+        padding:22px 12px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .regex-row{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:420px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="header">
+    <h1 class="logo">Regex Tester</h1>
+    <p class="subtitle">
+        Uji Regular Expression dan analisis hasil match langsung di browser.
+    </p>
+</header>
+
+
+<!-- REGEX -->
+
+<section class="panel">
+
+    <div class="section-title">
+        REGULAR EXPRESSION
+    </div>
+
+    <div class="regex-row">
+
+        <input
+            id="regexInput"
+            class="input"
+            type="text"
+            spellcheck="false"
+            placeholder="Contoh: \b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
+        >
+
+        <button
+            id="testButton"
+            class="button primary"
+        >
+            ⚡ Test Regex
+        </button>
+
+    </div>
+
+
+    <div class="flags">
+
+        <div class="flag">
+            <input id="flagG" type="checkbox" checked>
+            <label for="flagG">g — Global</label>
+        </div>
+
+        <div class="flag">
+            <input id="flagI" type="checkbox">
+            <label for="flagI">i — Ignore Case</label>
+        </div>
+
+        <div class="flag">
+            <input id="flagM" type="checkbox">
+            <label for="flagM">m — Multiline</label>
+        </div>
+
+        <div class="flag">
+            <input id="flagS" type="checkbox">
+            <label for="flagS">s — DotAll</label>
+        </div>
+
+        <div class="flag">
+            <input id="flagU" type="checkbox">
+            <label for="flagU">u — Unicode</label>
+        </div>
+
+        <div class="flag">
+            <input id="flagY" type="checkbox">
+            <label for="flagY">y — Sticky</label>
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            id="emailButton"
+            class="button"
+        >
+            Email
+        </button>
+
+        <button
+            id="urlButton"
+            class="button"
+        >
+            URL
+        </button>
+
+        <button
+            id="numberButton"
+            class="button"
+        >
+            Number
+        </button>
+
+        <button
+            id="phoneButton"
+            class="button"
+        >
+            Phone
+        </button>
+
+        <button
+            id="clearButton"
+            class="button"
+        >
+            × Clear
+        </button>
+
+    </div>
+
+    <div
+        id="status"
+        class="status"
+    >
+        Masukkan regex dan teks yang ingin diuji.
+    </div>
+
+</section>
+
+
+<!-- TEST TEXT -->
+
+<section class="panel">
+
+    <div class="section-title">
+        TEST TEXT
+    </div>
+
+    <textarea
+        id="testText"
+        class="test-input"
+        spellcheck="false"
+        placeholder="Masukkan teks yang ingin diperiksa oleh regex..."
+    ></textarea>
+
+</section>
+
+
+<!-- STATISTICS -->
+
+<section
+    id="statsPanel"
+    class="panel"
+    style="display:none;"
+>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-label">
+                MATCH
+            </div>
+            <div
+                id="matchCount"
+                class="stat-value"
+            >
+                0
+            </div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">
+                GROUP
+            </div>
+            <div
+                id="groupCount"
+                class="stat-value"
+            >
+                0
+            </div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">
+                CHARACTERS
+            </div>
+            <div
+                id="charCount"
+                class="stat-value"
+            >
+                0
+            </div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">
+                FLAGS
+            </div>
+            <div
+                id="flagDisplay"
+                class="stat-value"
+            >
+                —
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MATCHES -->
+
+<section
+    id="resultPanel"
+    class="panel"
+    style="display:none;"
+>
+
+    <div class="result">
+
+        <div class="result-title">
+
+            <span>
+                MATCH RESULTS
+            </span>
+
+            <span id="resultCount">
+                0 hasil
+            </span>
+
+        </div>
+
+        <div
+            id="matchList"
+            class="match-list"
+        ></div>
+
+    </div>
+
+</section>
+
+
+<!-- REPLACE -->
+
+<section class="panel">
+
+    <div class="section-title">
+        REGEX REPLACE
+    </div>
+
+    <textarea
+        id="replaceInput"
+        class="replace-input"
+        spellcheck="false"
+        placeholder="Teks pengganti, contoh: [REDACTED]"
+    ></textarea>
+
+    <div class="actions">
+
+        <button
+            id="replaceButton"
+            class="button primary"
+        >
+            ↻ Replace
+        </button>
+
+        <button
+            id="copyReplaceButton"
+            class="button"
+        >
+            ⧉ Copy Result
+        </button>
+
+    </div>
+
+    <textarea
+        id="replaceOutput"
+        class="replace-input"
+        readonly
+        placeholder="Hasil replace akan muncul di sini..."
+    ></textarea>
+
+</section>
+
+
+<!-- INFO -->
+
+<section class="panel">
+
+    <div class="info">
+
+        <strong style="color:#b66cff;">
+            Regex Tester
+        </strong>
+
+        membantu menguji pola Regular Expression sebelum digunakan
+        dalam kode aplikasi.
+
+        <br><br>
+
+        Flag yang tersedia:
+
+        <strong style="color:#aaa;">g</strong>
+        global,
+
+        <strong style="color:#aaa;">i</strong>
+        ignore case,
+
+        <strong style="color:#aaa;">m</strong>
+        multiline,
+
+        <strong style="color:#aaa;">s</strong>
+        dotAll,
+
+        <strong style="color:#aaa;">u</strong>
+        unicode,
+
+        dan
+
+        <strong style="color:#aaa;">y</strong>
+        sticky.
+
+        <br><br>
+
+        Semua proses dilakukan secara lokal di browser.
+        Tidak ada teks yang dikirim ke server.
+
+    </div>
+
+</section>
+
+
+<a
+    href="index3.html"
+    class="back"
+>
+    ← Kembali ke Advance Tools
+</a>
+
+<div class="footer">
+    © 2026 WebToolsKita
+</div>
+
+</div>
+
+
+<script>
+
+const regexInput =
+    document.getElementById("regexInput");
+
+const testText =
+    document.getElementById("testText");
+
+const testButton =
+    document.getElementById("testButton");
+
+const status =
+    document.getElementById("status");
+
+const statsPanel =
+    document.getElementById("statsPanel");
+
+const resultPanel =
+    document.getElementById("resultPanel");
+
+const matchList =
+    document.getElementById("matchList");
+
+const matchCount =
+    document.getElementById("matchCount");
+
+const groupCount =
+    document.getElementById("groupCount");
+
+const charCount =
+    document.getElementById("charCount");
+
+const flagDisplay =
+    document.getElementById("flagDisplay");
+
+const resultCount =
+    document.getElementById("resultCount");
+
+const replaceInput =
+    document.getElementById("replaceInput");
+
+const replaceOutput =
+    document.getElementById("replaceOutput");
+
+
+function setStatus(message,type=""){
+
+    status.textContent =
+        message;
+
+    status.className =
+        "status";
+
+    if(type){
+
+        status.classList.add(type);
+
+    }
+}
+
+
+function getFlags(){
+
+    let flags = "";
+
+    if(
+        document.getElementById("flagG").checked
+    ){
+        flags += "g";
+    }
+
+    if(
+        document.getElementById("flagI").checked
+    ){
+        flags += "i";
+    }
+
+    if(
+        document.getElementById("flagM").checked
+    ){
+        flags += "m";
+    }
+
+    if(
+        document.getElementById("flagS").checked
+    ){
+        flags += "s";
+    }
+
+    if(
+        document.getElementById("flagU").checked
+    ){
+        flags += "u";
+    }
+
+    if(
+        document.getElementById("flagY").checked
+    ){
+        flags += "y";
+    }
+
+    return flags;
+}
+
+
+function escapeHTML(value){
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+function runRegex(){
+
+    const pattern =
+        regexInput.value;
+
+    const text =
+        testText.value;
+
+    if(!pattern){
+
+        setStatus(
+            "Regex masih kosong.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(!text){
+
+        setStatus(
+            "Test text masih kosong.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    let regex;
+
+    const flags =
+        getFlags();
+
+
+    try{
+
+        regex =
+            new RegExp(
+                pattern,
+                flags
+            );
+
+    }catch(error){
+
+        setStatus(
+            "Regex tidak valid: " +
+            error.message,
+            "error"
+        );
+
+        statsPanel.style.display =
+            "none";
+
+        resultPanel.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    let matches = [];
+
+
+    try{
+
+        if(
+            flags.includes("g")
+        ){
+
+            matches =
+                Array.from(
+                    text.matchAll(
+                        regex
+                    )
+                );
+
+        }else{
+
+            const match =
+                regex.exec(
+                    text
+                );
+
+            if(match){
+
+                matches = [
+                    match
+                ];
+
+            }
+
+        }
+
+    }catch(error){
+
+        setStatus(
+            "Gagal menjalankan regex.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    matchList.innerHTML =
+        "";
+
+
+    let totalGroups = 0;
+
+
+    matches.forEach(
+        (match,index) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "match";
+
+
+            const position =
+                match.index +
+                "-" +
+                (
+                    match.index +
+                    match[0].length
+                );
+
+
+            let groupsHTML = "";
+
+
+            if(
+                match.length > 1
+            ){
+
+                for(
+                    let i=1;
+                    i<match.length;
+                    i++
+                ){
+
+                    totalGroups++;
+
+
+                    const groupValue =
+                        match[i] === undefined
+                            ? "undefined"
+                            : match[i];
+
+
+                    groupsHTML +=
+                        `
+                        <div class="group">
+
+                            <div class="group-label">
+                                Capture Group ${i}
+                            </div>
+
+                            <div class="group-value">
+                                ${escapeHTML(groupValue)}
+                            </div>
+
+                        </div>
+                        `;
+
+                }
+
+            }
+
+
+            item.innerHTML =
+                `
+                <div class="match-head">
+
+                    <span class="match-number">
+                        MATCH #${index + 1}
+                    </span>
+
+                    <span class="match-position">
+                        Position ${position}
+                    </span>
+
+                </div>
+
+                <div class="match-value">
+                    ${escapeHTML(match[0])}
+                </div>
+
+                ${groupsHTML}
+                `;
+
+
+            matchList.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    matchCount.textContent =
+        matches.length;
+
+
+    groupCount.textContent =
+        totalGroups;
+
+
+    charCount.textContent =
+        text.length;
+
+
+    flagDisplay.textContent =
+        flags || "none";
+
+
+    resultCount.textContent =
+        matches.length +
+        (
+            matches.length === 1
+                ? " hasil"
+                : " hasil"
+        );
+
+
+    statsPanel.style.display =
+        "block";
+
+
+    resultPanel.style.display =
+        "block";
+
+
+    if(matches.length){
+
+        setStatus(
+            "Regex berhasil. Ditemukan " +
+            matches.length +
+            " match.",
+            "success"
+        );
+
+    }else{
+
+        setStatus(
+            "Regex valid, tetapi tidak ditemukan match.",
+            ""
+        );
+
+    }
+
+
+    updateReplacePreview(
+        regex
+    );
+
+}
+
+
+function updateReplacePreview(
+    existingRegex = null
+){
+
+    const pattern =
+        regexInput.value;
+
+    const text =
+        testText.value;
+
+    if(
+        !pattern ||
+        !text
+    ){
+
+        replaceOutput.value =
+            "";
+
+        return;
+
+    }
+
+
+    let regex =
+        existingRegex;
+
+
+    if(!regex){
+
+        try{
+
+            regex =
+                new RegExp(
+                    pattern,
+                    getFlags()
+                );
+
+        }catch{
+
+            return;
+
+        }
+
+    }
+
+
+    replaceOutput.value =
+        text.replace(
+            regex,
+            replaceInput.value
+        );
+
+}
+
+
+testButton.addEventListener(
+    "click",
+    runRegex
+);
+
+
+replaceInput.addEventListener(
+    "input",
+    () => {
+
+        updateReplacePreview();
+
+    }
+);
+
+
+replaceButton.addEventListener(
+    "click",
+    () => {
+
+        const pattern =
+            regexInput.value;
+
+        const text =
+            testText.value;
+
+
+        if(!pattern){
+
+            setStatus(
+                "Regex masih kosong.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            const regex =
+                new RegExp(
+                    pattern,
+                    getFlags()
+                );
+
+
+            replaceOutput.value =
+                text.replace(
+                    regex,
+                    replaceInput.value
+                );
+
+
+            setStatus(
+                "Replace berhasil.",
+                "success"
+            );
+
+        }catch(error){
+
+            setStatus(
+                "Regex tidak valid: " +
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+document
+    .getElementById(
+        "copyReplaceButton"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+            if(
+                !replaceOutput.value
+            ){
+
+                return;
+
+            }
+
+
+            try{
+
+                await navigator
+                    .clipboard
+                    .writeText(
+                        replaceOutput.value
+                    );
+
+
+                const button =
+                    document.getElementById(
+                        "copyReplaceButton"
+                    );
+
+
+                button.textContent =
+                    "✓ Tersalin";
+
+
+                setTimeout(
+                    () => {
+
+                        button.textContent =
+                            "⧉ Copy Result";
+
+                    },
+                    1500
+                );
+
+            }catch{
+
+                setStatus(
+                    "Clipboard tidak tersedia.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+function setPreset(
+    pattern
+){
+
+    regexInput.value =
+        pattern;
+
+    runRegex();
+
+}
+
+
+document
+    .getElementById(
+        "emailButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            setPreset(
+                "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "urlButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            setPreset(
+                "https?:\\/\\/[^\\s]+"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "numberButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            setPreset(
+                "-?\\d+(?:\\.\\d+)?"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "phoneButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            setPreset(
+                "\\+?[0-9][0-9\\s()-]{7,}"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "clearButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            regexInput.value =
+                "";
+
+            testText.value =
+                "";
+
+            replaceInput.value =
+                "";
+
+            replaceOutput.value =
+                "";
+
+            matchList.innerHTML =
+                "";
+
+            statsPanel.style.display =
+                "none";
+
+            resultPanel.style.display =
+                "none";
+
+            setStatus(
+                "Semua data berhasil dibersihkan."
+            );
+
+            regexInput.focus();
+
+        }
+    );
+
+
+regexInput.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key === "Enter"
+        ){
+
+            runRegex();
+
+        }
+
+    }
+);
+
+
+testText.addEventListener(
+    "input",
+    () => {
+
+        if(
+            regexInput.value
+        ){
+
+            runRegex();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

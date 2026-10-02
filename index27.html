@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hash Generator - WebToolsKita</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #35106b 0%,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            #19083b 0%,
+            transparent 40%
+        ),
+        #07070b;
+}
+
+.container {
+    width: min(900px, 94%);
+    margin: auto;
+    padding: 30px 0 60px;
+}
+
+/* HEADER */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #a855f7;
+}
+
+.back-button {
+    border: 1px solid rgba(168,85,247,.35);
+    background: rgba(168,85,247,.08);
+    color: #c084fc;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.back-button:hover {
+    background: rgba(168,85,247,.18);
+}
+
+/* HERO */
+
+.hero {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.vip-label {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    background: rgba(168,85,247,.12);
+    border: 1px solid rgba(168,85,247,.35);
+
+    color: #c084fc;
+    font-size: 11px;
+    font-weight: 800;
+
+    margin-bottom: 12px;
+}
+
+.hero h1 {
+    font-size: clamp(30px, 6vw, 45px);
+    margin-bottom: 10px;
+}
+
+.hero h1 span {
+    color: #a855f7;
+}
+
+.hero p {
+    color: #999;
+    font-size: 14px;
+}
+
+/* CARD */
+
+.card {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 20px;
+    padding: 24px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.25);
+}
+
+/* LABEL */
+
+label {
+    display: block;
+    margin-bottom: 8px;
+
+    color: #ddd;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* TEXTAREA */
+
+textarea {
+    width: 100%;
+    min-height: 180px;
+
+    resize: vertical;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,.1);
+
+    background: rgba(0,0,0,.35);
+
+    color: white;
+
+    outline: none;
+
+    font-family:
+        Consolas,
+        Monaco,
+        monospace;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+textarea:focus {
+    border-color: #a855f7;
+}
+
+/* CONTROLS */
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+select {
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(255,255,255,.1);
+
+    background: #111118;
+
+    color: white;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+select:focus {
+    border-color: #a855f7;
+}
+
+/* BUTTONS */
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+button {
+    font-family: inherit;
+}
+
+.generate-button {
+    border: none;
+
+    padding: 13px;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #a855f7
+        );
+
+    color: white;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.generate-button:hover {
+    filter: brightness(1.12);
+}
+
+.clear-button {
+    border: 1px solid rgba(255,255,255,.1);
+
+    padding: 13px;
+
+    border-radius: 11px;
+
+    background: rgba(255,255,255,.05);
+
+    color: #ddd;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.clear-button:hover {
+    background: rgba(255,255,255,.09);
+}
+
+/* OUTPUT */
+
+.output-section {
+    margin-top: 25px;
+}
+
+.output-box {
+    position: relative;
+
+    background: rgba(0,0,0,.35);
+
+    border:
+        1px solid
+        rgba(168,85,247,.2);
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    min-height: 100px;
+}
+
+.output {
+    width: 100%;
+
+    min-height: 65px;
+
+    resize: vertical;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #d8b4fe;
+
+    font-family:
+        Consolas,
+        Monaco,
+        monospace;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+.copy-button {
+    position: absolute;
+
+    right: 10px;
+    top: 10px;
+
+    border: 1px solid rgba(168,85,247,.3);
+
+    background: rgba(168,85,247,.1);
+
+    color: #c084fc;
+
+    padding: 7px 10px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.copy-button:hover {
+    background: rgba(168,85,247,.2);
+}
+
+/* INFO */
+
+.info {
+    margin-top: 20px;
+
+    padding: 14px;
+
+    border-radius: 11px;
+
+    background: rgba(59,130,246,.06);
+
+    border: 1px solid rgba(59,130,246,.15);
+
+    color: #93c5fd;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+/* ACCESS */
+
+.access-loading {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: #07070b;
+
+    z-index: 9999;
+
+    font-weight: 700;
+
+    color: #c084fc;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 650px) {
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .back-button {
+        width: 100%;
+    }
+
+    .controls,
+    .actions {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ACCESS CHECK -->
+
+<div
+    id="accessLoading"
+    class="access-loading"
+>
+    Memeriksa akses VIP...
+</div>
+
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="logo">
+            WebTools<span>Kita</span>
+        </div>
+
+        <button
+            class="back-button"
+            onclick="goBack()"
+        >
+            ← Kembali ke Tools
+        </button>
+
+    </header>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="vip-label">
+            👑 VIP TOOL 9
+        </div>
+
+        <h1>
+            Hash <span>Generator</span>
+        </h1>
+
+        <p>
+            Generate hash dari teks menggunakan algoritma SHA.
+        </p>
+
+    </section>
+
+
+    <!-- MAIN CARD -->
+
+    <main class="card">
+
+        <label for="inputText">
+            Teks yang akan di-hash
+        </label>
+
+        <textarea
+            id="inputText"
+            placeholder="Masukkan teks di sini..."
+        ></textarea>
+
+
+        <!-- CONTROLS -->
+
+        <div class="controls">
+
+            <div>
+
+                <label for="algorithm">
+                    Algoritma
+                </label>
+
+                <select id="algorithm">
+
+                    <option value="SHA-256">
+                        SHA-256
+                    </option>
+
+                    <option value="SHA-512">
+                        SHA-512
+                    </option>
+
+                    <option value="SHA-384">
+                        SHA-384
+                    </option>
+
+                    <option value="SHA-1">
+                        SHA-1
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label for="format">
+                    Format Output
+                </label>
+
+                <select id="format">
+
+                    <option value="hex">
+                        HEX
+                    </option>
+
+                    <option value="base64">
+                        Base64
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <button
+                class="generate-button"
+                onclick="generateHash()"
+            >
+                🔐 Generate Hash
+            </button>
+
+            <button
+                class="clear-button"
+                onclick="clearAll()"
+            >
+                🗑️ Clear
+            </button>
+
+        </div>
+
+
+        <!-- OUTPUT -->
+
+        <section class="output-section">
+
+            <label>
+                Hasil Hash
+            </label>
+
+            <div class="output-box">
+
+                <textarea
+                    id="output"
+                    class="output"
+                    readonly
+                    placeholder="Hasil hash akan muncul di sini..."
+                ></textarea>
+
+                <button
+                    class="copy-button"
+                    onclick="copyHash()"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- INFO -->
+
+        <div class="info">
+
+            💡 <strong>Info:</strong>
+            Hash adalah hasil transformasi satu arah dari data.
+            SHA-256 dan SHA-512 cocok untuk kebutuhan hash modern.
+            SHA-1 tersedia untuk kompatibilitas lama dan tidak
+            disarankan untuk penggunaan kriptografi baru.
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+// =====================================================
+// FIREBASE CONFIG
+// =====================================================
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
+};
+
+
+// =====================================================
+// FIREBASE INIT
+// =====================================================
+
+firebase.initializeApp(
+    firebaseConfig
+);
+
+const auth =
+    firebase.auth();
+
+
+// =====================================================
+// VIP ACCESS CHECK
+// =====================================================
+
+auth.onAuthStateChanged(
+    async (user) => {
+
+        if (!user) {
+
+            window.location.href =
+                "index2.html";
+
+            return;
+        }
+
+        try {
+
+            // Refresh token agar claim terbaru terbaca.
+            const tokenResult =
+                await user.getIdTokenResult(true);
+
+            const claims =
+                tokenResult.claims || {};
+
+            const isAdmin =
+                claims.admin === true;
+
+            const isVip =
+                claims.vip === true;
+
+            if (isAdmin || isVip) {
+
+                document.getElementById(
+                    "accessLoading"
+                ).style.display = "none";
+
+                return;
+            }
+
+
+            // Fallback backend.
+            const token =
+                await user.getIdToken();
+
+            const response =
+                await fetch(
+                    "/api/auth/me",
+                    {
+                        headers: {
+                            "Authorization":
+                                "Bearer " + token
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (
+                data.success &&
+                data.access &&
+                data.access.vip
+            ) {
+
+                document.getElementById(
+                    "accessLoading"
+                ).style.display = "none";
+
+                return;
+            }
+
+
+            alert(
+                "🔒 Akses VIP diperlukan."
+            );
+
+            window.location.href =
+                "index3.html";
+
+        } catch (error) {
+
+            console.error(
+                "VIP check error:",
+                error
+            );
+
+            alert(
+                "Gagal memeriksa akses VIP."
+            );
+
+            window.location.href =
+                "index3.html";
+        }
+
+    }
+);
+
+
+// =====================================================
+// HASH GENERATOR
+// =====================================================
+
+async function generateHash() {
+
+    const input =
+        document.getElementById(
+            "inputText"
+        ).value;
+
+    const algorithm =
+        document.getElementById(
+            "algorithm"
+        ).value;
+
+    const format =
+        document.getElementById(
+            "format"
+        ).value;
+
+    const output =
+        document.getElementById(
+            "output"
+        );
+
+
+    if (!input) {
+
+        alert(
+            "Masukkan teks terlebih dahulu."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const encoder =
+            new TextEncoder();
+
+        const data =
+            encoder.encode(input);
+
+        const hashBuffer =
+            await crypto.subtle.digest(
+                algorithm,
+                data
+            );
+
+        const bytes =
+            new Uint8Array(
+                hashBuffer
+            );
+
+
+        let result = "";
+
+
+        // =================================================
+        // HEX
+        // =================================================
+
+        if (format === "hex") {
+
+            result =
+                Array
+                    .from(bytes)
+                    .map(
+                        byte =>
+                            byte
+                                .toString(16)
+                                .padStart(2, "0")
+                    )
+                    .join("");
+
+        }
+
+
+        // =================================================
+        // BASE64
+        // =================================================
+
+        else {
+
+            let binary = "";
+
+            bytes.forEach(
+                byte => {
+                    binary += String.fromCharCode(
+                        byte
+                    );
+                }
+            );
+
+            result =
+                btoa(binary);
+        }
+
+
+        output.value =
+            result;
+
+    } catch (error) {
+
+        console.error(
+            "Hash error:",
+            error
+        );
+
+        alert(
+            "Gagal membuat hash."
+        );
+    }
+
+}
+
+
+// =====================================================
+// COPY
+// =====================================================
+
+async function copyHash() {
+
+    const output =
+        document.getElementById(
+            "output"
+        );
+
+    if (!output.value) {
+
+        alert(
+            "Belum ada hash untuk dicopy."
+        );
+
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            output.value
+        );
+
+        const button =
+            document.querySelector(
+                ".copy-button"
+            );
+
+        const oldText =
+            button.textContent;
+
+        button.textContent =
+            "Copied!";
+
+        setTimeout(
+            () => {
+                button.textContent =
+                    oldText;
+            },
+            1200
+        );
+
+    } catch (error) {
+
+        output.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        alert(
+            "Hash berhasil dicopy."
+        );
+    }
+
+}
+
+
+// =====================================================
+// CLEAR
+// =====================================================
+
+function clearAll() {
+
+    document.getElementById(
+        "inputText"
+    ).value = "";
+
+    document.getElementById(
+        "output"
+    ).value = "";
+
+}
+
+
+// =====================================================
+// BACK
+// =====================================================
+
+function goBack() {
+
+    window.location.href =
+        "index3.html";
+}
+
+</script>
+
+</body>
+</html>

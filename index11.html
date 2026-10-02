@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Pengaturan — WebToolsKita</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --animation-speed: 0.2s;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            background: #050505;
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            padding: 40px 20px;
+
+        }
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            width: 500px;
+            height: 500px;
+
+            background: #7b2cff;
+
+            border-radius: 50%;
+
+            filter: blur(180px);
+
+            opacity: 0.15;
+
+            top: -220px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            pointer-events: none;
+
+            z-index: 0;
+
+        }
+
+        .container {
+
+            width: 100%;
+
+            max-width: 700px;
+
+            margin: 0 auto;
+
+            position: relative;
+
+            z-index: 1;
+
+        }
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+
+        }
+
+        .logo {
+
+            font-size: 38px;
+
+            font-weight: 800;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 10px;
+
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #b66cff,
+                #7b2cff
+            );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+        }
+
+        .subtitle {
+
+            color: #999;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+        .user-card {
+
+            background: rgba(17, 17, 17, 0.92);
+
+            border: 1px solid #292035;
+
+            border-radius: 18px;
+
+            padding: 18px 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+        .avatar {
+
+            width: 50px;
+
+            height: 50px;
+
+            border-radius: 50%;
+
+            border: 2px solid #8b4dff;
+
+            object-fit: cover;
+
+            flex-shrink: 0;
+
+        }
+
+        .user-details {
+
+            min-width: 0;
+
+            flex: 1;
+
+        }
+
+        .user-label {
+
+            color: #777;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 4px;
+
+        }
+
+        .user-name {
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            margin-bottom: 3px;
+
+        }
+
+        .user-email {
+
+            color: #b66cff;
+
+            font-size: 12px;
+
+            overflow-wrap: anywhere;
+
+        }
+
+        .section {
+
+            background: rgba(17, 17, 17, 0.92);
+
+            border: 1px solid #292035;
+
+            border-radius: 18px;
+
+            padding: 24px;
+
+            margin-bottom: 18px;
+
+        }
+
+        .section-title {
+
+            font-size: 18px;
+
+            margin-bottom: 6px;
+
+        }
+
+        .section-description {
+
+            color: #888;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            margin-bottom: 20px;
+
+        }
+
+        .setting-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 16px 0;
+
+            border-top: 1px solid #242027;
+
+        }
+
+        .setting-row:first-of-type {
+
+            border-top: none;
+
+        }
+
+        .setting-info {
+
+            flex: 1;
+
+        }
+
+        .setting-name {
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+
+        }
+
+        .setting-description {
+
+            color: #777;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+        .toggle {
+
+            width: 48px;
+
+            height: 26px;
+
+            border-radius: 20px;
+
+            border: 1px solid #39313f;
+
+            background: #17141c;
+
+            position: relative;
+
+            cursor: pointer;
+
+            transition:
+                background var(--animation-speed),
+                border-color var(--animation-speed);
+
+            flex-shrink: 0;
+
+        }
+
+        .toggle::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 20px;
+
+            height: 20px;
+
+            top: 2px;
+
+            left: 3px;
+
+            border-radius: 50%;
+
+            background: #777;
+
+            transition:
+                left var(--animation-speed),
+                background var(--animation-speed);
+
+        }
+
+        .toggle.active {
+
+            background: #6d2be8;
+
+            border-color: #8b4dff;
+
+        }
+
+        .toggle.active::after {
+
+            left: 23px;
+
+            background: white;
+
+        }
+
+        .toggle:focus-visible {
+
+            outline: 2px solid #b66cff;
+
+            outline-offset: 3px;
+
+        }
+
+        .danger-button {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            border: 1px solid #633333;
+
+            background: #171010;
+
+            color: #ffaaaa;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            transition:
+                background var(--animation-speed),
+                border-color var(--animation-speed);
+
+        }
+
+        .danger-button:hover {
+
+            background: #241313;
+
+            border-color: #aa5555;
+
+        }
+
+        .danger-button:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+        }
+
+        .bottom {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+        }
+
+        .back-link {
+
+            color: #777;
+
+            font-size: 13px;
+
+            text-decoration: none;
+
+            transition: color var(--animation-speed);
+
+        }
+
+        .back-link:hover {
+
+            color: #b66cff;
+
+        }
+
+        .footer {
+
+            margin-top: 25px;
+
+            color: #555;
+
+            font-size: 12px;
+
+        }
+
+        .status {
+
+            display: none;
+
+            padding: 12px;
+
+            margin-bottom: 18px;
+
+            border-radius: 10px;
+
+            background: #17141c;
+
+            border: 1px solid #39313f;
+
+            color: #c9a8ff;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+        .status.show {
+
+            display: block;
+
+        }
+
+        .status.error {
+
+            color: #ffaaaa;
+
+            border-color: #633333;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 25px 15px;
+            }
+
+            .logo {
+                font-size: 32px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .setting-row {
+                align-items: flex-start;
+            }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .toggle,
+            .toggle::after,
+            .danger-button,
+            .back-link {
+                transition: none !important;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- HEADER -->
+
+        <header class="header">
+
+            <h1 class="logo">
+                WebToolsKita
+            </h1>
+
+            <p class="subtitle">
+                Pengaturan akun dan preferensi WebToolsKita.
+            </p>
+
+        </header>
+
+
+        <!-- STATUS -->
+
+        <div
+            id="status"
+            class="status"
+            role="status"
+            aria-live="polite"
+        ></div>
+
+
+        <!-- USER -->
+
+        <section class="user-card">
+
+            <img
+                id="userAvatar"
+                class="avatar"
+                alt="Foto profil"
+            >
+
+            <div class="user-details">
+
+                <div class="user-label">
+                    Akun Google
+                </div>
+
+                <div
+                    id="userName"
+                    class="user-name"
+                >
+                    Memuat...
+                </div>
+
+                <div
+                    id="userEmail"
+                    class="user-email"
+                >
+                    Memuat...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- AKUN -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Akun
+            </h2>
+
+            <p class="section-description">
+                Informasi akun yang sedang digunakan
+                untuk WebToolsKita.
+            </p>
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-name">
+                        Akun Google
+                    </div>
+
+                    <div class="setting-description">
+                        Akun digunakan untuk login
+                        ke WebToolsKita.
+                    </div>
+
+                </div>
+
+                <span
+                    id="accountStatus"
+                    style="
+                        color:#7ee787;
+                        font-size:12px;
+                        white-space:nowrap;
+                    "
+                >
+                    Aktif
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- PREFERENSI -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Preferensi
+            </h2>
+
+            <p class="section-description">
+                Atur tampilan dan perilaku halaman
+                WebToolsKita.
+            </p>
+
+
+            <!-- ANIMASI -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-name">
+                        Efek Animasi
+                    </div>
+
+                    <div class="setting-description">
+                        Aktifkan atau matikan efek
+                        animasi pada halaman.
+                    </div>
+
+                </div>
+
+                <button
+                    id="animationToggle"
+                    class="toggle active"
+                    type="button"
+                    aria-label="Efek Animasi"
+                    aria-pressed="true"
+                ></button>
+
+            </div>
+
+
+            <!-- NOTIFIKASI -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-name">
+                        Notifikasi
+                    </div>
+
+                    <div class="setting-description">
+                        Aktifkan atau matikan preferensi
+                        notifikasi WebToolsKita.
+                    </div>
+
+                </div>
+
+                <button
+                    id="notificationToggle"
+                    class="toggle active"
+                    type="button"
+                    aria-label="Notifikasi"
+                    aria-pressed="true"
+                ></button>
+
+            </div>
+
+        </section>
+
+
+        <!-- SESI -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Sesi
+            </h2>
+
+            <p class="section-description">
+                Kelola sesi login WebToolsKita.
+            </p>
+
+            <button
+                id="logoutButton"
+                class="danger-button"
+                type="button"
+            >
+                Keluar dari Akun
+            </button>
+
+        </section>
+
+
+        <!-- BOTTOM -->
+
+        <div class="bottom">
+
+            <a
+                href="index3.html"
+                class="back-link"
+            >
+                ← Kembali ke Menu
+            </a>
+
+            <div class="footer">
+                © 2026 WebToolsKita
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- FIREBASE -->
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+
+    <script>
+
+        /* ============================================
+           FIREBASE CONFIG
+        ============================================ */
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+            authDomain:
+                "webtoolskita.firebaseapp.com",
+
+            projectId:
+                "webtoolskita",
+
+            storageBucket:
+                "webtoolskita.firebasestorage.app",
+
+            messagingSenderId:
+                "593680487717",
+
+            appId:
+                "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+            measurementId:
+                "G-YVEJ90678G"
+
+        };
+
+
+        /* ============================================
+           STORAGE KEY
+        ============================================ */
+
+        const ANIMATION_KEY =
+            "webtoolskita_animation";
+
+        const NOTIFICATION_KEY =
+            "webtoolskita_notifications";
+
+
+        /* ============================================
+           ELEMENT
+        ============================================ */
+
+        const statusBox =
+            document.getElementById("status");
+
+        const userName =
+            document.getElementById("userName");
+
+        const userEmail =
+            document.getElementById("userEmail");
+
+        const userAvatar =
+            document.getElementById("userAvatar");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+        const animationToggle =
+            document.getElementById(
+                "animationToggle"
+            );
+
+        const notificationToggle =
+            document.getElementById(
+                "notificationToggle"
+            );
+
+
+        /* ============================================
+           STATUS
+        ============================================ */
+
+        let statusTimer = null;
+
+        function showStatus(
+            message,
+            isError = false
+        ) {
+
+            statusBox.textContent =
+                message;
+
+            statusBox.className =
+                "status show";
+
+            if (isError) {
+
+                statusBox.classList.add(
+                    "error"
+                );
+
+            }
+
+            clearTimeout(statusTimer);
+
+            statusTimer =
+                setTimeout(
+                    () => {
+
+                        statusBox.classList.remove(
+                            "show"
+                        );
+
+                    },
+                    3500
+                );
+
+        }
+
+
+        /* ============================================
+           STORAGE HELPER
+        ============================================ */
+
+        function getStoredBoolean(
+            key,
+            defaultValue = true
+        ) {
+
+            try {
+
+                const value =
+                    localStorage.getItem(key);
+
+                if (value === null) {
+
+                    return defaultValue;
+
+                }
+
+                return value === "true";
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "LocalStorage tidak tersedia:",
+                    error
+                );
+
+                return defaultValue;
+
+            }
+
+        }
+
+
+        function saveBoolean(
+            key,
+            value
+        ) {
+
+            try {
+
+                localStorage.setItem(
+                    key,
+                    String(value)
+                );
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Gagal menyimpan pengaturan:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* ============================================
+           ANIMATION STATE
+        ============================================ */
+
+        function applyAnimationState(
+            active
+        ) {
+
+            if (active) {
+
+                animationToggle.classList.add(
+                    "active"
+                );
+
+                animationToggle.setAttribute(
+                    "aria-pressed",
+                    "true"
+                );
+
+                document.body.style.setProperty(
+                    "--animation-speed",
+                    "0.2s"
+                );
+
+            }
+
+            else {
+
+                animationToggle.classList.remove(
+                    "active"
+                );
+
+                animationToggle.setAttribute(
+                    "aria-pressed",
+                    "false"
+                );
+
+                document.body.style.setProperty(
+                    "--animation-speed",
+                    "0s"
+                );
+
+            }
+
+        }
+
+
+        /* ============================================
+           NOTIFICATION STATE
+        ============================================ */
+
+        function applyNotificationState(
+            active
+        ) {
+
+            if (active) {
+
+                notificationToggle.classList.add(
+                    "active"
+                );
+
+                notificationToggle.setAttribute(
+                    "aria-pressed",
+                    "true"
+                );
+
+            }
+
+            else {
+
+                notificationToggle.classList.remove(
+                    "active"
+                );
+
+                notificationToggle.setAttribute(
+                    "aria-pressed",
+                    "false"
+                );
+
+            }
+
+        }
+
+
+        /* ============================================
+           LOAD SETTINGS
+        ============================================ */
+
+        const savedAnimation =
+            getStoredBoolean(
+                ANIMATION_KEY,
+                true
+            );
+
+        const savedNotifications =
+            getStoredBoolean(
+                NOTIFICATION_KEY,
+                true
+            );
+
+        applyAnimationState(
+            savedAnimation
+        );
+
+        applyNotificationState(
+            savedNotifications
+        );
+
+
+        /* ============================================
+           ANIMATION TOGGLE
+        ============================================ */
+
+        animationToggle.addEventListener(
+            "click",
+            () => {
+
+                const active =
+                    !animationToggle.classList.contains(
+                        "active"
+                    );
+
+                applyAnimationState(
+                    active
+                );
+
+                saveBoolean(
+                    ANIMATION_KEY,
+                    active
+                );
+
+                if (active) {
+
+                    showStatus(
+                        "Efek animasi diaktifkan."
+                    );
+
+                }
+
+                else {
+
+                    showStatus(
+                        "Efek animasi dinonaktifkan."
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* ============================================
+           NOTIFICATION TOGGLE
+        ============================================ */
+
+        notificationToggle.addEventListener(
+            "click",
+            () => {
+
+                const active =
+                    !notificationToggle.classList.contains(
+                        "active"
+                    );
+
+                applyNotificationState(
+                    active
+                );
+
+                saveBoolean(
+                    NOTIFICATION_KEY,
+                    active
+                );
+
+                if (active) {
+
+                    showStatus(
+                        "Notifikasi diaktifkan."
+                    );
+
+                }
+
+                else {
+
+                    showStatus(
+                        "Notifikasi dinonaktifkan."
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* ============================================
+           FIREBASE
+        ============================================ */
+
+        try {
+
+            firebase.initializeApp(
+                firebaseConfig
+            );
+
+            const auth =
+                firebase.auth();
+
+
+            /* ========================================
+               CEK LOGIN
+            ======================================== */
+
+            auth.onAuthStateChanged(
+                user => {
+
+                    if (!user) {
+
+                        window.location.href =
+                            "index2.html";
+
+                        return;
+
+                    }
+
+
+                    /* =================================
+                       USER INFO
+                    ================================= */
+
+                    userName.textContent =
+                        user.displayName ||
+                        "Pengguna Google";
+
+                    userEmail.textContent =
+                        user.email || "";
+
+
+                    /* =================================
+                       AVATAR
+                    ================================= */
+
+                    if (user.photoURL) {
+
+                        userAvatar.src =
+                            user.photoURL;
+
+                        userAvatar.style.display =
+                            "block";
+
+                    }
+
+                    else {
+
+                        userAvatar.style.display =
+                            "none";
+
+                    }
+
+                }
+            );
+
+
+            /* ========================================
+               LOGOUT
+            ======================================== */
+
+            logoutButton.addEventListener(
+                "click",
+                async () => {
+
+                    logoutButton.disabled =
+                        true;
+
+                    logoutButton.textContent =
+                        "Keluar...";
+
+
+                    try {
+
+                        await auth.signOut();
+
+                        window.location.href =
+                            "index2.html";
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+                        showStatus(
+                            "Gagal keluar dari akun. Silakan coba lagi.",
+                            true
+                        );
+
+                        logoutButton.disabled =
+                            false;
+
+                        logoutButton.textContent =
+                            "Keluar dari Akun";
+
+                    }
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+            showStatus(
+                "Firebase gagal dimuat. Periksa konfigurasi dan koneksi internet.",
+                true
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QR Code Generator - WebToolsKita</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    padding:32px 18px;
+    background:#050505;
+    color:#f4f4f4;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.logo{
+    margin:0;
+    color:#ffffff;
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+.subtitle{
+    margin:8px 0 0;
+    color:#777;
+    font-size:13px;
+}
+
+.panel{
+    background:
+        linear-gradient(
+            145deg,
+            #080808,
+            #100b16,
+            #160b20
+        );
+    border:1px solid #292035;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:16px;
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.25),
+        inset 0 0 28px rgba(123,44,255,.035);
+}
+
+.section-title{
+    margin:0 0 16px;
+    color:#b66cff;
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.label{
+    display:block;
+    margin-bottom:8px;
+    color:#aaa;
+    font-size:12px;
+    font-weight:700;
+}
+
+textarea{
+    width:100%;
+    min-height:130px;
+    resize:vertical;
+    padding:15px;
+    border:1px solid #30263b;
+    border-radius:13px;
+    outline:none;
+    background:#0b0b0b;
+    color:#fff;
+    font-size:14px;
+    line-height:1.55;
+    transition:.2s;
+}
+
+textarea:focus{
+    border-color:#7b2cff;
+    box-shadow:0 0 0 3px rgba(123,44,255,.12);
+}
+
+textarea::placeholder{
+    color:#555;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+    margin-top:12px;
+}
+
+button{
+    border:1px solid #30263b;
+    border-radius:11px;
+    padding:12px 14px;
+    background:#151019;
+    color:#ddd;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    border-color:#7b2cff;
+    background:#1d1428;
+    color:#fff;
+}
+
+button.primary{
+    border-color:#7b2cff;
+    background:#7b2cff;
+    color:#fff;
+}
+
+button.primary:hover{
+    background:#8e45ff;
+    border-color:#8e45ff;
+}
+
+button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.analysis{
+    display:none;
+    margin-top:16px;
+    padding:16px;
+    border:1px solid #292035;
+    border-radius:14px;
+    background:#0c0a10;
+}
+
+.analysis.show{
+    display:block;
+}
+
+.analysis-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+}
+
+.analysis-title{
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:80px;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+.badge.web{
+    color:#cba5ff;
+    background:#211039;
+    border:1px solid #7134a8;
+}
+
+.badge.text{
+    color:#aaa;
+    background:#171717;
+    border:1px solid #333;
+}
+
+.analysis-reason{
+    color:#999;
+    font-size:12px;
+    line-height:1.55;
+}
+
+.analysis-value{
+    margin-top:10px;
+    padding:11px 12px;
+    border-radius:10px;
+    background:#080808;
+    border:1px solid #211b2a;
+    color:#ddd;
+    font-size:12px;
+    word-break:break-all;
+}
+
+.result{
+    display:none;
+}
+
+.result.show{
+    display:block;
+}
+
+.qr-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:360px;
+    padding:22px;
+    border:1px solid #292035;
+    border-radius:16px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(123,44,255,.07),
+            transparent 60%
+        ),
+        #080808;
+}
+
+#qrImage{
+    display:none;
+    width:300px;
+    height:300px;
+    max-width:100%;
+    object-fit:contain;
+    background:#fff;
+    padding:10px;
+    border-radius:10px;
+}
+
+.empty{
+    text-align:center;
+    color:#555;
+    font-size:12px;
+}
+
+.result-actions{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin-top:12px;
+}
+
+.status{
+    display:none;
+    margin-bottom:16px;
+    padding:12px 14px;
+    border-radius:11px;
+    border:1px solid #30263b;
+    background:#100d15;
+    color:#aaa;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.status.show{
+    display:block;
+}
+
+.status.success{
+    border-color:#365b45;
+    color:#9bd8ae;
+    background:#0d1711;
+}
+
+.status.error{
+    border-color:#6b3038;
+    color:#ff9fa9;
+    background:#170c0f;
+}
+
+.status.info{
+    border-color:#49356a;
+    color:#c7a7ed;
+    background:#120d19;
+}
+
+.footer{
+    text-align:center;
+    margin-top:22px;
+}
+
+.back{
+    color:#777;
+    text-decoration:none;
+    font-size:12px;
+}
+
+.back:hover{
+    color:#b66cff;
+}
+
+.note{
+    margin-top:12px;
+    color:#555;
+    font-size:11px;
+    line-height:1.5;
+    text-align:center;
+}
+
+@media(max-width:700px){
+
+    body{
+        padding:24px 13px;
+    }
+
+    .logo{
+        font-size:31px;
+    }
+
+    .actions{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .result-actions{
+        grid-template-columns:1fr;
+    }
+
+    .qr-wrap{
+        min-height:300px;
+    }
+
+    #qrImage{
+        width:260px;
+        height:260px;
+    }
+}
+
+@media(max-width:450px){
+
+    .panel{
+        padding:16px;
+    }
+
+    .actions{
+        grid-template-columns:1fr;
+    }
+
+    .analysis-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <h1 class="logo">WebToolsKita</h1>
+        <p class="subtitle">
+            Buat QR Code dari teks atau alamat web dengan deteksi otomatis.
+        </p>
+    </header>
+
+    <div id="status" class="status"></div>
+
+    <section class="panel">
+
+        <div class="section-title">
+            QR Code Generator
+        </div>
+
+        <label class="label" for="inputText">
+            Masukkan teks atau alamat web
+        </label>
+
+        <textarea
+            id="inputText"
+            placeholder="Contoh:
+https://google.com
+
+atau:
+Halo WebToolsKita"
+            autocomplete="off"
+            spellcheck="false"
+        ></textarea>
+
+        <div class="actions">
+
+            <button
+                id="analyzeBtn"
+                class="primary"
+                type="button"
+            >
+                🔎 Analisis
+            </button>
+
+            <button
+                id="generateBtn"
+                type="button"
+            >
+                ▣ Buat QR
+            </button>
+
+            <button
+                id="sampleWebBtn"
+                type="button"
+            >
+                🌐 Contoh Web
+            </button>
+
+            <button
+                id="sampleTextBtn"
+                type="button"
+            >
+                📝 Contoh Text
+            </button>
+
+        </div>
+
+        <div
+            id="analysis"
+            class="analysis"
+        >
+
+            <div class="analysis-head">
+
+                <div class="analysis-title">
+                    Hasil Analisis
+                </div>
+
+                <span
+                    id="typeBadge"
+                    class="badge text"
+                >
+                    TEXT
+                </span>
+
+            </div>
+
+            <div
+                id="analysisReason"
+                class="analysis-reason"
+            ></div>
+
+            <div
+                id="analysisValue"
+                class="analysis-value"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="resultPanel"
+        class="panel result"
+    >
+
+        <div class="section-title">
+            QR Code
+        </div>
+
+        <div class="qr-wrap">
+
+            <div
+                id="emptyMessage"
+                class="empty"
+            >
+                QR Code akan muncul di sini.
+            </div>
+
+            <img
+                id="qrImage"
+                alt="QR Code hasil generator"
+            >
+
+        </div>
+
+        <div class="result-actions">
+
+            <button
+                id="copyBtn"
+                type="button"
+                disabled
+            >
+                📋 Salin Isi
+            </button>
+
+            <button
+                id="downloadBtn"
+                type="button"
+                disabled
+            >
+                ⬇️ Download PNG
+            </button>
+
+            <button
+                id="clearBtn"
+                type="button"
+            >
+                🗑️ Bersihkan
+            </button>
+
+        </div>
+
+        <div class="note">
+            QR Code dibuat menggunakan server WebToolsKita.
+            Deteksi WEB/TEXT hanya mengklasifikasikan format input,
+            bukan memverifikasi apakah sebuah website benar-benar aman atau aktif.
+        </div>
+
+    </section>
+
+
+    <div class="footer">
+
+        <a
+            href="index3.html"
+            class="back"
+        >
+            ← Kembali ke WebToolsKita
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   ELEMENT
+   ========================================================= */
+
+const inputText = document.getElementById("inputText");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const generateBtn = document.getElementById("generateBtn");
+
+const sampleWebBtn = document.getElementById("sampleWebBtn");
+const sampleTextBtn = document.getElementById("sampleTextBtn");
+
+const analysis = document.getElementById("analysis");
+const typeBadge = document.getElementById("typeBadge");
+const analysisReason = document.getElementById("analysisReason");
+const analysisValue = document.getElementById("analysisValue");
+
+const resultPanel = document.getElementById("resultPanel");
+const qrImage = document.getElementById("qrImage");
+const emptyMessage = document.getElementById("emptyMessage");
+
+const copyBtn = document.getElementById("copyBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const statusBox = document.getElementById("status");
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let currentValue = "";
+let currentType = "TEXT";
+let currentQrDataUrl = "";
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function showStatus(message, type = "info") {
+
+    statusBox.textContent = message;
+
+    statusBox.className = "status show " + type;
+
+}
+
+function hideStatus() {
+
+    statusBox.textContent = "";
+    statusBox.className = "status";
+
+}
+
+
+/* =========================================================
+   NORMALIZE INPUT
+   ========================================================= */
+
+function normalizeInput(value) {
+
+    return String(value || "")
+        .trim();
+
+}
+
+
+/* =========================================================
+   EMAIL DETECTOR
+   ========================================================= */
+
+function isEmail(value) {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+}
+
+
+/* =========================================================
+   URL DETECTION
+   ========================================================= */
+
+function detectWebType(value) {
+
+    const text = normalizeInput(value);
+
+    if (!text) {
+
+        return {
+            type: "TEXT",
+            reason: "Input kosong. Masukkan teks atau alamat web terlebih dahulu."
+        };
+
+    }
+
+
+    /*
+     * Email sengaja tidak dianggap WEB.
+     * QR tetap bisa dibuat, tetapi kategorinya TEXT/DATA.
+     */
+
+    if (isEmail(text)) {
+
+        return {
+            type: "TEXT",
+            reason: "Input terlihat seperti alamat email. Email diperlakukan sebagai data teks."
+        };
+
+    }
+
+
+    /*
+     * 1. URL dengan protocol.
+     *
+     * http://
+     * https://
+     */
+
+    try {
+
+        const parsed = new URL(text);
+
+        if (
+            parsed.protocol === "http:" ||
+            parsed.protocol === "https:"
+        ) {
+
+            return {
+                type: "WEB",
+                reason: "Input memiliki protokol HTTP/HTTPS sehingga dikenali sebagai alamat web."
+            };
+
+        }
+
+    } catch (error) {
+        /*
+         * Bukan URL absolut.
+         * Lanjutkan ke pemeriksaan berikutnya.
+         */
+    }
+
+
+    /*
+     * 2. www.domain.tld
+     */
+
+    if (
+        /^www\.[a-z0-9-]+(?:\.[a-z0-9-]+)+(?::\d+)?(?:[/?#].*)?$/i.test(text)
+    ) {
+
+        return {
+            type: "WEB",
+            reason: "Input menggunakan format www + domain sehingga dikenali sebagai alamat web."
+        };
+
+    }
+
+
+    /*
+     * 3. Domain biasa.
+     *
+     * contoh:
+     * google.com
+     * example.co.id
+     * sub.example.com
+     */
+
+    if (
+        /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?::\d+)?(?:[/?#].*)?$/i.test(text)
+    ) {
+
+        return {
+            type: "WEB",
+            reason: "Input memiliki struktur domain yang valid, misalnya example.com atau example.co.id."
+        };
+
+    }
+
+
+    /*
+     * 4. localhost
+     */
+
+    if (
+        /^localhost(?::\d+)?(?:[/?#].*)?$/i.test(text)
+    ) {
+
+        return {
+            type: "WEB",
+            reason: "Input menggunakan hostname localhost sehingga dikategorikan sebagai alamat web lokal."
+        };
+
+    }
+
+
+    /*
+     * 5. IPv4
+     */
+
+    const ipv4Match = text.match(
+        /^(?:https?:\/\/)?((?:\d{1,3}\.){3}\d{1,3})(?::\d+)?(?:[/?#].*)?$/i
+    );
+
+    if (ipv4Match) {
+
+        const ip = ipv4Match[1];
+
+        const validIp = ip
+            .split(".")
+            .every(part => Number(part) >= 0 && Number(part) <= 255);
+
+        if (validIp) {
+
+            return {
+                type: "WEB",
+                reason: "Input menggunakan alamat IPv4 sehingga dapat digunakan sebagai alamat jaringan/web."
+            };
+
+        }
+
+    }
+
+
+    /*
+     * 6. localhost/IP dengan protocol
+     * sudah tertangani oleh URL.
+     */
+
+
+    /*
+     * Semua selain pola web di atas dianggap TEXT.
+     */
+
+    return {
+        type: "TEXT",
+        reason: "Input tidak cocok dengan pola URL, domain, localhost, atau alamat IPv4. Input diperlakukan sebagai teks."
+    };
+
+}
+
+
+/* =========================================================
+   ANALYZE
+   ========================================================= */
+
+function analyzeInput() {
+
+    const value = normalizeInput(inputText.value);
+
+    if (!value) {
+
+        analysis.classList.remove("show");
+
+        showStatus(
+            "Masukkan teks atau alamat web terlebih dahulu.",
+            "error"
+        );
+
+        return null;
+
+    }
+
+    const result = detectWebType(value);
+
+    currentValue = value;
+    currentType = result.type;
+
+    typeBadge.textContent = result.type;
+
+    typeBadge.className =
+        "badge " +
+        (result.type === "WEB" ? "web" : "text");
+
+    analysisReason.textContent = result.reason;
+
+    analysisValue.textContent = value;
+
+    analysis.classList.add("show");
+
+    showStatus(
+        result.type === "WEB"
+            ? "Input terdeteksi sebagai alamat WEB."
+            : "Input terdeteksi sebagai TEXT.",
+        "success"
+    );
+
+    return result;
+
+}
+
+
+/* =========================================================
+   GENERATE QR
+   ========================================================= */
+
+async function generateQr() {
+
+    hideStatus();
+
+    const value = normalizeInput(inputText.value);
+
+    if (!value) {
+
+        showStatus(
+            "Masukkan teks atau alamat web terlebih dahulu.",
+            "error"
+        );
+
+        inputText.focus();
+
+        return;
+
+    }
+
+
+    /*
+     * Selalu analisis terlebih dahulu.
+     */
+
+    const detected = analyzeInput();
+
+    if (!detected) {
+        return;
+    }
+
+
+    generateBtn.disabled = true;
+
+    generateBtn.textContent = "Membuat QR...";
+
+
+    try {
+
+        const response = await fetch("/api/qrcode", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                text: value
+            })
+
+        });
+
+
+        let data = null;
+
+        try {
+
+            data = await response.json();
+
+        } catch (error) {
+
+            throw new Error(
+                "Server mengirim respons yang tidak valid."
+            );
+
+        }
+
+
+        if (
+            !response.ok ||
+            !data ||
+            !data.success ||
+            !data.qr
+        ) {
+
+            throw new Error(
+                data?.message ||
+                "Gagal membuat QR Code."
+            );
+
+        }
+
+
+        currentQrDataUrl = data.qr;
+        currentValue = value;
+
+
+        qrImage.src = data.qr;
+        qrImage.style.display = "block";
+
+        emptyMessage.style.display = "none";
+
+        resultPanel.classList.add("show");
+
+        copyBtn.disabled = false;
+        downloadBtn.disabled = false;
+
+
+        showStatus(
+            detected.type === "WEB"
+                ? "QR Code berhasil dibuat untuk alamat WEB."
+                : "QR Code berhasil dibuat untuk TEXT.",
+            "success"
+        );
+
+
+        resultPanel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error("QR Generator error:", error);
+
+        showStatus(
+            error?.message ||
+            "Tidak dapat membuat QR Code. Pastikan server WebToolsKita aktif.",
+            "error"
+        );
+
+    } finally {
+
+        generateBtn.disabled = false;
+
+        generateBtn.textContent = "▣ Buat QR";
+
+    }
+
+}
+
+
+/* =========================================================
+   COPY
+   ========================================================= */
+
+async function copyValue() {
+
+    if (!currentValue) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(currentValue);
+
+        showStatus(
+            "Isi QR Code berhasil disalin.",
+            "success"
+        );
+
+    } catch (error) {
+
+        /*
+         * Fallback untuk browser yang membatasi clipboard.
+         */
+
+        const temp = document.createElement("textarea");
+
+        temp.value = currentValue;
+
+        document.body.appendChild(temp);
+
+        temp.select();
+
+        try {
+
+            document.execCommand("copy");
+
+            showStatus(
+                "Isi QR Code berhasil disalin.",
+                "success"
+            );
+
+        } catch (copyError) {
+
+            showStatus(
+                "Browser tidak mengizinkan penyalinan otomatis.",
+                "error"
+            );
+
+        }
+
+        temp.remove();
+
+    }
+
+}
+
+
+/* =========================================================
+   DOWNLOAD
+   ========================================================= */
+
+function downloadQr() {
+
+    if (!currentQrDataUrl) {
+
+        showStatus(
+            "Belum ada QR Code untuk di-download.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const link = document.createElement("a");
+
+    link.href = currentQrDataUrl;
+
+    link.download =
+        currentType === "WEB"
+            ? "webtoolskita-qr-web.png"
+            : "webtoolskita-qr-text.png";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+
+    showStatus(
+        "QR Code berhasil disiapkan untuk download.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   CLEAR
+   ========================================================= */
+
+function clearAll() {
+
+    inputText.value = "";
+
+    currentValue = "";
+    currentType = "TEXT";
+    currentQrDataUrl = "";
+
+    analysis.classList.remove("show");
+
+    resultPanel.classList.remove("show");
+
+    qrImage.src = "";
+    qrImage.style.display = "none";
+
+    emptyMessage.style.display = "block";
+
+    copyBtn.disabled = true;
+    downloadBtn.disabled = true;
+
+    hideStatus();
+
+    inputText.focus();
+
+}
+
+
+/* =========================================================
+   SAMPLE WEB
+   ========================================================= */
+
+function sampleWeb() {
+
+    inputText.value = "https://google.com";
+
+    analyzeInput();
+
+    inputText.focus();
+
+}
+
+
+/* =========================================================
+   SAMPLE TEXT
+   ========================================================= */
+
+function sampleText() {
+
+    inputText.value =
+        "Selamat datang di WebToolsKita";
+
+    analyzeInput();
+
+    inputText.focus();
+
+}
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+analyzeBtn.addEventListener(
+    "click",
+    analyzeInput
+);
+
+generateBtn.addEventListener(
+    "click",
+    generateQr
+);
+
+copyBtn.addEventListener(
+    "click",
+    copyValue
+);
+
+downloadBtn.addEventListener(
+    "click",
+    downloadQr
+);
+
+clearBtn.addEventListener(
+    "click",
+    clearAll
+);
+
+sampleWebBtn.addEventListener(
+    "click",
+    sampleWeb
+);
+
+sampleTextBtn.addEventListener(
+    "click",
+    sampleText
+);
+
+
+/*
+ * Analisis otomatis ketika user mengetik.
+ * Tidak langsung membuat QR.
+ */
+
+inputText.addEventListener(
+    "input",
+    function() {
+
+        const value = normalizeInput(inputText.value);
+
+        if (!value) {
+
+            analysis.classList.remove("show");
+
+            return;
+
+        }
+
+        analyzeInput();
+
+    }
+);
+
+
+/*
+ * Ctrl + Enter = buat QR
+ */
+
+inputText.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.ctrlKey &&
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            generateQr();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL STATE
+   ========================================================= */
+
+clearAll();
+
+</script>
+
+</body>
+</html>

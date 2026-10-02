@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Tools Management - WebToolsKita</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --bg:#08050f;--panel:rgba(18,11,34,.94);--panel2:rgba(255,255,255,.035);
+ --border:rgba(151,112,220,.22);--purple:#7c4dff;--text:#f5f3ff;
+ --muted:#aaa0c7;--gold:#ffd54f;--green:#8be28f;--red:#ff9c9c
+}
+body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:
+ radial-gradient(circle at 10% 0%,#2b145b 0%,transparent 32%),
+ radial-gradient(circle at 90% 10%,#19104a 0%,transparent 30%),
+ linear-gradient(145deg,#08050f,#10071d 55%,#08050f);color:var(--text);padding:24px 14px}
+.container{max-width:1180px;margin:auto}
+.header{text-align:center;margin-bottom:22px}
+.back{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:#cbbaff;
+ background:rgba(124,77,255,.1);border:1px solid rgba(124,77,255,.25);
+ padding:9px 13px;border-radius:10px;font-size:12px;font-weight:bold;margin-bottom:18px}
+.back:hover{background:rgba(124,77,255,.2)}
+h1{font-size:31px;margin-bottom:7px}.subtitle{color:var(--muted);font-size:13px;line-height:1.6}
+.admin{display:inline-block;margin-top:11px;padding:6px 12px;border-radius:999px;
+ color:var(--gold);background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);font-size:10px;font-weight:bold}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:17px;
+ box-shadow:0 15px 40px rgba(0,0,0,.25);backdrop-filter:blur(12px)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.stat{padding:15px;border-radius:13px;background:var(--panel2);border:1px solid rgba(255,255,255,.06)}
+.stat strong{display:block;font-size:25px;margin-bottom:4px}.stat span{color:#817793;font-size:10px}
+.toolbar{display:grid;grid-template-columns:1.7fr 1fr 1fr auto;gap:9px}
+input,select{width:100%;padding:12px;border-radius:10px;background:#0d0818;color:#eee;
+ border:1px solid rgba(151,112,220,.22);outline:none}
+input:focus,select:focus{border-color:rgba(124,77,255,.7)}
+button{border:0;border-radius:10px;padding:12px 15px;background:#6d43d8;color:#fff;font-weight:bold;cursor:pointer}
+button:hover{background:#8056eb}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:15px}
+.section-title h2{font-size:18px}.section-title p{color:var(--muted);font-size:12px;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.tool{position:relative;padding:17px;border-radius:15px;background:rgba(255,255,255,.035);
+ border:1px solid rgba(255,255,255,.065);transition:.2s}
+.tool:hover{transform:translateY(-3px);border-color:rgba(124,77,255,.48);box-shadow:0 10px 25px rgba(0,0,0,.2)}
+.tool.vip{border-color:rgba(255,193,7,.24);background:linear-gradient(135deg,rgba(62,40,8,.34),rgba(255,255,255,.025))}
+.top{display:flex;justify-content:space-between;gap:10px;margin-bottom:13px}
+.identity{display:flex;gap:11px;align-items:center}
+.icon{width:43px;height:43px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+ background:rgba(124,77,255,.12);border:1px solid rgba(124,77,255,.22);font-weight:bold;font-size:17px}
+.vip .icon{background:rgba(255,193,7,.1);border-color:rgba(255,193,7,.22)}
+.name{font-size:14px;font-weight:bold}.number{font-size:10px;color:#756b89;margin-top:3px}
+.badge{padding:5px 8px;border-radius:7px;font-size:9px;font-weight:bold;height:max-content}
+.free{color:var(--green);background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.22)}
+.vbadge{color:var(--gold);background:rgba(255,193,7,.09);border:1px solid rgba(255,193,7,.23)}
+.desc{color:var(--muted);font-size:12px;line-height:1.55;min-height:38px;margin-bottom:12px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.meta div{background:rgba(0,0,0,.15);padding:8px 9px;border-radius:8px}
+.meta small{display:block;color:#756b89;font-size:9px;margin-bottom:3px}.meta b{font-size:10px;color:#d9d2e8}
+.open{display:block;text-align:center;text-decoration:none;margin-top:11px;padding:10px;border-radius:9px;
+ background:rgba(124,77,255,.11);border:1px solid rgba(124,77,255,.23);color:#cbbaff;font-size:11px;font-weight:bold}
+.vip .open{background:rgba(255,193,7,.08);border-color:rgba(255,193,7,.22);color:var(--gold)}
+.empty{text-align:center;padding:35px;color:var(--muted);font-size:13px}
+.note{color:#d9cda9;background:rgba(255,193,7,.05);border:1px solid rgba(255,193,7,.16);
+ padding:14px;border-radius:12px;font-size:12px;line-height:1.65}
+.footer{text-align:center;color:#756b89;font-size:10px;margin:22px 0}
+.hidden{display:none!important}
+@media(max-width:780px){.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}.toolbar button{grid-column:1/-1}.grid{grid-template-columns:1fr}}
+@media(max-width:460px){body{padding:18px 10px}.stats{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.toolbar button{grid-column:auto}.meta{grid-template-columns:1fr}h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="header">
+<a class="back" href="index18.html">← Admin Dashboard</a>
+<h1>Tools Management</h1>
+<div class="subtitle">Kelola, pantau, dan periksa daftar tools WebToolsKita dari satu halaman.</div>
+<div class="admin">ADMINISTRATOR ONLY</div>
+</header>
+
+<section class="card">
+<div class="stats">
+<div class="stat"><strong id="total">0</strong><span>Total Tools</span></div>
+<div class="stat"><strong id="freeCount">0</strong><span>Free Tools</span></div>
+<div class="stat"><strong id="vipCount">0</strong><span>VIP Tools</span></div>
+<div class="stat"><strong id="categoryCount">0</strong><span>Kategori</span></div>
+</div>
+</section>
+
+<section class="card">
+<div class="section-title">
+<div><h2>Tool Directory</h2><p>Cari tool berdasarkan nama, kategori, atau nomor.</p></div>
+</div>
+<div class="toolbar">
+<input id="search" type="search" placeholder="🔎 Cari tools...">
+<select id="typeFilter"><option value="all">Semua akses</option><option value="free">Gratis</option><option value="vip">VIP</option></select>
+<select id="categoryFilter"><option value="all">Semua kategori</option></select>
+<button id="reset">Reset</button>
+</div>
+</section>
+
+<section class="card">
+<div class="section-title"><div><h2>Daftar Tools</h2><p id="resultInfo">Memuat...</p></div></div>
+<div id="grid" class="grid"></div>
+</section>
+
+<section class="card">
+<div class="section-title"><div><h2>Tools Management</h2><p>Status kemampuan backend saat ini</p></div></div>
+<div class="note">
+<strong>Mode konfigurasi saat ini: Read-only</strong><br><br>
+Halaman ini menampilkan konfigurasi tool yang memang terdaftar pada project. Tidak ada tombol edit/hapus palsu.
+Perubahan dinamis seperti membuat tool baru, menghapus tool, mengganti nama, kategori, akses VIP, atau status aktif
+memerlukan endpoint backend khusus dan akan kita tambahkan pada tahap upgrade server.js.
+</div>
+</section>
+
+<div class="footer">WebToolsKita v1.0.0 • Tools Management</div>
+</div>
+
+<script>
+const firebaseConfig={
+ apiKey:"AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+ authDomain:"webtoolskita.firebaseapp.com",
+ projectId:"webtoolskita",
+ storageBucket:"webtoolskita.firebasestorage.app",
+ messagingSenderId:"593680487717",
+ appId:"1:593680487717:web:33ef7a4bc9be02f99276cc",
+ measurementId:"G-YVEJ90678G"
+};
+const ADMIN_EMAIL="ganreffafk@gmail.com";
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+
+const TOOLS=[
+ {number:1,icon:"▦",name:"QR Code Generator",page:"index4.html",description:"Membuat QR Code dari teks, URL, atau informasi lainnya.",category:"Generator",type:"free"},
+ {number:2,icon:"🔐",name:"Password Generator",page:"index5.html",description:"Membuat password acak dengan pilihan panjang dan karakter.",category:"Security",type:"free"},
+ {number:3,icon:"📝",name:"Text Formatter",page:"index6.html",description:"Mengubah dan memformat teks dengan berbagai fungsi.",category:"Text",type:"free"},
+ {number:4,icon:"{}",name:"JSON Formatter",page:"index7.html",description:"Memformat, memvalidasi, dan membaca struktur JSON.",category:"Developer",type:"free"},
+ {number:5,icon:"🔗",name:"URL Encoder / Decoder",page:"index8.html",description:"Encode dan decode URL dengan cepat.",category:"Developer",type:"free"},
+ {number:6,icon:"64",name:"Base64 Encoder / Decoder",page:"index9.html",description:"Encode dan decode data menggunakan format Base64.",category:"Developer",type:"free"},
+ {number:7,icon:"⏱",name:"Timestamp Converter",page:"index10.html",description:"Mengubah timestamp menjadi format tanggal dan waktu.",category:"Developer",type:"free"},
+ {number:8,icon:"🛡",name:"CodeGuard",page:"index29.html",description:"Memeriksa file dan folder untuk menemukan pola keamanan yang berisiko.",category:"Security",type:"free"},
+ {number:1,icon:"JWT",name:"JWT Decoder",page:"index26.html",description:"Membaca dan menganalisis struktur JSON Web Token.",category:"Developer",type:"vip"},
+ {number:2,icon:"#",name:"Hash Generator",page:"index27.html",description:"Membuat hash dari data menggunakan algoritma yang tersedia.",category:"Security",type:"vip"},
+ {number:3,icon:"UUID",name:"UUID Generator",page:"index28.html",description:"Membuat UUID secara cepat untuk kebutuhan aplikasi.",category:"Developer",type:"vip"}
+];
+
+const content={
+ search:document.getElementById("search"),
+ type:document.getElementById("typeFilter"),
+ category:document.getElementById("categoryFilter"),
+ grid:document.getElementById("grid"),
+ result:document.getElementById("resultInfo")
+};
+
+function populateCategories(){
+ [...new Set(TOOLS.map(t=>t.category))].sort().forEach(c=>{
+   const o=document.createElement("option");o.value=c;o.textContent=c;content.category.appendChild(o);
+ });
+}
+function escapeHtml(v){
+ return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function card(t){
+ const vip=t.type==="vip";
+ return `<article class="tool ${vip?"vip":""}">
+  <div class="top">
+   <div class="identity">
+    <div class="icon">${escapeHtml(t.icon)}</div>
+    <div><div class="name">${escapeHtml(t.name)}</div><div class="number">Tool #${t.number}</div></div>
+   </div>
+   <span class="badge ${vip?"vbadge":"free"}">${vip?"VIP":"GRATIS"}</span>
+  </div>
+  <div class="desc">${escapeHtml(t.description)}</div>
+  <div class="meta">
+   <div><small>Kategori</small><b>${escapeHtml(t.category)}</b></div>
+   <div><small>File</small><b>${escapeHtml(t.page)}</b></div>
+  </div>
+  <a class="open" href="${escapeHtml(t.page)}">Buka Tool →</a>
+ </article>`;
+}
+function render(){
+ const q=content.search.value.trim().toLowerCase();
+ const type=content.type.value;
+ const cat=content.category.value;
+ const filtered=TOOLS.filter(t=>{
+   const matchQ=!q||[t.name,t.category,t.page,String(t.number)].some(v=>v.toLowerCase().includes(q));
+   return matchQ&&(type==="all"||t.type===type)&&(cat==="all"||t.category===cat);
+ });
+ content.grid.innerHTML=filtered.length?filtered.map(card).join(""):`<div class="empty">Tidak ada tool yang cocok dengan filter.</div>`;
+ content.result.textContent=`Menampilkan ${filtered.length} dari ${TOOLS.length} tools`;
+}
+function updateStats(){
+ document.getElementById("total").textContent=TOOLS.length;
+ document.getElementById("freeCount").textContent=TOOLS.filter(t=>t.type==="free").length;
+ document.getElementById("vipCount").textContent=TOOLS.filter(t=>t.type==="vip").length;
+ document.getElementById("categoryCount").textContent=new Set(TOOLS.map(t=>t.category)).size;
+}
+async function verifyAdmin(user){
+ if(!user){location.href="index18.html";return false;}
+ if((user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase())return true;
+ try{
+   const token=await user.getIdToken(true);
+   const r=await fetch("/api/admin/test",{headers:{Authorization:"Bearer "+token}});
+   if(!r.ok){location.href="index18.html";return false;}
+   return true;
+ }catch(e){
+   console.error(e);alert("Verifikasi administrator gagal.");return false;
+ }
+}
+auth.onAuthStateChanged(async user=>{
+ const ok=await verifyAdmin(user);
+ if(!ok)return;
+ populateCategories();updateStats();render();
+});
+["input","change"].forEach(ev=>{
+ content.search.addEventListener(ev,render);
+ content.type.addEventListener(ev,render);
+ content.category.addEventListener(ev,render);
+});
+document.getElementById("reset").addEventListener("click",()=>{
+ content.search.value="";content.type.value="all";content.category.value="all";render();
+});
+</script>
+</body>
+</html>

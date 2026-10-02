@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin VIP Management - WebToolsKita</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#24134a 0%,#100b1c 42%,#07070b 100%);color:#f7f3ff;padding:28px 16px}
+.container{width:100%;max-width:1180px;margin:auto}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:31px;color:#fff;margin-bottom:8px}
+.header p{color:#aaa0bd;font-size:14px;line-height:1.5}
+.admin-badge{display:inline-block;margin-top:12px;padding:7px 13px;border-radius:999px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.35);color:#d8b4fe;font-size:12px;font-weight:bold}
+.card{background:rgba(18,13,30,.94);border:1px solid rgba(168,85,247,.18);border-radius:19px;padding:22px;margin-bottom:18px;box-shadow:0 14px 40px rgba(0,0,0,.32);backdrop-filter:blur(12px)}
+.card h2{color:#fff;font-size:19px;margin-bottom:7px}
+.description{color:#9d93ad;font-size:13px;line-height:1.6;margin-bottom:18px}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.summary-item{padding:17px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);text-align:center}
+.summary-value{font-size:25px;font-weight:bold;color:#fff;margin-bottom:5px}
+.summary-label{color:#82788f;font-size:11px}
+.vip-summary{color:#c084fc}
+.pending-summary{color:#fbbf24}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input,select{min-height:42px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:#100c18;color:#eee;padding:0 12px;outline:none}
+input{flex:1;min-width:220px}
+select{min-width:145px}
+input:focus,select:focus{border-color:rgba(192,132,252,.55)}
+button{border:none;border-radius:11px;padding:11px 17px;background:#7c3aed;color:#fff;font-weight:bold;cursor:pointer;transition:.2s}
+button:hover{background:#8b5cf6;transform:translateY(-1px)}
+.secondary{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#d6cde0}
+.secondary:hover{background:rgba(255,255,255,.11)}
+.user-table-wrap{overflow:auto;border-radius:13px;border:1px solid rgba(255,255,255,.06)}
+table{width:100%;min-width:980px;border-collapse:collapse}
+th{background:rgba(139,92,246,.09);color:#cfc3dc;font-size:11px;text-align:left;padding:13px 12px;white-space:nowrap}
+td{color:#c0b7ca;font-size:11px;padding:13px 12px;border-top:1px solid rgba(255,255,255,.05);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.025)}
+.user-name{color:#fff;font-weight:bold}
+.user-email{color:#81778d;margin-top:3px}
+.status{display:inline-block;padding:6px 9px;border-radius:8px;font-size:9px;font-weight:bold;white-space:nowrap}
+.active{color:#d8b4fe;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25)}
+.inactive{color:#aaa3b1;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}
+.pending{color:#fcd34d;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2)}
+.admin-row{background:rgba(168,85,247,.035)}
+.admin-label{color:#d8b4fe;font-size:9px;font-weight:bold;margin-left:5px}
+.uid{font-family:monospace;color:#847a91}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.info-box{padding:15px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055)}
+.info-title{color:#fff;font-size:13px;font-weight:bold;margin-bottom:7px}
+.info-text{color:#958b9f;font-size:11px;line-height:1.65}
+.notice{padding:16px;border-radius:13px;background:rgba(124,58,237,.07);border:1px solid rgba(168,85,247,.18);color:#bdb2ca;font-size:12px;line-height:1.7}
+.notice strong{color:#e9d5ff}
+.loading{text-align:center;padding:45px 20px;color:#aaa0b1}
+.error{text-align:center;padding:30px 20px;color:#ff9d9d;line-height:1.6}
+.empty{text-align:center;padding:35px 20px;color:#82788f;font-size:12px}
+.actions{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+.footer{text-align:center;margin-top:22px;color:#625a6b;font-size:11px}
+.hidden{display:none}
+@media(max-width:800px){body{padding:20px 12px}.header h1{font-size:25px}.summary{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}.card{padding:18px}}
+@media(max-width:480px){.summary{grid-template-columns:1fr 1fr}.summary-value{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>VIP Management</h1>
+<p>Kelola dan monitoring status VIP, pembayaran, serta masa berlaku pengguna WebToolsKita.</p>
+<div class="admin-badge">ADMINISTRATOR ONLY</div>
+</div>
+
+<div id="content"><div class="loading">Memverifikasi administrator...</div></div>
+
+<div class="actions">
+<button id="refreshButton">↻ Refresh Data</button>
+<button class="secondary" id="backButton">← Kembali ke Admin Dashboard</button>
+</div>
+<div class="footer">WebToolsKita v1.0.0</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig={
+ apiKey:"AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+ authDomain:"webtoolskita.firebaseapp.com",
+ projectId:"webtoolskita",
+ storageBucket:"webtoolskita.firebasestorage.app",
+ messagingSenderId:"593680487717",
+ appId:"1:593680487717:web:33ef7a4bc9be02f99276cc",
+ measurementId:"G-YVEJ90678G"
+};
+const ADMIN_EMAIL="ganreffafk@gmail.com";
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const content=document.getElementById("content");
+const refreshButton=document.getElementById("refreshButton");
+const backButton=document.getElementById("backButton");
+let currentUser=null;
+let allUsers=[];
+
+backButton.onclick=()=>location.href="index18.html";
+refreshButton.onclick=()=>{if(currentUser)loadVipData(currentUser)};
+
+function escapeHtml(v){
+ if(v===null||v===undefined)return "";
+ return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function getUsers(data){
+ if(Array.isArray(data))return data;
+ if(data&&Array.isArray(data.users))return data.users;
+ if(data&&Array.isArray(data.data))return data.data;
+ if(data&&data.data&&Array.isArray(data.data.users))return data.data.users;
+ return [];
+}
+function isAdmin(u){return String(u.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase()}
+function isVip(u){
+ if(isAdmin(u))return true;
+ const s=String(u.vip_status??u.vip??"").toLowerCase();
+ return ["active","aktif","vip","true","1"].includes(s);
+}
+function isPending(u){
+ const s=String(u.payment_status||"").toLowerCase();
+ return ["pending","waiting","unpaid"].includes(s);
+}
+function date(v){
+ if(!v)return "—";
+ const d=new Date(v);
+ if(Number.isNaN(d.getTime()))return escapeHtml(v);
+ return d.toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"});
+}
+function status(u){
+ if(isVip(u))return '<span class="status active">VIP AKTIF</span>';
+ if(isPending(u))return '<span class="status pending">PAYMENT PENDING</span>';
+ return '<span class="status inactive">TIDAK AKTIF</span>';
+}
+function row(u,i){
+ const admin=isAdmin(u),vip=isVip(u);
+ const name=u.name||u.displayName||"Tanpa Nama";
+ const email=u.email||"—";
+ const uid=u.google_uid||u.uid||"—";
+ const payment=u.payment_status||(admin?"admin":"—");
+ const short=uid==="—"?"—":escapeHtml(String(uid).slice(0,12))+"...";
+ return `<tr class="${admin?"admin-row":""}">
+ <td>${i+1}</td>
+ <td><div class="user-name">${escapeHtml(name)}${admin?'<span class="admin-label">ADMIN</span>':""}</div><div class="user-email">${escapeHtml(email)}</div></td>
+ <td>${status(u)}</td>
+ <td>${escapeHtml(payment)}</td>
+ <td>${vip?date(u.vip_start):"—"}</td>
+ <td>${admin?"Tidak kedaluwarsa":vip?date(u.vip_expired):"—"}</td>
+ <td><span class="uid" title="${escapeHtml(uid)}">${short}</span></td>
+ </tr>`;
+}
+function render(){
+ const q=(document.getElementById("search")?.value||"").toLowerCase().trim();
+ const filter=document.getElementById("statusFilter")?.value||"all";
+ const users=allUsers.filter(u=>{
+   const text=`${u.name||""} ${u.displayName||""} ${u.email||""} ${u.google_uid||u.uid||""}`.toLowerCase();
+   if(q&&!text.includes(q))return false;
+   if(filter==="vip"&&!isVip(u))return false;
+   if(filter==="pending"&&!isPending(u))return false;
+   if(filter==="free"&&(isVip(u)||isPending(u)))return false;
+   return true;
+ });
+ const total=allUsers.length;
+ const vip=allUsers.filter(isVip);
+ const admins=allUsers.filter(isAdmin);
+ const pending=allUsers.filter(isPending);
+ content.innerHTML=`
+ <div class="card">
+  <h2>VIP Overview</h2>
+  <p class="description">Ringkasan status berdasarkan data pengguna yang diberikan backend.</p>
+  <div class="summary">
+   <div class="summary-item"><div class="summary-value">${total}</div><div class="summary-label">Total User</div></div>
+   <div class="summary-item"><div class="summary-value vip-summary">${vip.filter(u=>!isAdmin(u)).length}</div><div class="summary-label">VIP User</div></div>
+   <div class="summary-item"><div class="summary-value vip-summary">${admins.length}</div><div class="summary-label">Admin VIP</div></div>
+   <div class="summary-item"><div class="summary-value pending-summary">${pending.length}</div><div class="summary-label">Payment Pending</div></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Daftar VIP User</h2>
+  <p class="description">Cari dan filter data VIP tanpa mengubah data database dari frontend.</p>
+  <div class="toolbar">
+   <input id="search" placeholder="Cari nama, email, atau UID..." value="${escapeHtml(q)}">
+   <select id="statusFilter">
+    <option value="all">Semua Status</option>
+    <option value="vip" ${filter==="vip"?"selected":""}>VIP Aktif</option>
+    <option value="pending" ${filter==="pending"?"selected":""}>Payment Pending</option>
+    <option value="free" ${filter==="free"?"selected":""}>Free User</option>
+   </select>
+   <button class="secondary" id="resetFilter">Reset</button>
+  </div>
+  ${users.length?`<div class="user-table-wrap"><table><thead><tr><th>#</th><th>User</th><th>VIP Status</th><th>Payment</th><th>VIP Mulai</th><th>VIP Berakhir</th><th>UID</th></tr></thead><tbody>${users.map(row).join("")}</tbody></table></div>`:`<div class="empty">Tidak ada pengguna yang cocok dengan filter.</div>`}
+ </div>
+
+ <div class="card">
+  <h2>VIP System</h2>
+  <div class="info-grid">
+   <div class="info-box"><div class="info-title">Harga VIP</div><div class="info-text">Rp25.000 untuk periode 1 bulan sesuai konfigurasi halaman saat ini.</div></div>
+   <div class="info-box"><div class="info-title">Aktivasi</div><div class="info-text">Aktivasi VIP seharusnya dilakukan setelah pembayaran diverifikasi oleh server.</div></div>
+   <div class="info-box"><div class="info-title">Admin Utama</div><div class="info-text">${escapeHtml(ADMIN_EMAIL)} otomatis diperlakukan sebagai administrator dan VIP.</div></div>
+   <div class="info-box"><div class="info-title">Payment Gateway</div><div class="info-text">Integrasi iPaymu belum terhubung pada backend saat ini.</div></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Mode Pengelolaan</h2>
+  <div class="notice"><strong>Read-only untuk saat ini.</strong><br><br>
+  Halaman ini membaca status VIP dari backend dan menyediakan pencarian/filter. Tombol aktivasi, perpanjangan, atau pencabutan VIP belum dibuat di frontend karena endpoint administrasi yang aman perlu disiapkan di server terlebih dahulu.</div>
+ </div>`;
+ document.getElementById("search").oninput=render;
+ document.getElementById("statusFilter").onchange=render;
+ document.getElementById("resetFilter").onclick=()=>{document.getElementById("search").value="";document.getElementById("statusFilter").value="all";render()};
+}
+async function verifyAdmin(user){
+ if(!user){location.href="index18.html";return false}
+ if(String(user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase())return true;
+ try{
+  const token=await user.getIdToken(true);
+  const r=await fetch("/api/admin/test",{headers:{Authorization:"Bearer "+token}});
+  if(r.status===401||r.status===403){location.href="index18.html";return false}
+  if(!r.ok)throw new Error("Admin verification gagal.");
+  return true;
+ }catch(e){
+  console.error(e);
+  content.innerHTML='<div class="card"><div class="error">Verifikasi administrator gagal.<br><br>'+escapeHtml(e.message)+'</div></div>';
+  return false;
+ }
+}
+async function loadVipData(user){
+ content.innerHTML='<div class="loading">Memuat data VIP...</div>';
+ try{
+  const token=await user.getIdToken(true);
+  const r=await fetch("/api/users",{headers:{Authorization:"Bearer "+token}});
+  if(r.status===401||r.status===403){location.href="index18.html";return}
+  if(!r.ok)throw new Error("Gagal mengambil data user.");
+  allUsers=getUsers(await r.json());
+  render();
+ }catch(e){
+  console.error(e);
+  content.innerHTML='<div class="card"><div class="error">Gagal memuat data VIP.<br><br>'+escapeHtml(e.message||"Unknown error")+'</div></div>';
+ }
+}
+auth.onAuthStateChanged(async user=>{
+ currentUser=user;
+ if(!user){location.href="index18.html";return}
+ const allowed=await verifyAdmin(user);
+ if(allowed)await loadVipData(user);
+});
+</script>
+</body>
+</html>

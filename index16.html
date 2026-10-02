@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Team - WebToolsKita</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(128, 0, 255, 0.18),
+                    transparent 35%
+                ),
+                #050505;
+            color: white;
+            padding: 30px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            color: #c77dff;
+            text-shadow:
+                0 0 20px rgba(160, 70, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 15px;
+        }
+
+        /* USER CARD */
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid #3b145c;
+            border-radius: 18px;
+
+            padding: 18px;
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 0 25px rgba(128, 0, 255, 0.08);
+        }
+
+        .user-card img {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+            object-fit: cover;
+
+            border: 2px solid #a855f7;
+            background: #111;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-info h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #999;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        /* SECTION */
+
+        .section {
+            background: rgba(15, 15, 15, 0.95);
+
+            border: 1px solid #32134c;
+            border-radius: 20px;
+
+            padding: 28px;
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 0 30px rgba(128, 0, 255, 0.07);
+        }
+
+        .section h2 {
+            color: #c77dff;
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .section-description {
+            color: #999;
+            line-height: 1.7;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* TEAM CARD */
+
+        .team-card {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(90, 20, 130, 0.25),
+                    rgba(15, 10, 20, 0.95)
+                );
+
+            border: 1px solid #42145f;
+            border-radius: 17px;
+
+            padding: 22px;
+            margin-top: 15px;
+
+            transition: 0.25s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-3px);
+
+            border-color: #a855f7;
+
+            box-shadow:
+                0 0 25px rgba(168, 85, 247, 0.15);
+        }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            margin-bottom: 12px;
+        }
+
+        .team-icon {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #160b20;
+
+            border: 1px solid #542070;
+            border-radius: 14px;
+
+            font-size: 23px;
+
+            flex-shrink: 0;
+        }
+
+        .team-name {
+            font-size: 19px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .team-role {
+            color: #a855f7;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .team-description {
+            color: #aaa;
+
+            font-size: 14px;
+            line-height: 1.7;
+
+            margin-bottom: 17px;
+        }
+
+        /* BUTTON */
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .website-button,
+        .contact-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 11px 17px;
+
+            border-radius: 11px;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            text-decoration: none;
+
+            transition: 0.2s ease;
+        }
+
+        .website-button {
+            border: 1px solid #6d28a8;
+
+            background:
+                rgba(91, 33, 182, 0.18);
+
+            color: #d8b4fe;
+        }
+
+        .website-button:hover {
+            background:
+                rgba(126, 34, 206, 0.30);
+
+            border-color: #a855f7;
+
+            color: white;
+
+            transform: translateY(-1px);
+        }
+
+        .contact-button {
+            border: 1px solid #444;
+
+            background: #111;
+
+            color: #aaa;
+        }
+
+        .contact-button:hover {
+            border-color: #a855f7;
+
+            background: #181018;
+
+            color: white;
+        }
+
+        .website-note {
+            color: #666;
+
+            font-size: 12px;
+
+            margin-top: 9px;
+        }
+
+        /* INFO GRID */
+
+        .info-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 14px;
+
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: #0d0d0d;
+
+            border: 1px solid #2d193d;
+
+            border-radius: 14px;
+
+            padding: 17px;
+        }
+
+        .info-box strong {
+            display: block;
+
+            color: #c77dff;
+
+            font-size: 14px;
+
+            margin-bottom: 6px;
+        }
+
+        .info-box span {
+            color: #999;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        /* BACK */
+
+        .back-button {
+            display: block;
+
+            width: 100%;
+
+            margin-top: 25px;
+
+            padding: 14px;
+
+            border: 1px solid #333;
+
+            border-radius: 14px;
+
+            background: #111;
+
+            color: #aaa;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            transition: 0.2s;
+        }
+
+        .back-button:hover {
+            color: white;
+
+            border-color: #a855f7;
+
+            background: #181018;
+        }
+
+        /* VERSION */
+
+        .version {
+            text-align: center;
+
+            color: #555;
+
+            font-size: 13px;
+
+            margin-top: 25px;
+
+            line-height: 1.7;
+        }
+
+        .version strong {
+            color: #8b4bb5;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 14px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 22px;
+            }
+
+            .user-card {
+                padding: 15px;
+            }
+
+            .team-card {
+                padding: 18px;
+            }
+
+            .team-name {
+                font-size: 17px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .website-button,
+            .contact-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            Team
+        </h1>
+
+        <p>
+            Orang dan bagian yang terlibat dalam WebToolsKita
+        </p>
+
+    </div>
+
+
+    <!-- USER -->
+
+    <div class="user-card">
+
+        <img
+            id="userPhoto"
+            src=""
+            alt="Foto Profil"
+        >
+
+        <div class="user-info">
+
+            <h2 id="userName">
+                Memuat...
+            </h2>
+
+            <p id="userEmail">
+                Memuat...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- TEAM -->
+
+    <div class="section">
+
+        <h2>
+            Team WebToolsKita
+        </h2>
+
+        <p class="section-description">
+            Berikut adalah bagian dan anggota yang berperan
+            dalam pembuatan serta pengembangan WebToolsKita.
+        </p>
+
+
+        <!-- 1. FOUNDER -->
+
+        <div class="team-card">
+
+            <div class="team-header">
+
+                <div class="team-icon">
+                    👑
+                </div>
+
+                <div>
+
+                    <div class="team-name">
+                        Ganreff A.f.k
+                    </div>
+
+                    <div class="team-role">
+                        Founder & Developer
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="team-description">
+                Pembuat dan pengembang utama WebToolsKita.
+                Bertanggung jawab terhadap pengembangan,
+                konsep, fitur, dan sistem utama website.
+            </p>
+
+            <div class="button-row">
+
+                <a
+                    id="websiteFounder"
+                    class="website-button"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    🌐 Website
+                </a>
+
+                <a
+                    class="contact-button"
+                    href="mailto:ganreffafk@gmail.com?subject=WebToolsKita"
+                >
+                    ✉️ Hubungi Founder
+                </a>
+
+            </div>
+
+            <div class="website-note">
+                Website Founder
+            </div>
+
+        </div>
+
+
+        <!-- 2. DEVELOPMENT -->
+
+        <div class="team-card">
+
+            <div class="team-header">
+
+                <div class="team-icon">
+                    💻
+                </div>
+
+                <div>
+
+                    <div class="team-name">
+                        WebToolsKita Development
+                    </div>
+
+                    <div class="team-role">
+                        Development
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="team-description">
+                Bagian yang berfokus pada pengembangan fitur,
+                pembuatan tools, pemrograman, serta pengembangan
+                sistem WebToolsKita.
+            </p>
+
+            <a
+                id="websiteDevelopment"
+                class="website-button"
+                href="chatgbt.com"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                🌐 Website Development
+            </a>
+
+            <div class="website-note">
+                Website Development
+            </div>
+
+        </div>
+
+
+        <!-- 3. DESIGN -->
+
+        <div class="team-card">
+
+            <div class="team-header">
+
+                <div class="team-icon">
+                    🎨
+                </div>
+
+                <div>
+
+                    <div class="team-name">
+                        WebToolsKita Design
+                    </div>
+
+                    <div class="team-role">
+                        Design & UI
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="team-description">
+                Bagian yang berfokus pada tampilan,
+                desain antarmuka, pengalaman pengguna,
+                serta visual WebToolsKita.
+            </p>
+
+            <a
+                id="websiteDesign"
+                class="website-button"
+                href="chatgbt.com"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                🌐 Website Design
+            </a>
+
+            <div class="website-note">
+                Website Design
+            </div>
+
+        </div>
+
+
+        <!-- 4. SYSTEM -->
+
+        <div class="team-card">
+
+            <div class="team-header">
+
+                <div class="team-icon">
+                    ⚙️
+                </div>
+
+                <div>
+
+                    <div class="team-name">
+                        WebToolsKita System
+                    </div>
+
+                    <div class="team-role">
+                        Backend & System
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="team-description">
+                Bagian yang menangani sistem backend,
+                database, autentikasi, server, dan layanan
+                yang mendukung WebToolsKita.
+            </p>
+
+            <a
+                id="websiteSystem"
+                class="website-button"
+                href="chatgbt.com"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                🌐 Website System
+            </a>
+
+            <div class="website-note">
+                Website System
+            </div>
+
+        </div>
+
+
+        <!-- 5. SUPPORT -->
+
+        <div class="team-card">
+
+            <div class="team-header">
+
+                <div class="team-icon">
+                    🛠️
+                </div>
+
+                <div>
+
+                    <div class="team-name">
+                        WebToolsKita Support
+                    </div>
+
+                    <div class="team-role">
+                        Support & Bantuan Pengguna
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="team-description">
+                Bagian yang menangani bantuan pengguna,
+                pertanyaan, laporan masalah, dan dukungan
+                terkait penggunaan WebToolsKita.
+            </p>
+
+            <a
+                id="websiteSupport"
+                class="website-button"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                🌐 Website Support
+            </a>
+
+            <div class="website-note">
+                Website Support
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TENTANG TEAM -->
+
+    <div class="section">
+
+        <h2>
+            Tentang Team
+        </h2>
+
+        <p class="section-description">
+            WebToolsKita menggunakan pembagian fungsi agar
+            pengembangan, sistem, desain, dan dukungan pengguna
+            dapat dikelola dengan lebih terstruktur.
+        </p>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+
+                <strong>
+                    👑 Founder
+                </strong>
+
+                <span>
+                    Mengatur arah proyek, konsep utama,
+                    pengembangan, dan keputusan teknis.
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    💻 Development
+                </strong>
+
+                <span>
+                    Mengembangkan fitur dan berbagai tools
+                    yang tersedia di WebToolsKita.
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    🎨 Design
+                </strong>
+
+                <span>
+                    Mengembangkan tampilan, antarmuka,
+                    dan pengalaman pengguna.
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    ⚙️ System
+                </strong>
+
+                <span>
+                    Menangani server, database, autentikasi,
+                    dan sistem pendukung aplikasi.
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    🛠️ Support
+                </strong>
+
+                <span>
+                    Membantu pengguna dan menangani laporan
+                    masalah yang berkaitan dengan website.
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    🌐 Website
+                </strong>
+
+                <span>
+                    Setiap bagian dapat memiliki alamat website
+                    sendiri yang dapat diubah melalui konfigurasi.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- VERSION -->
+
+    <div class="version">
+
+        WebToolsKita<br>
+
+        <strong>
+            v1.0.0
+        </strong>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <a
+        href="index13.html"
+        class="back-button"
+    >
+        ← Kembali ke Credit
+    </a>
+
+</div>
+
+
+<script>
+
+    /*
+    ============================================================
+    KONFIGURASI WEBSITE TEAM
+    ============================================================
+
+    GANTI URL DI BAGIAN INI SAJA.
+
+    Contoh:
+
+    founder:
+        "https://website-kamu.com"
+
+    development:
+        "https://development-kamu.com"
+
+    Jangan hapus tanda kutip.
+    ============================================================
+    */
+
+    const TEAM_WEBSITES = {
+
+        founder:
+            "https://webdeploykita.vercel.app",
+
+        development:
+            "https://chatgbt.com",
+
+        design:
+            "https://chatgbt.com",
+
+        system:
+            "https://chatgbt.com",
+
+        support:
+            "https://ndxstoreid.vercel.app"
+
+    };
+
+
+    /*
+    ============================================================
+    FIREBASE CONFIG
+    ============================================================
+    */
+
+    const firebaseConfig = {
+
+        apiKey:
+            "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+        authDomain:
+            "webtoolskita.firebaseapp.com",
+
+        projectId:
+            "webtoolskita",
+
+        storageBucket:
+            "webtoolskita.firebasestorage.app",
+
+        messagingSenderId:
+            "593680487717",
+
+        appId:
+            "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+        measurementId:
+            "G-YVEJ90678G"
+
+    };
+
+
+    /*
+    ============================================================
+    INITIALIZE FIREBASE
+    ============================================================
+    */
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
+
+    /*
+    ============================================================
+    PASANG WEBSITE URL
+    ============================================================
+    */
+
+    document.getElementById(
+        "websiteFounder"
+    ).href = TEAM_WEBSITES.founder;
+
+
+    document.getElementById(
+        "websiteDevelopment"
+    ).href = TEAM_WEBSITES.development;
+
+
+    document.getElementById(
+        "websiteDesign"
+    ).href = TEAM_WEBSITES.design;
+
+
+    document.getElementById(
+        "websiteSystem"
+    ).href = TEAM_WEBSITES.system;
+
+
+    document.getElementById(
+        "websiteSupport"
+    ).href = TEAM_WEBSITES.support;
+
+
+    /*
+    ============================================================
+    AUTH CHECK
+    ============================================================
+    */
+
+    auth.onAuthStateChanged((user) => {
+
+        if (!user) {
+
+            window.location.href =
+                "index2.html";
+
+            return;
+        }
+
+
+        /*
+        USER NAME
+        */
+
+        document.getElementById(
+            "userName"
+        ).textContent =
+            user.displayName ||
+            "Pengguna";
+
+
+        /*
+        USER EMAIL
+        */
+
+        document.getElementById(
+            "userEmail"
+        ).textContent =
+            user.email ||
+            "-";
+
+
+        /*
+        USER PHOTO
+        */
+
+        document.getElementById(
+            "userPhoto"
+        ).src =
+            user.photoURL ||
+            "https://www.gravatar.com/avatar/?d=mp";
+
+    });
+
+</script>
+
+</body>
+</html>

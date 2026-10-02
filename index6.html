@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WebToolsKita - Text Formatter</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    color: white;
+    background:
+        radial-gradient(circle at top left, #24104f 0%, #0b0714 35%, #050509 100%);
+}
+
+header {
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(5,5,9,0.80);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #a855f7;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-mini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+}
+
+.user-mini img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a855f7;
+}
+
+.user-mini-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-mini-name {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-mini-email {
+    font-size: 11px;
+    color: #aaa;
+}
+
+.logout-btn {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: #7c3aed;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #9333ea;
+}
+
+main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 50px 25px 80px;
+}
+
+.back-button {
+    display: inline-flex;
+    text-decoration: none;
+    color: #bbb;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.back-button:hover {
+    color: white;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title .icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.page-title h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.page-title h1 span {
+    color: #a855f7;
+}
+
+.page-title p {
+    color: #999;
+    font-size: 15px;
+}
+
+.card {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 28px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.02)
+        );
+}
+
+textarea {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    outline: none;
+    background: #08070d;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+textarea:focus {
+    border-color: #a855f7;
+}
+
+textarea::placeholder {
+    color: #666;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+button.tool-btn {
+    border: none;
+    padding: 13px;
+    border-radius: 10px;
+    background: #7c3aed;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button.tool-btn:hover {
+    background: #9333ea;
+}
+
+button.secondary {
+    background: rgba(255,255,255,0.08);
+}
+
+button.secondary:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.stat {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 22px;
+    font-weight: 800;
+    color: #c084fc;
+}
+
+.stat-label {
+    margin-top: 5px;
+    color: #999;
+    font-size: 12px;
+}
+
+.info {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(168,85,247,0.15);
+    color: #999;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050509;
+    z-index: 999;
+}
+
+.loading-box {
+    text-align: center;
+}
+
+.spinner {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.12);
+    border-top-color: #a855f7;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 15px;
+}
+
+.loading-box p {
+    color: #aaa;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 15px 18px;
+    }
+
+    .user-mini-info {
+        display: none;
+    }
+
+    main {
+        padding: 35px 18px 60px;
+    }
+
+    .page-title h1 {
+        font-size: 30px;
+    }
+
+    .buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div id="loading">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <p>Memeriksa status login...</p>
+
+    </div>
+
+</div>
+
+
+<header>
+
+    <div class="logo">
+        WebTools<span>Kita</span>
+    </div>
+
+    <div class="header-right">
+
+        <div class="user-mini">
+
+            <img id="miniPhoto" src="" alt="Foto profil">
+
+            <div class="user-mini-info">
+
+                <div class="user-mini-name" id="miniName">
+                    Memuat...
+                </div>
+
+                <div class="user-mini-email" id="miniEmail">
+                    Memuat...
+                </div>
+
+            </div>
+
+        </div>
+
+        <button class="logout-btn" id="logoutBtn">
+            Keluar
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <a href="index3.html" class="back-button">
+        ← Kembali ke Tools
+    </a>
+
+
+    <section class="page-title">
+
+        <div class="icon">
+            📝
+        </div>
+
+        <h1>
+            Text <span>Formatter</span>
+        </h1>
+
+        <p>
+            Ubah dan bersihkan teks dengan cepat.
+        </p>
+
+    </section>
+
+
+    <div class="card">
+
+        <textarea
+            id="textInput"
+            placeholder="Ketik atau tempel teks kamu di sini..."
+        ></textarea>
+
+
+        <div class="buttons">
+
+            <button class="tool-btn" id="upperBtn">
+                UPPERCASE
+            </button>
+
+            <button class="tool-btn" id="lowerBtn">
+                lowercase
+            </button>
+
+            <button class="tool-btn" id="capitalizeBtn">
+                Capitalize
+            </button>
+
+            <button class="tool-btn secondary" id="cleanBtn">
+                Bersihkan Spasi
+            </button>
+
+            <button class="tool-btn secondary" id="copyBtn">
+                📋 Copy
+            </button>
+
+            <button class="tool-btn secondary" id="clearBtn">
+                Hapus Semua
+            </button>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-number" id="charCount">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Karakter
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number" id="wordCount">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Kata
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number" id="lineCount">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Baris
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            <strong>Tips:</strong>
+            Masukkan teks lalu gunakan tombol di atas
+            untuk mengubah formatnya. Statistik akan
+            diperbarui otomatis.
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+
+// ========================================
+// FIREBASE
+// ========================================
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
+
+};
+
+
+if (!firebase.apps.length) {
+
+    firebase.initializeApp(firebaseConfig);
+
+}
+
+const auth = firebase.auth();
+
+
+// ========================================
+// ELEMENT
+// ========================================
+
+const loading =
+    document.getElementById("loading");
+
+const miniPhoto =
+    document.getElementById("miniPhoto");
+
+const miniName =
+    document.getElementById("miniName");
+
+const miniEmail =
+    document.getElementById("miniEmail");
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+const textInput =
+    document.getElementById("textInput");
+
+const charCount =
+    document.getElementById("charCount");
+
+const wordCount =
+    document.getElementById("wordCount");
+
+const lineCount =
+    document.getElementById("lineCount");
+
+
+// ========================================
+// CEK LOGIN
+// ========================================
+
+auth.onAuthStateChanged((user) => {
+
+    if (!user) {
+
+        window.location.href =
+            "index2.html";
+
+        return;
+
+    }
+
+    miniName.textContent =
+        user.displayName || "User";
+
+    miniEmail.textContent =
+        user.email || "";
+
+    if (user.photoURL) {
+
+        miniPhoto.src =
+            user.photoURL;
+
+    }
+
+    loading.style.display =
+        "none";
+
+});
+
+
+// ========================================
+// UPDATE STATISTICS
+// ========================================
+
+function updateStats() {
+
+    const text =
+        textInput.value;
+
+
+    charCount.textContent =
+        text.length;
+
+
+    const words =
+        text.trim()
+            ? text.trim().split(/\s+/).length
+            : 0;
+
+    wordCount.textContent =
+        words;
+
+
+    const lines =
+        text
+            ? text.split(/\r?\n/).length
+            : 0;
+
+    lineCount.textContent =
+        lines;
+
+}
+
+
+textInput.addEventListener(
+    "input",
+    updateStats
+);
+
+
+// ========================================
+// UPPERCASE
+// ========================================
+
+document.getElementById(
+    "upperBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        textInput.value =
+            textInput.value.toUpperCase();
+
+        updateStats();
+
+    }
+);
+
+
+// ========================================
+// LOWERCASE
+// ========================================
+
+document.getElementById(
+    "lowerBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        textInput.value =
+            textInput.value.toLowerCase();
+
+        updateStats();
+
+    }
+);
+
+
+// ========================================
+// CAPITALIZE
+// ========================================
+
+document.getElementById(
+    "capitalizeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        textInput.value =
+            textInput.value
+                .toLowerCase()
+                .replace(
+                    /(^|\s)\S/g,
+                    letter =>
+                        letter.toUpperCase()
+                );
+
+        updateStats();
+
+    }
+);
+
+
+// ========================================
+// CLEAN SPACES
+// ========================================
+
+document.getElementById(
+    "cleanBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        textInput.value =
+            textInput.value
+                .replace(/[ \t]+/g, " ")
+                .replace(/\n\s+/g, "\n")
+                .trim();
+
+        updateStats();
+
+    }
+);
+
+
+// ========================================
+// COPY
+// ========================================
+
+document.getElementById(
+    "copyBtn"
+).addEventListener(
+    "click",
+    async () => {
+
+        if (!textInput.value) {
+
+            alert(
+                "Tidak ada teks untuk disalin."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                textInput.value
+            );
+
+            const button =
+                document.getElementById("copyBtn");
+
+            button.textContent =
+                "✓ Copied!";
+
+            setTimeout(() => {
+
+                button.textContent =
+                    "📋 Copy";
+
+            }, 1500);
+
+        } catch (error) {
+
+            alert(
+                "Gagal menyalin teks."
+            );
+
+        }
+
+    }
+);
+
+
+// ========================================
+// CLEAR
+// ========================================
+
+document.getElementById(
+    "clearBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        textInput.value = "";
+
+        updateStats();
+
+        textInput.focus();
+
+    }
+);
+
+
+// ========================================
+// LOGOUT
+// ========================================
+
+logoutBtn.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            logoutBtn.disabled =
+                true;
+
+            logoutBtn.textContent =
+                "Keluar...";
+
+            await auth.signOut();
+
+            window.location.href =
+                "index2.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            logoutBtn.disabled =
+                false;
+
+            logoutBtn.textContent =
+                "Keluar";
+
+        }
+
+    }
+);
+
+
+updateStats();
+
+</script>
+
+</body>
+
+</html>

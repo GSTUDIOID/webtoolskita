@@ -1,0 +1,1035 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penyaluran Data VIP - WebToolsKita</title>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#050505;
+  --panel:#0d0d0d;
+  --panel2:#100b16;
+  --border:#292035;
+  --purple:#7b2cff;
+  --accent:#b66cff;
+  --muted:#777;
+  --green:#62e6a4;
+  --red:#ff7777;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,rgba(123,44,255,.12),transparent 42%),var(--bg);
+  color:#eee;
+  font-family:Arial,Helvetica,sans-serif;
+}
+button,input,textarea { font:inherit; }
+button { cursor:pointer; }
+button:disabled { opacity:.4;cursor:not-allowed; }
+.container { width:min(1000px,calc(100% - 28px));margin:auto;padding:26px 0 42px; }
+.back { display:inline-block;color:#888;text-decoration:none;font-size:12px;margin-bottom:22px; }
+.back:hover { color:var(--accent); }
+.hero { text-align:center;margin:0 0 28px; }
+.hero h1 { color:var(--accent);font-size:clamp(27px,5vw,38px);margin:0;text-shadow:0 0 24px #7b2cff30; }
+.hero p { color:var(--muted);font-size:13px;line-height:1.7; }
+.badge { display:inline-block;padding:6px 10px;border:1px solid #493064;border-radius:30px;color:var(--accent);font-size:10px;font-weight:bold;letter-spacing:1px;margin-bottom:12px; }
+.panel { background:linear-gradient(145deg,var(--panel),var(--panel2));border:1px solid var(--border);border-radius:17px;padding:20px;margin-bottom:16px; }
+.title { color:var(--accent);font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px; }
+.desc,.muted { color:var(--muted);font-size:12px;line-height:1.7; }
+.grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px; }
+.role { border:1px solid var(--border);background:#080808;border-radius:13px;padding:16px; }
+.role h3 { font-size:15px;margin:0 0 8px; }
+.role p { color:var(--muted);font-size:12px;line-height:1.6;min-height:38px; }
+button,.file-button {
+  border:1px solid #39284a;border-radius:10px;background:#15101b;color:#eee;
+  padding:11px 13px;font-size:12px;font-weight:700;transition:.18s;
+}
+button:hover,.file-button:hover { border-color:var(--purple);background:#20132c; }
+.primary { background:var(--purple);border-color:var(--purple); }
+.primary:hover { background:#913eff; }
+.secondary { background:#0b0b0b; }
+.danger { color:#ffb0b0;border-color:#542626; }
+.file-button { display:inline-flex;align-items:center;justify-content:center;text-align:center;cursor:pointer; }
+.file-button input { display:none; }
+.full { width:100%; }
+label.field-label { display:block;color:#aaa;font-size:11px;margin:14px 0 7px; }
+textarea,input[type=text] {
+  width:100%;background:#060606;border:1px solid var(--border);border-radius:10px;
+  padding:12px;color:#eee;outline:none;font-size:12px;
+}
+textarea { min-height:115px;resize:vertical;font-family:Consolas,monospace;line-height:1.5;overflow-wrap:anywhere; }
+textarea:focus,input[type=text]:focus { border-color:var(--purple); }
+.actions { display:flex;gap:9px;flex-wrap:wrap;margin-top:10px; }
+.actions button { flex:1;min-width:120px; }
+.status { padding:12px 14px;background:#080808;border:1px solid var(--border);border-radius:11px;color:#aaa;font-size:12px;line-height:1.6;overflow-wrap:anywhere; }
+.status.ok { border-color:#28543f;color:var(--green); }
+.status.err { border-color:#613030;color:var(--red); }
+.status.warn { border-color:#493064;color:var(--accent); }
+.hidden { display:none!important; }
+.file-list { margin-top:12px;display:grid;gap:7px; }
+.file-row { display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 12px;background:#080808;border:1px solid #211b29;border-radius:9px;font-size:11px; }
+.file-name { overflow-wrap:anywhere;color:#ddd; }
+.file-size { color:#888;white-space:nowrap; }
+.progress { height:8px;background:#211b29;border-radius:10px;overflow:hidden;margin:10px 0; }
+.progress div { width:0;height:100%;background:linear-gradient(90deg,#7b2cff,#b66cff);transition:width .15s; }
+.metric { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0; }
+.metric > div { padding:12px 8px;border:1px solid var(--border);background:#080808;border-radius:10px;min-width:0; }
+.metric strong { display:block;font-size:16px;color:var(--accent);overflow-wrap:anywhere; }
+.metric span { display:block;color:#777;font-size:10px;margin-top:5px; }
+.received { display:grid;gap:8px;margin-top:12px; }
+.received a { color:var(--accent);overflow-wrap:anywhere;font-size:12px; }
+hr { border:0;border-top:1px solid var(--border);margin:18px 0; }
+footer { text-align:center;color:#555;font-size:11px;line-height:2;margin-top:26px; }
+footer a { color:#777;text-decoration:none; }
+footer a:hover { color:var(--accent); }
+@media(max-width:650px) {
+  .container { width:calc(100% - 20px);padding-top:18px; }
+  .panel { padding:14px; }
+  .grid { grid-template-columns:1fr; }
+  .role p { min-height:0; }
+  .metric { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back" href="index3.html">← Kembali ke WebToolsKita</a>
+
+<header class="hero">
+  <div class="badge">VIP TOOL</div>
+  <h1>Penyaluran Data</h1>
+  <p>Kirim banyak file dari satu perangkat ke perangkat lain melalui koneksi P2P.</p>
+</header>
+
+<section class="panel">
+  <div class="title">Pilih peran</div>
+  <div class="grid">
+    <div class="role">
+      <h3>📤 Pengirim</h3>
+      <p>Pilih folder, buat kode koneksi, lalu tunggu penerima terhubung.</p>
+      <button class="primary full" id="chooseSender">Mulai sebagai Pengirim</button>
+    </div>
+    <div class="role">
+      <h3>📥 Penerima</h3>
+      <p>Masukkan kode dari pengirim, balas dengan kode koneksi, lalu terima file.</p>
+      <button class="primary full" id="chooseReceiver">Mulai sebagai Penerima</button>
+    </div>
+  </div>
+  <div class="status warn" style="margin-top:14px">
+    Koneksi menggunakan WebRTC. Kedua perangkat perlu bertukar kode secara manual.
+    Kode tersebut berisi informasi koneksi, bukan isi file.
+  </div>
+</section>
+
+<section id="senderPanel" class="panel hidden">
+  <div class="title">📤 Panel Pengirim</div>
+  <p class="desc">Pilih folder yang ingin dikirim. Struktur nama relatif folder akan dipertahankan pada nama file yang diterima.</p>
+
+  <label class="file-button full">
+    📁 Pilih Folder untuk Dikirim
+    <input id="folderInput" type="file" webkitdirectory multiple>
+  </label>
+  <div id="fileSummary" class="status" style="margin-top:12px">Belum ada folder dipilih.</div>
+  <div id="senderFiles" class="file-list"></div>
+
+  <div class="actions">
+    <button id="makeOffer" class="primary">1. Buat Kode Koneksi</button>
+    <button id="resetSender" class="danger">Reset</button>
+  </div>
+
+  <label class="field-label" for="offerOutput">Kode koneksi pengirim — kirim ke penerima</label>
+  <textarea id="offerOutput" readonly placeholder="Kode koneksi akan muncul di sini..."></textarea>
+  <div class="actions">
+    <button id="copyOffer">Salin Kode Pengirim</button>
+  </div>
+
+  <label class="field-label" for="answerInput">Tempel kode jawaban dari penerima di sini</label>
+  <textarea id="answerInput" placeholder="Tempel kode jawaban penerima..."></textarea>
+  <div class="actions">
+    <button id="applyAnswer" class="primary">2. Hubungkan ke Penerima</button>
+  </div>
+
+  <hr>
+  <div class="title">Progres pengiriman</div>
+  <div id="sendStatus" class="status">Pilih folder terlebih dahulu.</div>
+  <div class="progress"><div id="sendProgress"></div></div>
+  <div id="sendProgressText" class="muted">0%</div>
+  <button id="sendFiles" class="primary full" disabled style="margin-top:12px">3. Kirim Semua File</button>
+</section>
+
+<section id="receiverPanel" class="panel hidden">
+  <div class="title">📥 Panel Penerima</div>
+  <p class="desc">Tempel kode pengirim. Setelah kode jawaban dibuat, kirim kembali kepada pengirim.</p>
+
+  <label class="field-label" for="offerInput">Kode koneksi dari pengirim</label>
+  <textarea id="offerInput" placeholder="Tempel kode pengirim di sini..."></textarea>
+  <button id="makeAnswer" class="primary full" style="margin-top:10px">1. Buat Kode Jawaban</button>
+
+  <label class="field-label" for="answerOutput">Kode jawaban — kirim kembali ke pengirim</label>
+  <textarea id="answerOutput" readonly placeholder="Kode jawaban akan muncul di sini..."></textarea>
+  <div class="actions">
+    <button id="copyAnswer">Salin Kode Jawaban</button>
+  </div>
+
+  <hr>
+  <div class="title">Progres penerimaan</div>
+  <div id="receiveStatus" class="status">Menunggu kode koneksi dari pengirim.</div>
+  <div class="progress"><div id="receiveProgress"></div></div>
+  <div id="receiveProgressText" class="muted">Belum menerima file.</div>
+  <div id="receiveFiles" class="file-list"></div>
+  <div id="receivedLinks" class="received"></div>
+  <div class="actions">
+    <button id="downloadAll" class="primary" disabled>Unduh Semua File sebagai ZIP</button>
+    <button id="clearReceived" class="danger">Hapus Hasil</button>
+  </div>
+  <p class="muted">File diterima terlebih dahulu di memori browser. Simpan hasil sebelum menutup atau memuat ulang halaman.</p>
+</section>
+
+<section class="panel">
+  <div class="title">Cara penggunaan</div>
+  <div class="desc">
+    <strong>1.</strong> Pengirim memilih folder lalu membuat kode koneksi.<br>
+    <strong>2.</strong> Pengirim mengirim kode itu kepada penerima melalui kanal terpisah, misalnya chat.<br>
+    <strong>3.</strong> Penerima menempel kode tersebut lalu membuat kode jawaban.<br>
+    <strong>4.</strong> Penerima mengirim kode jawaban kembali kepada pengirim.<br>
+    <strong>5.</strong> Pengirim menempel jawaban dan menghubungkan perangkat. Setelah tersambung, pengirim dapat mengirim file.<br><br>
+    Gunakan hanya dengan orang yang kamu percaya. Kode koneksi bersifat sensitif; jangan membagikannya secara publik.
+  </div>
+</section>
+
+<footer>
+  <a href="index3.html">← Kembali ke Advance & VIP Tools</a><br>
+  © 2026 WebToolsKita
+</footer>
+</div>
+
+<script>
+"use strict";
+
+/*
+ * Penyaluran Data:
+ * - WebRTC DataChannel reliable/ordered.
+ * - Manual SDP signaling.
+ * - File chunks are sent sequentially.
+ * - Received files are saved as individual files and can be packed into ZIP.
+ *
+ * This page does not provide a signaling server or a TURN relay.
+ */
+
+const $ = id => document.getElementById(id);
+
+const senderPanel = $("senderPanel");
+const receiverPanel = $("receiverPanel");
+
+let pc = null;
+let channel = null;
+let role = null;
+let selectedFiles = [];
+let receivedFiles = [];
+let receiveCurrent = null;
+let transferRunning = false;
+let transferFinished = false;
+let zipReady = false;
+let senderReady = false;
+
+const CHUNK_SIZE = 48 * 1024;
+const HIGH_WATER = 1024 * 1024;
+
+function setStatus(id, message, type = "") {
+  const el = $(id);
+  el.textContent = message;
+  el.className = "status" + (type ? " " + type : "");
+}
+
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes < 0) return "—";
+  if (bytes < 1024) return bytes + " B";
+  const units = ["KB", "MB", "GB", "TB"];
+  let n = bytes / 1024;
+  let i = 0;
+  while (n >= 1024 && i < units.length - 1) {
+    n /= 1024;
+    i++;
+  }
+  return n.toFixed(n >= 100 ? 0 : n >= 10 ? 1 : 2) + " " + units[i];
+}
+
+function safeRelativePath(path) {
+  return String(path || "file")
+    .replace(/\\/g, "/")
+    .split("/")
+    .filter(part => part && part !== "." && part !== "..")
+    .join("/");
+}
+
+function setProgress(id, textId, value, text) {
+  const pct = Math.max(0, Math.min(100, value));
+  $(id).style.width = pct + "%";
+  $(textId).textContent = text || Math.round(pct) + "%";
+}
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function copyText(text) {
+  if (!text) throw new Error("Belum ada kode untuk disalin.");
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    if (!ok) throw new Error("Penyalinan gagal. Salin teks secara manual.");
+  }
+}
+
+function encodeDescription(value) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(value))));
+}
+
+function decodeDescription(value) {
+  return JSON.parse(decodeURIComponent(escape(atob(value.trim()))));
+}
+
+function waitForIceComplete(peer, timeoutMs = 12000) {
+  return new Promise(resolve => {
+    if (peer.iceGatheringState === "complete") {
+      resolve();
+      return;
+    }
+
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      peer.removeEventListener("icegatheringstatechange", check);
+      resolve();
+    };
+    const check = () => {
+      if (peer.iceGatheringState === "complete") done();
+    };
+    const timer = setTimeout(done, timeoutMs);
+    peer.addEventListener("icegatheringstatechange", check);
+  });
+}
+
+function encodeSession(description) {
+  return encodeDescription({
+    version: 1,
+    type: description.type,
+    sdp: description.sdp
+  });
+}
+
+function decodeSession(text, expectedType) {
+  const value = decodeDescription(text);
+  if (value.version !== 1 || value.type !== expectedType || typeof value.sdp !== "string") {
+    throw new Error("Kode koneksi tidak valid atau jenis kodenya salah.");
+  }
+  return value;
+}
+
+function makePeer() {
+  if (pc) {
+    try { pc.close(); } catch {}
+  }
+
+  pc = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun.cloudflare.com:3478" }
+    ]
+  });
+
+  pc.addEventListener("connectionstatechange", () => {
+    if (!pc) return;
+    const state = pc.connectionState;
+    const message = {
+      connected: "Perangkat berhasil terhubung. Siap transfer.",
+      connecting: "Sedang menghubungkan perangkat...",
+      disconnected: "Koneksi terputus. Coba periksa jaringan.",
+      failed: "Koneksi gagal. Jaringan mungkin membutuhkan TURN relay.",
+      closed: "Koneksi ditutup."
+    }[state];
+
+    if (message) {
+      setStatus(role === "sender" ? "sendStatus" : "receiveStatus",
+        message, state === "connected" ? "ok" : state === "failed" ? "err" : "");
+    }
+    updateSendButton();
+  });
+
+  pc.addEventListener("iceconnectionstatechange", () => {
+    if (pc && pc.iceConnectionState === "failed") {
+      setStatus(role === "sender" ? "sendStatus" : "receiveStatus",
+        "ICE gagal membangun jalur langsung. Jaringan ini mungkin membutuhkan TURN relay.", "err");
+    }
+  });
+
+  return pc;
+}
+
+function setupChannel(ch) {
+  channel = ch;
+  channel.binaryType = "arraybuffer";
+  channel.bufferedAmountLowThreshold = 256 * 1024;
+
+  channel.addEventListener("open", () => {
+    setStatus(role === "sender" ? "sendStatus" : "receiveStatus",
+      "Koneksi P2P aktif dan siap digunakan.", "ok");
+    updateSendButton();
+  });
+
+  channel.addEventListener("close", () => {
+    updateSendButton();
+    if (!transferFinished) {
+      setStatus(role === "sender" ? "sendStatus" : "receiveStatus",
+        "Koneksi data ditutup.", "warn");
+    }
+  });
+
+  channel.addEventListener("error", () => {
+    setStatus(role === "sender" ? "sendStatus" : "receiveStatus",
+      "Terjadi kesalahan pada kanal data.", "err");
+  });
+
+  channel.addEventListener("message", event => {
+    handleIncoming(event.data).catch(error => {
+      console.error(error);
+      setStatus("receiveStatus", "Gagal memproses data: " + error.message, "err");
+    });
+  });
+}
+
+function updateSendButton() {
+  $("sendFiles").disabled = !(
+    role === "sender" &&
+    channel &&
+    channel.readyState === "open" &&
+    selectedFiles.length > 0 &&
+    !transferRunning
+  );
+}
+
+function showFiles() {
+  const total = selectedFiles.reduce((sum, f) => sum + f.size, 0);
+  $("fileSummary").textContent =
+    selectedFiles.length + " file dipilih • Total " + formatBytes(total);
+
+  const list = $("senderFiles");
+  list.replaceChildren();
+
+  selectedFiles.slice(0, 150).forEach(file => {
+    const row = document.createElement("div");
+    row.className = "file-row";
+
+    const name = document.createElement("span");
+    name.className = "file-name";
+    name.textContent = safeRelativePath(file.webkitRelativePath || file.name);
+
+    const size = document.createElement("span");
+    size.className = "file-size";
+    size.textContent = formatBytes(file.size);
+
+    row.append(name, size);
+    list.appendChild(row);
+  });
+
+  if (selectedFiles.length > 150) {
+    const extra = document.createElement("div");
+    extra.className = "muted";
+    extra.textContent = "Dan " + (selectedFiles.length - 150) + " file lainnya.";
+    list.appendChild(extra);
+  }
+
+  updateSendButton();
+}
+
+function showReceivedFiles() {
+  const list = $("receiveFiles");
+  list.replaceChildren();
+
+  receivedFiles.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "file-row";
+
+    const name = document.createElement("span");
+    name.className = "file-name";
+    name.textContent = item.name;
+
+    const size = document.createElement("span");
+    size.className = "file-size";
+    size.textContent = formatBytes(item.blob.size);
+
+    row.append(name, size);
+    list.appendChild(row);
+  });
+
+  $("downloadAll").disabled = receivedFiles.length === 0;
+}
+
+function resetConnection() {
+  transferRunning = false;
+  transferFinished = false;
+  senderReady = false;
+  receiveCurrent = null;
+
+  if (channel) {
+    try { channel.close(); } catch {}
+  }
+  channel = null;
+
+  if (pc) {
+    try { pc.close(); } catch {}
+  }
+  pc = null;
+
+  updateSendButton();
+}
+
+function showRole(nextRole) {
+  role = nextRole;
+  senderPanel.classList.toggle("hidden", role !== "sender");
+  receiverPanel.classList.toggle("hidden", role !== "receiver");
+
+  setStatus(role === "sender" ? "sendStatus" : "receiveStatus",
+    role === "sender"
+      ? "Pilih folder, lalu buat kode koneksi."
+      : "Tempel kode pengirim untuk memulai.",
+    "");
+}
+
+$("chooseSender").addEventListener("click", () => showRole("sender"));
+$("chooseReceiver").addEventListener("click", () => showRole("receiver"));
+
+$("folderInput").addEventListener("change", event => {
+  selectedFiles = Array.from(event.target.files || []);
+
+  if (selectedFiles.some(file => file.size > 0)) {
+    // Empty files are valid too; this only refreshes the list.
+  }
+
+  showFiles();
+  setStatus("sendStatus",
+    selectedFiles.length
+      ? "Folder dimuat. Buat kode koneksi untuk menghubungkan penerima."
+      : "Tidak ada file dipilih.",
+    selectedFiles.length ? "ok" : "");
+});
+
+$("makeOffer").addEventListener("click", async () => {
+  if (!selectedFiles.length) {
+    setStatus("sendStatus", "Pilih folder yang berisi file terlebih dahulu.", "err");
+    return;
+  }
+
+  try {
+    resetConnection();
+    showRole("sender");
+    makePeer();
+
+    setupChannel(pc.createDataChannel("webtoolskita-transfer", {
+      ordered: true
+    }));
+
+    setStatus("sendStatus", "Membuat kode koneksi. Tunggu sebentar...");
+    $("makeOffer").disabled = true;
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await waitForIceComplete(pc);
+
+    $("offerOutput").value = encodeSession(pc.localDescription);
+    setStatus("sendStatus",
+      "Kode siap. Kirim kode pengirim kepada penerima, lalu tunggu kode jawabannya.",
+      "ok");
+  } catch (error) {
+    console.error(error);
+    setStatus("sendStatus", "Gagal membuat koneksi: " + error.message, "err");
+  } finally {
+    $("makeOffer").disabled = false;
+  }
+});
+
+$("copyOffer").addEventListener("click", async () => {
+  try {
+    await copyText($("offerOutput").value);
+    setStatus("sendStatus", "Kode pengirim berhasil disalin.", "ok");
+  } catch (error) {
+    setStatus("sendStatus", error.message, "err");
+  }
+});
+
+$("applyAnswer").addEventListener("click", async () => {
+  try {
+    if (!pc) throw new Error("Buat kode koneksi terlebih dahulu.");
+    const answer = decodeSession($("answerInput").value, "answer");
+    await pc.setRemoteDescription(answer);
+    setStatus("sendStatus", "Jawaban diterima. Sedang membangun koneksi...", "warn");
+  } catch (error) {
+    setStatus("sendStatus", "Tidak dapat menggunakan kode jawaban: " + error.message, "err");
+  }
+});
+
+$("makeAnswer").addEventListener("click", async () => {
+  try {
+    resetConnection();
+    showRole("receiver");
+    const offer = decodeSession($("offerInput").value, "offer");
+    makePeer();
+
+    pc.addEventListener("datachannel", event => {
+      setupChannel(event.channel);
+    });
+
+    setStatus("receiveStatus", "Membuat kode jawaban...", "warn");
+    $("makeAnswer").disabled = true;
+
+    await pc.setRemoteDescription(offer);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await waitForIceComplete(pc);
+
+    $("answerOutput").value = encodeSession(pc.localDescription);
+    setStatus("receiveStatus",
+      "Kode jawaban siap. Kirim kembali ke pengirim dan tunggu koneksi.",
+      "ok");
+  } catch (error) {
+    console.error(error);
+    setStatus("receiveStatus", "Gagal membuat jawaban: " + error.message, "err");
+  } finally {
+    $("makeAnswer").disabled = false;
+  }
+});
+
+$("copyAnswer").addEventListener("click", async () => {
+  try {
+    await copyText($("answerOutput").value);
+    setStatus("receiveStatus", "Kode jawaban berhasil disalin.", "ok");
+  } catch (error) {
+    setStatus("receiveStatus", error.message, "err");
+  }
+});
+
+function waitForBufferLow(ch) {
+  if (ch.bufferedAmount <= HIGH_WATER) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("Pengiriman terlalu lama tertahan."));
+    }, 30000);
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      ch.removeEventListener("bufferedamountlow", onLow);
+      ch.removeEventListener("close", onClose);
+    };
+
+    const onLow = () => {
+      cleanup();
+      resolve();
+    };
+
+    const onClose = () => {
+      cleanup();
+      reject(new Error("Koneksi ditutup saat mengirim."));
+    };
+
+    ch.addEventListener("bufferedamountlow", onLow, { once: true });
+    ch.addEventListener("close", onClose, { once: true });
+  });
+}
+
+async function sendMessage(data) {
+  if (!channel || channel.readyState !== "open") {
+    throw new Error("Koneksi tidak aktif.");
+  }
+
+  while (channel.bufferedAmount > HIGH_WATER) {
+    await waitForBufferLow(channel);
+  }
+
+  channel.send(data);
+}
+
+async function sendFiles() {
+  if (transferRunning || !channel || channel.readyState !== "open") return;
+  if (!selectedFiles.length) return;
+
+  transferRunning = true;
+  transferFinished = false;
+  updateSendButton();
+
+  const totalBytes = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+  let sentBytes = 0;
+
+  try {
+    await sendMessage(JSON.stringify({
+      type: "transfer-start",
+      count: selectedFiles.length,
+      totalBytes,
+      createdAt: Date.now()
+    }));
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      const name = safeRelativePath(file.webkitRelativePath || file.name) || "file";
+
+      await sendMessage(JSON.stringify({
+        type: "file-start",
+        index: i,
+        name,
+        size: file.size,
+        mime: file.type || "application/octet-stream"
+      }));
+
+      for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) {
+        if (!channel || channel.readyState !== "open") {
+          throw new Error("Koneksi terputus saat pengiriman.");
+        }
+
+        const chunk = await file.slice(offset, offset + CHUNK_SIZE).arrayBuffer();
+        await sendMessage(chunk);
+
+        sentBytes += chunk.byteLength;
+
+        const pct = totalBytes ? sentBytes / totalBytes * 100 : 100;
+        setProgress("sendProgress", "sendProgressText", pct,
+          formatBytes(sentBytes) + " / " + formatBytes(totalBytes) +
+          " • " + Math.round(pct) + "%");
+
+        setStatus("sendStatus",
+          "Mengirim " + (i + 1) + "/" + selectedFiles.length + ": " + name,
+          "warn");
+      }
+
+      await sendMessage(JSON.stringify({
+        type: "file-end",
+        index: i
+      }));
+    }
+
+    await sendMessage(JSON.stringify({ type: "transfer-end" }));
+    transferFinished = true;
+    setProgress("sendProgress", "sendProgressText", 100,
+      "Selesai • " + formatBytes(sentBytes));
+    setStatus("sendStatus",
+      "Semua data sudah dikirim melalui koneksi. Tunggu penerima memastikan file diterima.",
+      "ok");
+  } catch (error) {
+    console.error(error);
+    setStatus("sendStatus", "Pengiriman terhenti: " + error.message, "err");
+  } finally {
+    transferRunning = false;
+    updateSendButton();
+  }
+}
+
+$("sendFiles").addEventListener("click", sendFiles);
+
+async function handleIncoming(data) {
+  if (typeof data !== "string") {
+    if (!receiveCurrent) {
+      throw new Error("Data biner diterima tanpa informasi file.");
+    }
+
+    const chunk = data instanceof Blob ? await data.arrayBuffer() : data;
+    receiveCurrent.chunks.push(chunk);
+    receiveCurrent.received += chunk.byteLength;
+
+    const overall = receivedFiles.reduce((sum, item) => sum + item.blob.size, 0)
+      + receiveCurrent.received;
+
+    const total = receiveCurrent.totalBytes || 0;
+    const pct = total ? Math.min(100, overall / total * 100) : 0;
+
+    setProgress("receiveProgress", "receiveProgressText", pct,
+      formatBytes(overall) + (total ? " / " + formatBytes(total) : ""));
+
+    return;
+  }
+
+  let message;
+  try {
+    message = JSON.parse(data);
+  } catch {
+    throw new Error("Pesan kontrol tidak valid.");
+  }
+
+  if (message.type === "transfer-start") {
+    receiveCurrent = null;
+    receivedFiles = [];
+    $("receivedLinks").replaceChildren();
+    showReceivedFiles();
+
+    receiveCurrent = {
+      transferCount: message.count,
+      totalBytes: message.totalBytes,
+      received: 0
+    };
+
+    setProgress("receiveProgress", "receiveProgressText", 0,
+      "0 / " + formatBytes(message.totalBytes));
+    setStatus("receiveStatus",
+      "Transfer dimulai: " + message.count + " file • " +
+      formatBytes(message.totalBytes),
+      "warn");
+    return;
+  }
+
+  if (message.type === "file-start") {
+    receiveCurrent = {
+      index: message.index,
+      name: safeRelativePath(message.name) || "file",
+      size: Number(message.size) || 0,
+      mime: message.mime || "application/octet-stream",
+      chunks: [],
+      received: 0,
+      totalBytes: receiveCurrent ? receiveCurrent.totalBytes : 0
+    };
+
+    setStatus("receiveStatus", "Menerima: " + receiveCurrent.name, "warn");
+    return;
+  }
+
+  if (message.type === "file-end") {
+    if (!receiveCurrent || !Array.isArray(receiveCurrent.chunks)) {
+      throw new Error("Informasi file hilang saat penerimaan.");
+    }
+
+    if (receiveCurrent.received !== receiveCurrent.size) {
+      throw new Error("Ukuran file tidak cocok: " + receiveCurrent.name);
+    }
+
+    const blob = new Blob(receiveCurrent.chunks, { type: receiveCurrent.mime });
+    receivedFiles.push({
+      name: receiveCurrent.name,
+      blob
+    });
+
+    receiveCurrent = {
+      transferCount: receiveCurrent.transferCount,
+      totalBytes: receiveCurrent.totalBytes,
+      received: 0
+    };
+
+    showReceivedFiles();
+    await refreshZipButton();
+
+    setStatus("receiveStatus",
+      "File berhasil diterima: " + message.index + " • " +
+      receivedFiles.length + " file sudah diterima.",
+      "ok");
+    return;
+  }
+
+  if (message.type === "transfer-end") {
+    receiveCurrent = null;
+    transferFinished = true;
+
+    const total = receivedFiles.reduce((sum, item) => sum + item.blob.size, 0);
+    setProgress("receiveProgress", "receiveProgressText", 100,
+      "Selesai • " + receivedFiles.length + " file • " + formatBytes(total));
+    setStatus("receiveStatus",
+      "Transfer selesai. Periksa daftar file dan unduh hasilnya.",
+      "ok");
+
+    await refreshZipButton();
+  }
+}
+
+function safeZipName(path) {
+  return safeRelativePath(path).split("/").map(part => {
+    return part.replace(/[<>:"|?*\x00-\x1f]/g, "_").replace(/[. ]+$/g, "_") || "_";
+  }).join("/");
+}
+
+/*
+ * Small ZIP writer, no external library required.
+ * Uses uncompressed ZIP entries and CRC32.
+ */
+const crcTable = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
+
+function crc32(bytes) {
+  let crc = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) {
+    crc = crcTable[(crc ^ bytes[i]) & 255] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function u16(view, offset, value) { view.setUint16(offset, value, true); }
+function u32(view, offset, value) { view.setUint32(offset, value >>> 0, true); }
+
+async function createZip(files) {
+  const encoder = new TextEncoder();
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+
+  for (const file of files) {
+    const nameBytes = encoder.encode(safeZipName(file.name));
+    const data = new Uint8Array(await file.blob.arrayBuffer());
+    const crc = crc32(data);
+
+    if (data.byteLength > 0xffffffff || offset > 0xffffffff) {
+      throw new Error("Arsip ZIP 32-bit ini tidak mendukung file atau arsip lebih dari 4 GB.");
+    }
+
+    const local = new Uint8Array(30 + nameBytes.length);
+    const lv = new DataView(local.buffer);
+    u32(lv, 0, 0x04034b50);
+    u16(lv, 4, 20);
+    u16(lv, 6, 0x0800);
+    u16(lv, 8, 0);
+    u16(lv, 10, 0);
+    u16(lv, 12, 0);
+    u32(lv, 14, crc);
+    u32(lv, 18, data.length);
+    u32(lv, 22, data.length);
+    u16(lv, 26, nameBytes.length);
+    u16(lv, 28, 0);
+    local.set(nameBytes, 30);
+
+    localParts.push(local, data);
+
+    const central = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(central.buffer);
+    u32(cv, 0, 0x02014b50);
+    u16(cv, 4, 20);
+    u16(cv, 6, 20);
+    u16(cv, 8, 0x0800);
+    u16(cv, 10, 0);
+    u16(cv, 12, 0);
+    u16(cv, 14, 0);
+    u32(cv, 16, crc);
+    u32(cv, 20, data.length);
+    u32(cv, 24, data.length);
+    u16(cv, 28, nameBytes.length);
+    u16(cv, 30, 0);
+    u16(cv, 32, 0);
+    u16(cv, 34, 0);
+    u16(cv, 36, 0);
+    u32(cv, 38, 0);
+    u32(cv, 42, offset);
+    central.set(nameBytes, 46);
+    centralParts.push(central);
+
+    offset += local.length + data.length;
+  }
+
+  const centralSize = centralParts.reduce((sum, part) => sum + part.length, 0);
+  if (files.length > 65535 || offset > 0xffffffff || centralSize > 0xffffffff) {
+    throw new Error("Jumlah atau ukuran file terlalu besar untuk ZIP 32-bit.");
+  }
+
+  const end = new Uint8Array(22);
+  const ev = new DataView(end.buffer);
+  u32(ev, 0, 0x06054b50);
+  u16(ev, 4, 0);
+  u16(ev, 6, 0);
+  u16(ev, 8, files.length);
+  u16(ev, 10, files.length);
+  u32(ev, 12, centralSize);
+  u32(ev, 16, offset);
+  u16(ev, 20, 0);
+
+  return new Blob([...localParts, ...centralParts, end], {
+    type: "application/zip"
+  });
+}
+
+async function refreshZipButton() {
+  $("downloadAll").disabled = receivedFiles.length === 0;
+}
+
+$("downloadAll").addEventListener("click", async () => {
+  if (!receivedFiles.length) return;
+
+  const button = $("downloadAll");
+  button.disabled = true;
+  button.textContent = "Menyiapkan ZIP...";
+
+  try {
+    const zip = await createZip(receivedFiles);
+    const url = URL.createObjectURL(zip);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "WebToolsKita-PenyaluranData.zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setStatus("receiveStatus",
+      "ZIP dibuat. Periksa folder unduhan perangkat kamu.",
+      "ok");
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (error) {
+    setStatus("receiveStatus", "Gagal membuat ZIP: " + error.message, "err");
+  } finally {
+    button.textContent = "Unduh Semua File sebagai ZIP";
+    button.disabled = receivedFiles.length === 0;
+  }
+});
+
+$("clearReceived").addEventListener("click", () => {
+  receivedFiles = [];
+  receiveCurrent = null;
+  $("receivedLinks").replaceChildren();
+  $("receiveFiles").replaceChildren();
+  setProgress("receiveProgress", "receiveProgressText", 0, "Belum menerima file.");
+  $("downloadAll").disabled = true;
+  setStatus("receiveStatus", "Hasil penerimaan dihapus dari memori halaman.", "");
+});
+
+$("resetSender").addEventListener("click", () => {
+  resetConnection();
+  selectedFiles = [];
+  $("folderInput").value = "";
+  $("fileSummary").textContent = "Belum ada folder dipilih.";
+  $("senderFiles").replaceChildren();
+  $("offerOutput").value = "";
+  $("answerInput").value = "";
+  setProgress("sendProgress", "sendProgressText", 0, "0%");
+  setStatus("sendStatus", "Reset selesai. Pilih folder untuk memulai lagi.");
+  updateSendButton();
+});
+
+window.addEventListener("beforeunload", () => {
+  resetConnection();
+});
+
+if (!window.RTCPeerConnection) {
+  setStatus("sendStatus",
+    "Browser ini tidak mendukung WebRTC. Coba browser modern.",
+    "err");
+}
+
+showRole("sender");
+</script>
+</body>
+</html>

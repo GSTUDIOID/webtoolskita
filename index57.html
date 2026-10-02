@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HTTP Request Builder — WebToolsKita</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    padding:30px 16px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:520px;
+    height:520px;
+    top:-280px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:#7b2cff;
+    filter:blur(180px);
+    opacity:.13;
+    pointer-events:none;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    position:relative;
+    z-index:1;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:-1.5px;
+
+    background:linear-gradient(
+        90deg,
+        #fff,
+        #b66cff,
+        #7b2cff
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#888;
+    font-size:13px;
+}
+
+.panel{
+    border:1px solid #292035;
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d0d0d,
+            #100b16
+        );
+
+    padding:18px;
+    margin-bottom:18px;
+
+    box-shadow:
+        inset 0 0 30px
+        rgba(123,44,255,.035);
+}
+
+.section-title{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:9px;
+}
+
+.request-row{
+    display:grid;
+    grid-template-columns:130px 1fr;
+    gap:10px;
+}
+
+select,
+input,
+textarea{
+    width:100%;
+
+    border:1px solid #30263c;
+    border-radius:10px;
+
+    background:#080808;
+    color:#ddd;
+
+    outline:none;
+
+    font-family:
+        Consolas,
+        Monaco,
+        "Courier New",
+        monospace;
+
+    font-size:11px;
+}
+
+select,
+input{
+    padding:13px;
+}
+
+textarea{
+    padding:13px;
+    resize:vertical;
+    line-height:1.6;
+}
+
+select:focus,
+input:focus,
+textarea:focus{
+    border-color:#7b2cff;
+}
+
+select{
+    cursor:pointer;
+}
+
+.headers{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.header-row{
+    display:grid;
+    grid-template-columns:1fr 1fr auto;
+    gap:8px;
+}
+
+.remove-header{
+    width:40px;
+    border:1px solid #30263c;
+    border-radius:9px;
+    background:#111;
+    color:#777;
+    cursor:pointer;
+}
+
+.remove-header:hover{
+    color:#fff;
+    border-color:#7b2cff;
+}
+
+.actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:13px;
+}
+
+.button{
+    padding:11px 16px;
+
+    border-radius:9px;
+
+    border:1px solid #30263c;
+
+    background:#111;
+
+    color:#ccc;
+
+    font-size:11px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+}
+
+.button:hover{
+    color:#fff;
+    border-color:#7b2cff;
+    background:#17111e;
+    transform:translateY(-1px);
+}
+
+.button.primary{
+    background:#7b2cff;
+    border-color:#9b5cff;
+    color:#fff;
+}
+
+.button.primary:hover{
+    background:#8d45ff;
+}
+
+.status{
+    margin-top:13px;
+
+    padding:10px 12px;
+
+    border-radius:9px;
+
+    border:1px solid #292035;
+
+    background:#090909;
+
+    color:#777;
+
+    font-size:10px;
+
+    text-align:center;
+
+    line-height:1.5;
+}
+
+.status.success{
+    color:#b66cff;
+    border-color:#4a315f;
+    background:#120b18;
+}
+
+.status.error{
+    color:#ff9b9b;
+    border-color:#5a3030;
+    background:#180b0b;
+}
+
+.info{
+    color:#666;
+    font-size:10px;
+    line-height:1.6;
+}
+
+.response-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:14px;
+}
+
+.response-box{
+    min-width:0;
+}
+
+.response-title{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:8px;
+}
+
+.response-title span:first-child{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+}
+
+.response-title span:last-child{
+    color:#555;
+    font-size:9px;
+}
+
+.response-output{
+    min-height:300px;
+}
+
+.stats{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:10px;
+
+    margin-bottom:14px;
+}
+
+.stat{
+    padding:12px;
+
+    border:1px solid #292035;
+
+    border-radius:10px;
+
+    background:#090909;
+
+    text-align:center;
+}
+
+.stat-label{
+    color:#555;
+    font-size:9px;
+    font-weight:800;
+    margin-bottom:5px;
+}
+
+.stat-value{
+    color:#b66cff;
+    font-size:16px;
+    font-weight:900;
+    word-break:break-word;
+}
+
+.back{
+    display:block;
+
+    text-align:center;
+
+    margin-top:24px;
+
+    color:#777;
+
+    text-decoration:none;
+
+    font-size:12px;
+}
+
+.back:hover{
+    color:#b66cff;
+}
+
+.footer{
+    text-align:center;
+
+    color:#444;
+
+    font-size:11px;
+
+    margin-top:10px;
+}
+
+@media(max-width:750px){
+
+    body{
+        padding:22px 12px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .request-row{
+        grid-template-columns:1fr;
+    }
+
+    .header-row{
+        grid-template-columns:1fr;
+    }
+
+    .remove-header{
+        width:100%;
+        height:38px;
+    }
+
+    .response-grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:420px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+
+<header class="header">
+
+    <h1 class="logo">
+        HTTP Request Builder
+    </h1>
+
+    <p class="subtitle">
+        Buat dan uji HTTP request langsung dari browser.
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     REQUEST
+===================================================== -->
+
+<section class="panel">
+
+    <div class="section-title">
+        REQUEST
+    </div>
+
+
+    <div class="request-row">
+
+        <select id="method">
+
+            <option value="GET">
+                GET
+            </option>
+
+            <option value="POST">
+                POST
+            </option>
+
+            <option value="PUT">
+                PUT
+            </option>
+
+            <option value="PATCH">
+                PATCH
+            </option>
+
+            <option value="DELETE">
+                DELETE
+            </option>
+
+            <option value="HEAD">
+                HEAD
+            </option>
+
+            <option value="OPTIONS">
+                OPTIONS
+            </option>
+
+        </select>
+
+
+        <input
+            id="url"
+            type="url"
+            placeholder="https://example.com/api"
+            spellcheck="false"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            id="sendButton"
+            class="button primary"
+        >
+            ⚡ Send Request
+        </button>
+
+        <button
+            id="exampleButton"
+            class="button"
+        >
+            ✦ Example
+        </button>
+
+        <button
+            id="clearButton"
+            class="button"
+        >
+            × Clear
+        </button>
+
+    </div>
+
+
+    <div
+        id="status"
+        class="status"
+    >
+        Masukkan URL lalu kirim request.
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HEADERS
+===================================================== -->
+
+<section class="panel">
+
+    <div class="section-title">
+        HEADERS
+    </div>
+
+
+    <div
+        id="headers"
+        class="headers"
+    >
+
+        <div class="header-row">
+
+            <input
+                class="header-name"
+                type="text"
+                placeholder="Header name"
+            >
+
+            <input
+                class="header-value"
+                type="text"
+                placeholder="Header value"
+            >
+
+            <button
+                class="remove-header"
+                type="button"
+                onclick="removeHeader(this)"
+            >
+                ×
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            id="addHeaderButton"
+            class="button"
+        >
+            + Add Header
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     BODY
+===================================================== -->
+
+<section class="panel">
+
+    <div class="section-title">
+        REQUEST BODY
+    </div>
+
+
+    <textarea
+        id="requestBody"
+        rows="10"
+        spellcheck="false"
+        placeholder='{
+  "name": "WebToolsKita",
+  "status": "online"
+}'
+    ></textarea>
+
+
+    <div class="actions">
+
+        <button
+            id="formatBodyButton"
+            class="button"
+        >
+            ✦ Format JSON
+        </button>
+
+        <button
+            id="clearBodyButton"
+            class="button"
+        >
+            Clear Body
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     RESPONSE
+===================================================== -->
+
+<section
+    id="responsePanel"
+    class="panel"
+    style="display:none;"
+>
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                STATUS
+            </div>
+
+            <div
+                id="responseStatus"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                TIME
+            </div>
+
+            <div
+                id="responseTime"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                SIZE
+            </div>
+
+            <div
+                id="responseSize"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                TYPE
+            </div>
+
+            <div
+                id="responseType"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="response-grid">
+
+
+        <!-- RESPONSE HEADERS -->
+
+        <div class="response-box">
+
+            <div class="response-title">
+
+                <span>
+                    RESPONSE HEADERS
+                </span>
+
+                <span>
+                    HTTP
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="responseHeaders"
+                class="response-output"
+                readonly
+            ></textarea>
+
+        </div>
+
+
+        <!-- RESPONSE BODY -->
+
+        <div class="response-box">
+
+            <div class="response-title">
+
+                <span>
+                    RESPONSE BODY
+                </span>
+
+                <span>
+                    DATA
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="responseBody"
+                class="response-output"
+                readonly
+            ></textarea>
+
+
+            <div class="actions">
+
+                <button
+                    id="copyResponseButton"
+                    class="button"
+                >
+                    ⧉ Copy Response
+                </button>
+
+                <button
+                    id="formatResponseButton"
+                    class="button"
+                >
+                    ✦ Format JSON
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     INFO
+===================================================== -->
+
+<section class="panel">
+
+    <div class="info">
+
+        <strong style="color:#b66cff;">
+            HTTP Request Builder
+        </strong>
+
+        digunakan untuk menguji endpoint HTTP/HTTPS secara langsung
+        dari browser.
+
+        <br><br>
+
+        Perlu diperhatikan bahwa request dari browser tetap mengikuti
+        aturan keamanan browser seperti
+
+        <strong style="color:#aaa;">
+            CORS
+        </strong>.
+
+        Jika server tujuan tidak mengizinkan origin browser,
+        request dapat ditolak meskipun endpoint sebenarnya aktif.
+
+        <br><br>
+
+        Tool ini tidak mengirim request melalui server WebToolsKita.
+        Request dikirim langsung dari browser pengguna.
+
+    </div>
+
+</section>
+
+
+<a
+    href="index3.html"
+    class="back"
+>
+    ← Kembali ke Advance Tools
+</a>
+
+
+<div class="footer">
+    © 2026 WebToolsKita
+</div>
+
+
+</div>
+
+
+<script>
+
+const method =
+    document.getElementById(
+        "method"
+    );
+
+const url =
+    document.getElementById(
+        "url"
+    );
+
+const headers =
+    document.getElementById(
+        "headers"
+    );
+
+const requestBody =
+    document.getElementById(
+        "requestBody"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const responsePanel =
+    document.getElementById(
+        "responsePanel"
+    );
+
+const responseStatus =
+    document.getElementById(
+        "responseStatus"
+    );
+
+const responseTime =
+    document.getElementById(
+        "responseTime"
+    );
+
+const responseSize =
+    document.getElementById(
+        "responseSize"
+    );
+
+const responseType =
+    document.getElementById(
+        "responseType"
+    );
+
+const responseHeaders =
+    document.getElementById(
+        "responseHeaders"
+    );
+
+const responseBody =
+    document.getElementById(
+        "responseBody"
+    );
+
+
+function setStatus(
+    message,
+    type=""
+){
+
+    status.textContent =
+        message;
+
+    status.className =
+        "status";
+
+    if(type){
+
+        status.classList.add(
+            type
+        );
+
+    }
+
+}
+
+
+function addHeader(
+    name="",
+    value=""
+){
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        "header-row";
+
+
+    row.innerHTML =
+        `
+        <input
+            class="header-name"
+            type="text"
+            placeholder="Header name"
+            value="${escapeAttribute(name)}"
+        >
+
+        <input
+            class="header-value"
+            type="text"
+            placeholder="Header value"
+            value="${escapeAttribute(value)}"
+        >
+
+        <button
+            class="remove-header"
+            type="button"
+        >
+            ×
+        </button>
+        `;
+
+
+    row.querySelector(
+        ".remove-header"
+    ).addEventListener(
+        "click",
+        () => {
+
+            row.remove();
+
+        }
+    );
+
+
+    headers.appendChild(
+        row
+    );
+
+}
+
+
+function escapeAttribute(
+    value
+){
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
+
+}
+
+
+function removeHeader(
+    button
+){
+
+    const row =
+        button.closest(
+            ".header-row"
+        );
+
+    if(row){
+
+        row.remove();
+
+    }
+
+}
+
+
+function collectHeaders(){
+
+    const result = {};
+
+    const rows =
+        headers.querySelectorAll(
+            ".header-row"
+        );
+
+
+    rows.forEach(
+        row => {
+
+            const name =
+                row.querySelector(
+                    ".header-name"
+                ).value.trim();
+
+            const value =
+                row.querySelector(
+                    ".header-value"
+                ).value.trim();
+
+
+            if(
+                name &&
+                value
+            ){
+
+                result[name] =
+                    value;
+
+            }
+
+        }
+    );
+
+
+    return result;
+
+}
+
+
+function formatBytes(
+    bytes
+){
+
+    if(
+        bytes === 0
+    ){
+
+        return "0 B";
+
+    }
+
+
+    if(
+        !bytes ||
+        !Number.isFinite(bytes)
+    ){
+
+        return "—";
+
+    }
+
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+    ];
+
+
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+
+    const value =
+        bytes /
+        Math.pow(
+            1024,
+            index
+        );
+
+
+    return (
+        value.toFixed(
+            index === 0 ? 0 : 2
+        ) +
+        " " +
+        units[index]
+    );
+
+}
+
+
+function getBodyByteSize(
+text
+){
+
+    return new TextEncoder()
+        .encode(
+            text
+        ).length;
+
+}
+
+
+async function sendRequest(){
+
+    const target =
+        url.value.trim();
+
+
+    if(!target){
+
+        setStatus(
+            "URL masih kosong.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    let parsedURL;
+
+
+    try{
+
+        parsedURL =
+            new URL(
+                target
+            );
+
+    }catch{
+
+        setStatus(
+            "URL tidak valid.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        parsedURL.protocol !==
+            "http:" &&
+        parsedURL.protocol !==
+            "https:"
+    ){
+
+        setStatus(
+            "URL harus menggunakan HTTP atau HTTPS.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const requestHeaders =
+        collectHeaders();
+
+
+    const selectedMethod =
+        method.value;
+
+
+    const options = {
+
+        method:
+            selectedMethod,
+
+        headers:
+            requestHeaders,
+
+        mode:
+            "cors",
+
+        cache:
+            "no-store"
+
+    };
+
+
+    if(
+        selectedMethod !== "GET" &&
+        selectedMethod !== "HEAD" &&
+        selectedMethod !== "OPTIONS" &&
+        requestBody.value.trim()
+    ){
+
+        options.body =
+            requestBody.value;
+
+    }
+
+
+    setStatus(
+        "Mengirim request...",
+        ""
+    );
+
+
+    responsePanel.style.display =
+        "block";
+
+
+    responseStatus.textContent =
+        "…";
+
+    responseTime.textContent =
+        "…";
+
+    responseSize.textContent =
+        "…";
+
+    responseType.textContent =
+        "…";
+
+    responseHeaders.value =
+        "";
+
+    responseBody.value =
+        "";
+
+
+    const started =
+        performance.now();
+
+
+    try{
+
+        const response =
+            await fetch(
+                target,
+                options
+            );
+
+
+        const elapsed =
+            performance.now() -
+            started;
+
+
+        const text =
+            await response.text();
+
+
+        const elapsedRounded =
+            Math.round(
+                elapsed
+            );
+
+
+        responseStatus.textContent =
+            response.status +
+            " " +
+            response.statusText;
+
+
+        responseTime.textContent =
+            elapsedRounded +
+            " ms";
+
+
+        responseSize.textContent =
+            formatBytes(
+                getBodyByteSize(
+                    text
+                )
+            );
+
+
+        responseType.textContent =
+            response.headers.get(
+                "content-type"
+            ) || "unknown";
+
+
+        let headerText =
+            "";
+
+
+        response.headers.forEach(
+            (
+                value,
+                key
+            ) => {
+
+                headerText +=
+                    key +
+                    ": " +
+                    value +
+                    "\n";
+
+            }
+        );
+
+
+        responseHeaders.value =
+            headerText.trim();
+
+
+        responseBody.value =
+            text;
+
+
+        if(
+            response.ok
+        ){
+
+            setStatus(
+                "Request berhasil: HTTP " +
+                response.status,
+                "success"
+            );
+
+        }else{
+
+            setStatus(
+                "Server merespons HTTP " +
+                response.status +
+                ".",
+                ""
+            );
+
+        }
+
+    }catch(error){
+
+        const elapsed =
+            performance.now() -
+            started;
+
+
+        responseStatus.textContent =
+            "FAILED";
+
+
+        responseTime.textContent =
+            Math.round(
+                elapsed
+            ) +
+            " ms";
+
+
+        responseSize.textContent =
+            "—";
+
+
+        responseType.textContent =
+            "—";
+
+
+        responseHeaders.value =
+            "";
+
+
+        responseBody.value =
+            "Request gagal.\n\n" +
+            error.message +
+            "\n\n" +
+            "Kemungkinan penyebab:\n" +
+            "- CORS tidak mengizinkan origin browser.\n" +
+            "- URL tidak dapat dijangkau.\n" +
+            "- Sertifikat HTTPS bermasalah.\n" +
+            "- Network/browser memblokir request.";
+
+
+        setStatus(
+            "Request gagal: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+document
+    .getElementById(
+        "sendButton"
+    )
+    .addEventListener(
+        "click",
+        sendRequest
+    );
+
+
+document
+    .getElementById(
+        "addHeaderButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            addHeader();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "formatBodyButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            const value =
+                requestBody.value.trim();
+
+
+            if(!value){
+
+                return;
+
+            }
+
+
+            try{
+
+                requestBody.value =
+                    JSON.stringify(
+                        JSON.parse(
+                            value
+                        ),
+                        null,
+                        2
+                    );
+
+
+                setStatus(
+                    "JSON body berhasil diformat.",
+                    "success"
+                );
+
+            }catch{
+
+                setStatus(
+                    "Request body bukan JSON yang valid.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "clearBodyButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            requestBody.value =
+                "";
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "formatResponseButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            const value =
+                responseBody.value.trim();
+
+
+            if(!value){
+
+                return;
+
+            }
+
+
+            try{
+
+                responseBody.value =
+                    JSON.stringify(
+                        JSON.parse(
+                            value
+                        ),
+                        null,
+                        2
+                    );
+
+            }catch{
+
+                setStatus(
+                    "Response bukan JSON yang valid.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "copyResponseButton"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+            if(
+                !responseBody.value
+            ){
+
+                return;
+
+            }
+
+
+            try{
+
+                await navigator
+                    .clipboard
+                    .writeText(
+                        responseBody.value
+                    );
+
+
+                const button =
+                    document.getElementById(
+                        "copyResponseButton"
+                    );
+
+
+                button.textContent =
+                    "✓ Tersalin";
+
+
+                setTimeout(
+                    () => {
+
+                        button.textContent =
+                            "⧉ Copy Response";
+
+                    },
+                    1500
+                );
+
+            }catch{
+
+                setStatus(
+                    "Clipboard tidak tersedia.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "exampleButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            method.value =
+                "POST";
+
+
+            url.value =
+                "https://httpbin.org/post";
+
+
+            requestBody.value =
+                JSON.stringify(
+                    {
+                        name:
+                            "WebToolsKita",
+                        status:
+                            "online"
+                    },
+                    null,
+                    2
+                );
+
+
+            headers.innerHTML =
+                "";
+
+
+            addHeader(
+                "Content-Type",
+                "application/json"
+            );
+
+
+            setStatus(
+                "Contoh request berhasil dimuat."
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "clearButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            method.value =
+                "GET";
+
+            url.value =
+                "";
+
+            requestBody.value =
+                "";
+
+            headers.innerHTML =
+                "";
+
+
+            addHeader();
+
+
+            responsePanel.style.display =
+                "none";
+
+
+            responseBody.value =
+                "";
+
+            responseHeaders.value =
+                "";
+
+
+            setStatus(
+                "Semua data berhasil dibersihkan."
+            );
+
+
+            url.focus();
+
+        }
+    );
+
+
+url.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key === "Enter"
+        ){
+
+            sendRequest();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

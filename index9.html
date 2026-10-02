@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WebToolsKita - Base64 Encoder</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    color: white;
+    background:
+        radial-gradient(circle at top left, #24104f 0%, #0b0714 35%, #050509 100%);
+}
+
+header {
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(5,5,9,0.82);
+    backdrop-filter: blur(12px);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #a855f7;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-mini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+}
+
+.user-mini img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a855f7;
+}
+
+.user-mini-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-mini-name {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-mini-email {
+    font-size: 11px;
+    color: #aaa;
+}
+
+.logout-btn {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: #7c3aed;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #9333ea;
+}
+
+main {
+    max-width: 1050px;
+    margin: auto;
+    padding: 50px 25px 80px;
+}
+
+.back-button {
+    display: inline-block;
+    text-decoration: none;
+    color: #bbb;
+    margin-bottom: 35px;
+    font-size: 14px;
+}
+
+.back-button:hover {
+    color: white;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.page-title h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.page-title h1 span {
+    color: #a855f7;
+}
+
+.page-title p {
+    color: #999;
+}
+
+.card {
+    padding: 28px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.02)
+        );
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+textarea {
+    width: 100%;
+    min-height: 300px;
+    resize: vertical;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    outline: none;
+    background: #08070d;
+    color: white;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+textarea:focus {
+    border-color: #a855f7;
+}
+
+textarea::placeholder {
+    color: #666;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+button {
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    background: #7c3aed;
+}
+
+button:hover {
+    background: #9333ea;
+}
+
+.secondary {
+    background: rgba(255,255,255,0.08);
+}
+
+.secondary:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+.status {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    color: #aaa;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.status.success {
+    color: #86efac;
+    background: rgba(34,197,94,0.08);
+    border-color: rgba(134,239,172,0.25);
+}
+
+.status.error {
+    color: #fca5a5;
+    background: rgba(239,68,68,0.08);
+    border-color: rgba(248,113,113,0.25);
+}
+
+.info {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 12px;
+    color: #999;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(168,85,247,0.15);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#loading {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050509;
+}
+
+.loading-box {
+    text-align: center;
+    color: #aaa;
+}
+
+.spinner {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 15px;
+    border: 4px solid rgba(255,255,255,0.12);
+    border-top-color: #a855f7;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 15px 18px;
+    }
+
+    .user-mini-info {
+        display: none;
+    }
+
+    main {
+        padding: 35px 18px 60px;
+    }
+
+    .page-title h1 {
+        font-size: 30px;
+    }
+
+    .buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div id="loading">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        Memeriksa status login...
+
+    </div>
+
+</div>
+
+
+<header>
+
+    <div class="logo">
+        WebTools<span>Kita</span>
+    </div>
+
+    <div class="header-right">
+
+        <div class="user-mini">
+
+            <img
+                id="miniPhoto"
+                src=""
+                alt="Foto profil"
+            >
+
+            <div class="user-mini-info">
+
+                <div
+                    class="user-mini-name"
+                    id="miniName"
+                >
+                    Memuat...
+                </div>
+
+                <div
+                    class="user-mini-email"
+                    id="miniEmail"
+                >
+                    Memuat...
+                </div>
+
+            </div>
+
+        </div>
+
+        <button
+            class="logout-btn"
+            id="logoutBtn"
+        >
+            Keluar
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <a
+        href="index3.html"
+        class="back-button"
+    >
+        ← Kembali ke Tools
+    </a>
+
+
+    <section class="page-title">
+
+        <div class="icon">
+            🔐
+        </div>
+
+        <h1>
+            Base64 <span>Encoder</span>
+        </h1>
+
+        <p>
+            Encode dan decode teks menggunakan Base64.
+        </p>
+
+    </section>
+
+
+    <div class="card">
+
+        <label for="textInput">
+            Masukkan teks atau Base64
+        </label>
+
+        <textarea
+            id="textInput"
+            placeholder="Contoh: Halo WebToolsKita!"
+        ></textarea>
+
+
+        <div class="buttons">
+
+            <button id="encodeBtn">
+                🔒 Encode
+            </button>
+
+            <button id="decodeBtn">
+                🔓 Decode
+            </button>
+
+            <button
+                id="copyBtn"
+                class="secondary"
+            >
+                📋 Copy
+            </button>
+
+            <button
+                id="clearBtn"
+                class="secondary"
+            >
+                Hapus
+            </button>
+
+        </div>
+
+
+        <div
+            id="status"
+            class="status"
+        >
+            Masukkan teks untuk memulai.
+        </div>
+
+
+        <div class="info">
+
+            <strong>Tips:</strong>
+            Gunakan <strong>Encode</strong> untuk mengubah
+            teks menjadi Base64. Gunakan <strong>Decode</strong>
+            untuk mengembalikan Base64 menjadi teks asli.
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+
+// ========================================
+// FIREBASE
+// ========================================
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
+
+};
+
+
+if (!firebase.apps.length) {
+
+    firebase.initializeApp(firebaseConfig);
+
+}
+
+const auth =
+    firebase.auth();
+
+
+// ========================================
+// ELEMENT
+// ========================================
+
+const loading =
+    document.getElementById("loading");
+
+const miniPhoto =
+    document.getElementById("miniPhoto");
+
+const miniName =
+    document.getElementById("miniName");
+
+const miniEmail =
+    document.getElementById("miniEmail");
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+const textInput =
+    document.getElementById("textInput");
+
+const statusBox =
+    document.getElementById("status");
+
+
+// ========================================
+// LOGIN CHECK
+// ========================================
+
+auth.onAuthStateChanged((user) => {
+
+    if (!user) {
+
+        window.location.href =
+            "index2.html";
+
+        return;
+
+    }
+
+    miniName.textContent =
+        user.displayName || "User";
+
+    miniEmail.textContent =
+        user.email || "";
+
+    if (user.photoURL) {
+
+        miniPhoto.src =
+            user.photoURL;
+
+    }
+
+    loading.style.display =
+        "none";
+
+});
+
+
+// ========================================
+// STATUS
+// ========================================
+
+function showStatus(
+    message,
+    type = ""
+) {
+
+    statusBox.textContent =
+        message;
+
+    statusBox.className =
+        "status";
+
+    if (type) {
+
+        statusBox.classList.add(type);
+
+    }
+
+}
+
+
+// ========================================
+// UTF-8 BASE64 ENCODE
+// ========================================
+
+function encodeBase64(text) {
+
+    const bytes =
+        new TextEncoder().encode(text);
+
+    let binary = "";
+
+    const chunkSize = 0x8000;
+
+    for (
+        let i = 0;
+        i < bytes.length;
+        i += chunkSize
+    ) {
+
+        const chunk =
+            bytes.subarray(
+                i,
+                i + chunkSize
+            );
+
+        binary += String.fromCharCode(
+            ...chunk
+        );
+
+    }
+
+    return btoa(binary);
+
+}
+
+
+// ========================================
+// UTF-8 BASE64 DECODE
+// ========================================
+
+function decodeBase64(base64) {
+
+    const binary =
+        atob(base64.replace(/\s/g, ""));
+
+    const bytes =
+        Uint8Array.from(
+            binary,
+            char => char.charCodeAt(0)
+        );
+
+    return new TextDecoder().decode(bytes);
+
+}
+
+
+// ========================================
+// ENCODE
+// ========================================
+
+document.getElementById(
+    "encodeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        if (!textInput.value) {
+
+            showStatus(
+                "Masukkan teks terlebih dahulu.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        try {
+
+            textInput.value =
+                encodeBase64(
+                    textInput.value
+                );
+
+            showStatus(
+                "✓ Teks berhasil di-encode ke Base64.",
+                "success"
+            );
+
+        } catch (error) {
+
+            showStatus(
+                "✕ Gagal melakukan encode.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+// ========================================
+// DECODE
+// ========================================
+
+document.getElementById(
+    "decodeBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        if (!textInput.value.trim()) {
+
+            showStatus(
+                "Masukkan Base64 terlebih dahulu.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        try {
+
+            textInput.value =
+                decodeBase64(
+                    textInput.value
+                );
+
+            showStatus(
+                "✓ Base64 berhasil di-decode.",
+                "success"
+            );
+
+        } catch (error) {
+
+            showStatus(
+                "✕ Base64 tidak valid.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+// ========================================
+// COPY
+// ========================================
+
+document.getElementById(
+    "copyBtn"
+).addEventListener(
+    "click",
+    async () => {
+
+        if (!textInput.value) {
+
+            showStatus(
+                "Tidak ada teks untuk disalin.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(
+                textInput.value
+            );
+
+            showStatus(
+                "✓ Berhasil disalin.",
+                "success"
+            );
+
+        } catch (error) {
+
+            showStatus(
+                "Gagal menyalin teks.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+// ========================================
+// CLEAR
+// ========================================
+
+document.getElementById(
+    "clearBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        textInput.value =
+            "";
+
+        showStatus(
+            "Masukkan teks untuk memulai."
+        );
+
+        textInput.focus();
+
+    }
+);
+
+
+// ========================================
+// LOGOUT
+// ========================================
+
+logoutBtn.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            logoutBtn.disabled =
+                true;
+
+            logoutBtn.textContent =
+                "Keluar...";
+
+            await auth.signOut();
+
+            window.location.href =
+                "index2.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            logoutBtn.disabled =
+                false;
+
+            logoutBtn.textContent =
+                "Keluar";
+
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WebToolsKita</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    min-height:100vh;
+    background:#050505;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+}
+
+/* =====================================================
+   HALAMAN UTAMA
+===================================================== */
+
+body::before{
+    content:"";
+    position:fixed;
+
+    width:500px;
+    height:500px;
+
+    background:#7b2cff;
+    border-radius:50%;
+
+    filter:blur(180px);
+    opacity:.18;
+
+    top:-200px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    pointer-events:none;
+}
+
+.container{
+    width:90%;
+    max-width:800px;
+
+    text-align:center;
+
+    position:relative;
+    z-index:1;
+}
+
+.title{
+    font-size:clamp(48px,8vw,90px);
+    font-weight:800;
+
+    letter-spacing:-3px;
+
+    margin-bottom:20px;
+
+    background:linear-gradient(
+        90deg,
+        #ffffff,
+        #b66cff,
+        #7b2cff
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    text-shadow:
+        0 0 40px rgba(123,44,255,.25);
+}
+
+.subtitle{
+    color:#bdbdbd;
+
+    font-size:18px;
+    line-height:1.7;
+
+    max-width:600px;
+
+    margin:0 auto 40px;
+}
+
+.menu-button{
+    display:inline-block;
+
+    padding:15px 45px;
+
+    border-radius:12px;
+
+    background:#7b2cff;
+    color:white;
+
+    text-decoration:none;
+
+    font-size:16px;
+    font-weight:bold;
+
+    border:1px solid #9b5cff;
+
+    box-shadow:
+        0 0 20px rgba(123,44,255,.45),
+        0 0 60px rgba(123,44,255,.15);
+
+    transition:.25s ease;
+}
+
+.menu-button:hover{
+    transform:translateY(-4px);
+
+    background:#8d45ff;
+
+    box-shadow:
+        0 0 30px rgba(123,44,255,.7),
+        0 0 80px rgba(123,44,255,.25);
+}
+
+.menu-button:active{
+    transform:translateY(0);
+}
+
+.footer{
+    margin-top:60px;
+
+    color:#555;
+
+    font-size:13px;
+}
+
+
+/* =====================================================
+   INTRO
+===================================================== */
+
+#intro{
+    position:fixed;
+    inset:0;
+
+    z-index:99999;
+
+    background:#000;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+
+    opacity:1;
+
+    transition:
+        opacity .8s ease,
+        visibility .8s ease;
+}
+
+#intro.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+
+/* =====================================================
+   GLOW LOGO
+===================================================== */
+
+.logo-aura{
+    position:absolute;
+
+    width:300px;
+    height:300px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:#7b2cff;
+
+    filter:blur(100px);
+
+    opacity:.08;
+}
+
+
+/* =====================================================
+   LOGO LENGKAP
+   SVG INLINE — TIDAK ADA FILE EKSTERNAL
+===================================================== */
+
+.logo-wrap{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:min(72vw,520px);
+
+    transform:
+        translate(-50%,-50%)
+        scale(.88);
+
+    opacity:0;
+
+    animation:
+        logoEnter 1.5s
+        cubic-bezier(.2,.8,.2,1)
+        .2s
+        forwards;
+}
+
+.logo-svg{
+    display:block;
+
+    width:100%;
+    height:auto;
+
+    overflow:visible;
+
+    filter:
+        drop-shadow(
+            0 0 18px rgba(123,44,255,.32)
+        );
+}
+
+@keyframes logoEnter{
+
+    0%{
+        opacity:0;
+
+        transform:
+            translate(-50%,-50%)
+            scale(.88);
+
+        filter:blur(5px);
+    }
+
+    65%{
+        opacity:1;
+
+        transform:
+            translate(-50%,-50%)
+            scale(1.04);
+
+        filter:blur(0);
+    }
+
+    100%{
+        opacity:1;
+
+        transform:
+            translate(-50%,-50%)
+            scale(1);
+
+        filter:blur(0);
+    }
+}
+
+
+/* =====================================================
+   MAHKOTA
+===================================================== */
+
+.crown-wrap{
+    position:absolute;
+
+    left:50%;
+    top:calc(50% - min(72vw,520px) * .27);
+
+    width:min(72vw,115px);
+
+    transform:
+        translate(-50%,-180px)
+        scale(.75);
+
+    opacity:0;
+
+    z-index:5;
+
+    animation:
+        crownDrop 1.15s
+        cubic-bezier(.2,.85,.2,1)
+        1.8s
+        forwards;
+}
+
+.crown-svg{
+    width:100%;
+    height:auto;
+
+    display:block;
+
+    filter:
+        drop-shadow(
+            0 0 10px rgba(255,193,55,.35)
+        );
+}
+
+@keyframes crownDrop{
+
+    0%{
+        opacity:0;
+
+        transform:
+            translate(-50%,-180px)
+            scale(.75);
+    }
+
+    65%{
+        opacity:1;
+
+        transform:
+            translate(-50%,8px)
+            scale(1.06);
+    }
+
+    82%{
+        transform:
+            translate(-50%,-3px)
+            scale(.98);
+    }
+
+    100%{
+        opacity:1;
+
+        transform:
+            translate(-50%,0)
+            scale(1);
+    }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:600px){
+
+    .title{
+        letter-spacing:-2px;
+    }
+
+    .subtitle{
+        font-size:15px;
+    }
+
+    .menu-button{
+        padding:14px 35px;
+    }
+
+    .logo-wrap{
+        width:82vw;
+    }
+
+    .logo-aura{
+        width:65vw;
+        height:65vw;
+    }
+
+    .crown-wrap{
+        width:22vw;
+
+        top:calc(50% - 27vw);
+    }
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     INTRO
+===================================================== -->
+
+<div id="intro">
+
+    <div class="logo-aura"></div>
+
+
+    <!-- =================================================
+         LOGO WEBTOOLSKITA
+         SATU KESATUAN SVG
+    ================================================== -->
+
+    <div class="logo-wrap">
+
+        <svg
+            class="logo-svg"
+            viewBox="0 0 700 260"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="WebToolsKita"
+        >
+
+            <defs>
+
+                <linearGradient
+                    id="purpleLogo"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                >
+                    <stop
+                        offset="0%"
+                        stop-color="#ffffff"
+                    />
+
+                    <stop
+                        offset="45%"
+                        stop-color="#b66cff"
+                    />
+
+                    <stop
+                        offset="100%"
+                        stop-color="#7b2cff"
+                    />
+                </linearGradient>
+
+                <linearGradient
+                    id="purpleDark"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                >
+                    <stop
+                        offset="0%"
+                        stop-color="#9b5cff"
+                    />
+
+                    <stop
+                        offset="100%"
+                        stop-color="#4d168f"
+                    />
+                </linearGradient>
+
+                <filter
+                    id="logoGlow"
+                    x="-50%"
+                    y="-50%"
+                    width="200%"
+                    height="200%"
+                >
+                    <feGaussianBlur
+                        stdDeviation="5"
+                        result="blur"
+                    />
+
+                    <feMerge>
+                        <feMergeNode
+                            in="blur"
+                        />
+
+                        <feMergeNode
+                            in="SourceGraphic"
+                        />
+                    </feMerge>
+                </filter>
+
+            </defs>
+
+
+            <!-- =========================================
+                 ICON LOGO
+            ========================================== -->
+
+            <g
+                transform="translate(35 25)"
+                filter="url(#logoGlow)"
+            >
+
+                <!-- lingkaran -->
+                <circle
+                    cx="105"
+                    cy="105"
+                    r="91"
+                    fill="#09050f"
+                    stroke="url(#purpleLogo)"
+                    stroke-width="7"
+                />
+
+                <!-- orbit -->
+                <ellipse
+                    cx="105"
+                    cy="105"
+                    rx="96"
+                    ry="38"
+                    fill="none"
+                    stroke="#7b2cff"
+                    stroke-width="3"
+                    opacity=".75"
+                    transform="rotate(-25 105 105)"
+                />
+
+                <!-- simbol W -->
+                <path
+                    d="
+                    M45 65
+                    L67 140
+                    L105 92
+                    L143 140
+                    L165 65
+                    "
+                    fill="none"
+                    stroke="url(#purpleLogo)"
+                    stroke-width="15"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+
+                <!-- titik tengah -->
+                <circle
+                    cx="105"
+                    cy="92"
+                    r="8"
+                    fill="#ffffff"
+                />
+
+                <!-- aksen bawah -->
+                <path
+                    d="
+                    M63 160
+                    Q105 180 147 160
+                    "
+                    fill="none"
+                    stroke="#7b2cff"
+                    stroke-width="5"
+                    stroke-linecap="round"
+                />
+
+            </g>
+
+
+            <!-- =========================================
+                 WORDMARK
+            ========================================== -->
+
+            <text
+                x="235"
+                y="125"
+                fill="url(#purpleLogo)"
+                font-family="Arial, Helvetica, sans-serif"
+                font-size="58"
+                font-weight="800"
+                letter-spacing="-2"
+            >
+                WebToolsKita
+            </text>
+
+
+            <text
+                x="239"
+                y="158"
+                fill="#777"
+                font-family="Arial, Helvetica, sans-serif"
+                font-size="14"
+                font-weight="600"
+                letter-spacing="5"
+            >
+                DIGITAL TOOLS
+            </text>
+
+        </svg>
+
+    </div>
+
+
+    <!-- =================================================
+         MAHKOTA
+    ================================================== -->
+
+    <div class="crown-wrap">
+
+        <svg
+            class="crown-svg"
+            viewBox="0 0 240 170"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+
+            <defs>
+
+                <linearGradient
+                    id="gold"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                >
+                    <stop
+                        offset="0%"
+                        stop-color="#fff4a0"
+                    />
+
+                    <stop
+                        offset="35%"
+                        stop-color="#ffd34d"
+                    />
+
+                    <stop
+                        offset="70%"
+                        stop-color="#e8a91b"
+                    />
+
+                    <stop
+                        offset="100%"
+                        stop-color="#9b6410"
+                    />
+                </linearGradient>
+
+            </defs>
+
+
+            <!-- mahkota -->
+
+            <path
+                d="
+                M28 45
+                L62 88
+                L92 28
+                L120 83
+                L148 28
+                L178 88
+                L212 45
+                L190 125
+                Q120 150 50 125
+                Z
+                "
+                fill="url(#gold)"
+                stroke="#fff0a0"
+                stroke-width="4"
+                stroke-linejoin="round"
+            />
+
+            <!-- permata -->
+
+            <circle
+                cx="92"
+                cy="52"
+                r="7"
+                fill="#ffffff"
+            />
+
+            <circle
+                cx="120"
+                cy="73"
+                r="7"
+                fill="#ffffff"
+            />
+
+            <circle
+                cx="148"
+                cy="52"
+                r="7"
+                fill="#ffffff"
+            />
+
+            <!-- dasar -->
+
+            <path
+                d="
+                M50 125
+                Q120 150 190 125
+                L185 145
+                Q120 168 55 145
+                Z
+                "
+                fill="#c58b18"
+            />
+
+        </svg>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     HALAMAN UTAMA
+===================================================== -->
+
+<div class="container">
+
+    <h1 class="title">
+        WebToolsKita
+    </h1>
+
+    <p class="subtitle">
+        Kumpulan tools online yang simpel, cepat, dan mudah digunakan.
+        Semua kebutuhan digitalmu, ada di satu tempat.
+    </p>
+
+    <a
+        href="index2.html"
+        class="menu-button"
+    >
+        LOGIN
+    </a>
+
+    <div class="footer">
+        © 2026 WebToolsKita
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   INTRO SELESAI
+===================================================== */
+
+const intro =
+    document.getElementById("intro");
+
+
+setTimeout(() => {
+
+    intro.classList.add("hide");
+
+    setTimeout(() => {
+
+        intro.style.display = "none";
+
+    }, 850);
+
+}, 4300);
+
+</script>
+
+</body>
+</html>

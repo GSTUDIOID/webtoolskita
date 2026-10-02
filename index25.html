@@ -1,0 +1,2843 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#08050f"
+    >
+
+    <title>
+        Admin Security - WebToolsKita
+    </title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #08050f;
+            --bg2: #120824;
+            --panel: rgba(20, 12, 38, 0.88);
+            --panel2: rgba(255,255,255,0.035);
+            --border: rgba(157, 112, 235, 0.20);
+            --border-soft: rgba(255,255,255,0.065);
+            --purple: #8b5cf6;
+            --purple2: #6d43d8;
+            --purple-light: #c4a8ff;
+            --text: #f7f3ff;
+            --muted: #a79bbd;
+            --muted2: #756b89;
+            --green: #82e28a;
+            --yellow: #ffd45c;
+            --red: #ff8d98;
+            --cyan: #76d7ff;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 15% 0%,
+                    rgba(110, 55, 210, 0.30),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(80, 30, 150, 0.20),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    145deg,
+                    #08050f,
+                    #10071f 48%,
+                    #07040c
+                );
+
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                );
+
+            background-size: 38px 38px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 85%
+                );
+
+            opacity: 0.35;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            width: 100%;
+
+            background:
+                rgba(8, 5, 15, 0.84);
+
+            border-bottom:
+                1px solid rgba(155, 110, 235, 0.14);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .topbar-inner {
+            width: min(1180px, calc(100% - 28px));
+
+            min-height: 68px;
+
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            min-width: 0;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,0.30),
+                    rgba(87,40,150,0.15)
+                );
+
+            border:
+                1px solid rgba(139,92,246,0.30);
+
+            box-shadow:
+                0 0 24px rgba(124,77,255,0.12);
+
+            font-size: 20px;
+        }
+
+        .brand-text {
+            min-width: 0;
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+
+            white-space: nowrap;
+        }
+
+        .brand-subtitle {
+            margin-top: 3px;
+
+            color: var(--muted2);
+
+            font-size: 10px;
+
+            white-space: nowrap;
+        }
+
+        .top-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 8px 11px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(76,175,80,0.08);
+
+            border:
+                1px solid rgba(76,175,80,0.18);
+
+            color: var(--green);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.3px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: currentColor;
+
+            box-shadow:
+                0 0 9px currentColor;
+
+            animation:
+                pulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.35;
+            }
+
+        }
+
+        .page {
+            width: min(1180px, calc(100% - 28px));
+
+            margin: auto;
+
+            padding:
+                34px 0 55px;
+        }
+
+        .hero {
+            position: relative;
+
+            padding: 30px;
+
+            margin-bottom: 20px;
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(38, 20, 73, 0.88),
+                    rgba(15, 9, 28, 0.94)
+                );
+
+            border:
+                1px solid rgba(139,92,246,0.22);
+
+            box-shadow:
+                0 24px 70px rgba(0,0,0,0.28);
+        }
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            width: 230px;
+            height: 230px;
+
+            right: -70px;
+            top: -90px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(124,77,255,0.15);
+
+            filter: blur(5px);
+        }
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 160px;
+            height: 160px;
+
+            left: 35%;
+            bottom: -130px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(124,77,255,0.10);
+
+            filter: blur(12px);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 25px;
+        }
+
+        .hero-left {
+            min-width: 0;
+        }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-bottom: 12px;
+
+            padding: 7px 10px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(139,92,246,0.10);
+
+            border:
+                1px solid rgba(139,92,246,0.22);
+
+            color: var(--purple-light);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 0.6px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 5vw, 42px);
+
+            line-height: 1.08;
+
+            margin-bottom: 12px;
+
+            color: #fff;
+        }
+
+        .hero h1 span {
+            color: var(--purple-light);
+        }
+
+        .hero p {
+            max-width: 680px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+        .hero-shield {
+            width: 92px;
+            height: 92px;
+
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(139,92,246,0.18),
+                    rgba(86,44,154,0.08)
+                );
+
+            border:
+                1px solid rgba(139,92,246,0.28);
+
+            box-shadow:
+                0 0 45px rgba(124,77,255,0.13);
+
+            font-size: 43px;
+
+            animation:
+                shieldFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes shieldFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+
+            margin-top: 20px;
+        }
+
+        button {
+            border: 0;
+
+            font-family: inherit;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                border-color .2s ease,
+                box-shadow .2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            padding: 11px 15px;
+
+            border-radius: 11px;
+
+            color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c4dff,
+                    #6036c6
+                );
+
+            box-shadow:
+                0 9px 24px rgba(91,50,180,0.22);
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .btn-secondary {
+            padding: 11px 15px;
+
+            border-radius: 11px;
+
+            color: #d9cdf2;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid rgba(255,255,255,0.09);
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .btn-secondary:hover {
+            background:
+                rgba(139,92,246,0.10);
+
+            border-color:
+                rgba(139,92,246,0.25);
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            color: #fff;
+
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .section-description {
+            margin-top: 5px;
+
+            color: var(--muted2);
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .section-meta {
+            color: var(--muted2);
+
+            font-size: 10px;
+
+            white-space: nowrap;
+        }
+
+        .overview-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .stat-card {
+            position: relative;
+
+            padding: 18px;
+
+            min-height: 125px;
+
+            overflow: hidden;
+
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(24,15,43,0.92),
+                    rgba(14,9,25,0.92)
+                );
+
+            border:
+                1px solid var(--border);
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                box-shadow .25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(139,92,246,0.38);
+
+            box-shadow:
+                0 15px 35px rgba(0,0,0,0.22);
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 12px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(139,92,246,0.10);
+
+            border:
+                1px solid rgba(139,92,246,0.17);
+
+            font-size: 17px;
+        }
+
+        .stat-value {
+            color: #fff;
+
+            font-size: 18px;
+            font-weight: 800;
+
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--muted2);
+
+            font-size: 10px;
+        }
+
+        .component-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .component {
+            padding: 18px;
+
+            border-radius: 17px;
+
+            background:
+                rgba(18,11,33,0.90);
+
+            border:
+                1px solid var(--border);
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease;
+        }
+
+        .component:hover {
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(139,92,246,0.34);
+        }
+
+        .component-top {
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            margin-bottom: 13px;
+        }
+
+        .component-icon {
+            width: 42px;
+            height: 42px;
+
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background:
+                rgba(139,92,246,0.10);
+
+            border:
+                1px solid rgba(139,92,246,0.18);
+
+            font-size: 19px;
+        }
+
+        .component-title {
+            color: #fff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            line-height: 1.35;
+        }
+
+        .component-subtitle {
+            margin-top: 3px;
+
+            color: var(--muted2);
+
+            font-size: 9px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            padding: 5px 8px;
+
+            border-radius: 7px;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            margin-bottom: 10px;
+        }
+
+        .status-green {
+            color: var(--green);
+
+            background:
+                rgba(76,175,80,0.08);
+
+            border:
+                1px solid rgba(76,175,80,0.18);
+        }
+
+        .status-purple {
+            color: var(--purple-light);
+
+            background:
+                rgba(124,77,255,0.08);
+
+            border:
+                1px solid rgba(124,77,255,0.18);
+        }
+
+        .status-yellow {
+            color: var(--yellow);
+
+            background:
+                rgba(255,193,7,0.07);
+
+            border:
+                1px solid rgba(255,193,7,0.18);
+        }
+
+        .status-red {
+            color: var(--red);
+
+            background:
+                rgba(244,67,54,0.07);
+
+            border:
+                1px solid rgba(244,67,54,0.18);
+        }
+
+        .component-description {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.65;
+        }
+
+        .session-card {
+            padding: 20px;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(22,13,40,0.94),
+                    rgba(13,8,24,0.94)
+                );
+
+            border:
+                1px solid var(--border);
+        }
+
+        .session-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 9px;
+        }
+
+        .session-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(0,0,0,0.16);
+
+            border:
+                1px solid rgba(255,255,255,0.045);
+        }
+
+        .session-label {
+            color: var(--muted2);
+
+            font-size: 10px;
+
+            white-space: nowrap;
+        }
+
+        .session-value {
+            color: #ddd6eb;
+
+            font-size: 11px;
+
+            text-align: right;
+
+            word-break: break-word;
+        }
+
+        .rules {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .rule {
+            padding: 17px;
+
+            border-radius: 15px;
+
+            background:
+                rgba(255,255,255,0.025);
+
+            border:
+                1px solid var(--border-soft);
+        }
+
+        .rule-number {
+            display: inline-flex;
+
+            width: 28px;
+            height: 28px;
+
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 10px;
+
+            border-radius: 9px;
+
+            background:
+                rgba(139,92,246,0.11);
+
+            color:
+                var(--purple-light);
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .rule-title {
+            color: #fff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            margin-bottom: 6px;
+        }
+
+        .rule-text {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.65;
+        }
+
+        .notice {
+            padding: 18px;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255,193,7,0.055),
+                    rgba(255,193,7,0.025)
+                );
+
+            border:
+                1px solid rgba(255,193,7,0.17);
+        }
+
+        .notice-title {
+            color: var(--yellow);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            margin-bottom: 7px;
+        }
+
+        .notice-text {
+            color: #cfc3a3;
+
+            font-size: 11px;
+
+            line-height: 1.7;
+        }
+
+        .loading {
+            min-height: 300px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-direction: column;
+
+            gap: 13px;
+
+            color: var(--muted);
+
+            text-align: center;
+        }
+
+        .loader {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            border:
+                3px solid rgba(139,92,246,0.14);
+
+            border-top-color:
+                var(--purple);
+
+            animation:
+                spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-card {
+            padding: 30px;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            background:
+                rgba(30,10,18,0.80);
+
+            border:
+                1px solid rgba(255,100,120,0.18);
+        }
+
+        .error-icon {
+            font-size: 34px;
+
+            margin-bottom: 12px;
+        }
+
+        .error-title {
+            color: #fff;
+
+            font-size: 16px;
+            font-weight: 800;
+
+            margin-bottom: 7px;
+        }
+
+        .error-text {
+            color: #c79da5;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+
+            color: var(--muted2);
+
+            font-size: 10px;
+
+            padding-top: 5px;
+        }
+
+        .toast {
+            position: fixed;
+
+            left: 50%;
+            bottom: 22px;
+
+            z-index: 500;
+
+            transform:
+                translate(-50%, 120px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            padding: 11px 15px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(25,16,43,0.96);
+
+            border:
+                1px solid rgba(139,92,246,0.24);
+
+            box-shadow:
+                0 14px 40px rgba(0,0,0,0.35);
+
+            color: #eee8fb;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            transition:
+                transform .3s ease,
+                opacity .3s ease;
+        }
+
+        .toast.show {
+            transform:
+                translate(-50%, 0);
+
+            opacity: 1;
+        }
+
+        .fade-in {
+            animation:
+                fadeIn .45s ease both;
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(7px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        @media (max-width: 950px) {
+
+            .overview-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .component-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .topbar-inner {
+                min-height: 60px;
+            }
+
+            .top-status {
+                display: none;
+            }
+
+            .page {
+                padding-top: 22px;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero-content {
+                align-items: flex-start;
+            }
+
+            .hero-shield {
+                width: 66px;
+                height: 66px;
+
+                border-radius: 20px;
+
+                font-size: 31px;
+            }
+
+            .overview-grid,
+            .component-grid,
+            .session-grid,
+            .rules {
+                grid-template-columns: 1fr;
+            }
+
+            .session-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .session-value {
+                text-align: left;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+
+            .brand-title {
+                font-size: 13px;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 27px;
+            }
+
+            .hero-shield {
+                display: none;
+            }
+
+            .toolbar {
+                width: 100%;
+            }
+
+            .toolbar button {
+                flex: 1;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="topbar">
+
+        <div class="topbar-inner">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🛡️
+                </div>
+
+                <div class="brand-text">
+
+                    <div class="brand-title">
+                        WebToolsKita
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Admin Security Center
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="top-status"
+                id="topStatus"
+            >
+
+                <span class="dot"></span>
+
+                MEMVERIFIKASI
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <main class="page">
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="hero-left">
+
+                    <div class="hero-label">
+                        🔐 ADMINISTRATOR ONLY
+                    </div>
+
+                    <h1>
+                        Security
+                        <span>Center</span>
+                    </h1>
+
+                    <p>
+                        Pusat pemeriksaan keamanan administrator
+                        WebToolsKita. Halaman ini menampilkan status
+                        autentikasi, otorisasi backend, perlindungan
+                        API, sesi administrator, serta aturan keamanan
+                        sistem.
+                    </p>
+
+
+                    <div class="toolbar">
+
+                        <button
+                            class="btn-primary"
+                            id="refreshButton"
+                            type="button"
+                        >
+                            ↻ Refresh Security Check
+                        </button>
+
+                        <button
+                            class="btn-secondary"
+                            id="backButton"
+                            type="button"
+                        >
+                            ← Admin Dashboard
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-shield">
+                    🛡️
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div id="content">
+
+            <div class="loading">
+
+                <div class="loader"></div>
+
+                <div>
+                    Memverifikasi administrator...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+            WebToolsKita v1.0.0 · Admin Security
+        </div>
+
+    </main>
+
+
+    <div
+        class="toast"
+        id="toast"
+    ></div>
+
+
+    <script>
+
+        /*
+         * =========================================================
+         * FIREBASE CONFIGURATION
+         * =========================================================
+         */
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+            authDomain:
+                "webtoolskita.firebaseapp.com",
+
+            projectId:
+                "webtoolskita",
+
+            storageBucket:
+                "webtoolskita.firebasestorage.app",
+
+            messagingSenderId:
+                "593680487717",
+
+            appId:
+                "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+            measurementId:
+                "G-YVEJ90678G"
+
+        };
+
+
+        const ADMIN_EMAIL =
+            "ganreffafk@gmail.com";
+
+
+        firebase.initializeApp(
+            firebaseConfig
+        );
+
+
+        const auth =
+            firebase.auth();
+
+
+        const content =
+            document.getElementById(
+                "content"
+            );
+
+
+        const refreshButton =
+            document.getElementById(
+                "refreshButton"
+            );
+
+
+        const backButton =
+            document.getElementById(
+                "backButton"
+            );
+
+
+        const topStatus =
+            document.getElementById(
+                "topStatus"
+            );
+
+
+        const toast =
+            document.getElementById(
+                "toast"
+            );
+
+
+        let currentUser = null;
+
+
+        /*
+         * =========================================================
+         * UTILITY
+         * =========================================================
+         */
+
+        function escapeHTML(value) {
+
+            return String(
+                value ?? ""
+            )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+        }
+
+
+        function showToast(message) {
+
+            toast.textContent =
+                message;
+
+            toast.classList.add(
+                "show"
+            );
+
+            clearTimeout(
+                showToast.timer
+            );
+
+            showToast.timer =
+                setTimeout(
+                    function () {
+
+                        toast.classList.remove(
+                            "show"
+                        );
+
+                    },
+                    2600
+                );
+
+        }
+
+
+        function setTopStatus(
+            text,
+            type
+        ) {
+
+            const colors = {
+
+                success:
+                    "var(--green)",
+
+                warning:
+                    "var(--yellow)",
+
+                error:
+                    "var(--red)",
+
+                info:
+                    "var(--purple-light)"
+
+            };
+
+
+            topStatus.style.color =
+                colors[type] ||
+                colors.info;
+
+
+            topStatus.innerHTML = `
+
+                <span class="dot"></span>
+
+                ${escapeHTML(text)}
+
+            `;
+
+        }
+
+
+        function loadingScreen(
+            message
+        ) {
+
+            content.innerHTML = `
+
+                <div class="loading">
+
+                    <div class="loader"></div>
+
+                    <div>
+                        ${escapeHTML(message)}
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /*
+         * =========================================================
+         * ADMIN BACKEND VERIFICATION
+         * =========================================================
+         *
+         * Frontend email check bukan sumber otorisasi.
+         *
+         * Backend tetap harus memverifikasi Firebase ID Token.
+         */
+
+        async function verifyAdminBackend(
+            user
+        ) {
+
+            if (!user) {
+
+                return {
+                    allowed: false,
+                    reason: "NO_SESSION"
+                };
+
+            }
+
+
+            try {
+
+                const token =
+                    await user.getIdToken(
+                        true
+                    );
+
+
+                const response =
+                    await fetch(
+                        "/api/admin/test",
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "Authorization":
+                                    "Bearer " +
+                                    token
+                            },
+
+                            cache: "no-store"
+                        }
+                    );
+
+
+                if (
+                    response.status === 401
+                ) {
+
+                    return {
+                        allowed: false,
+                        reason: "UNAUTHORIZED"
+                    };
+
+                }
+
+
+                if (
+                    response.status === 403
+                ) {
+
+                    return {
+                        allowed: false,
+                        reason: "FORBIDDEN"
+                    };
+
+                }
+
+
+                if (!response.ok) {
+
+                    return {
+                        allowed: false,
+                        reason: "SERVER_ERROR"
+                    };
+
+                }
+
+
+                let data = null;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch (_) {
+
+                    data = null;
+
+                }
+
+
+                return {
+
+                    allowed: true,
+
+                    response: data
+
+                };
+
+            } catch (error) {
+
+                console.error(
+                    "Admin verification error:",
+                    error
+                );
+
+
+                return {
+                    allowed: false,
+                    reason: "NETWORK_ERROR"
+                };
+
+            }
+
+        }
+
+
+        /*
+         * =========================================================
+         * SECURITY DATA
+         * =========================================================
+         */
+
+        function getSecurityData(
+            user,
+            backendOnline
+        ) {
+
+            const email =
+                user.email ||
+                "Tidak tersedia";
+
+
+            const displayName =
+                user.displayName ||
+                "Administrator";
+
+
+            const uid =
+                user.uid ||
+                "Tidak tersedia";
+
+
+            const emailIsPrimaryAdmin =
+                email.toLowerCase() ===
+                ADMIN_EMAIL.toLowerCase();
+
+
+            return {
+
+                email,
+                displayName,
+                uid,
+                emailIsPrimaryAdmin,
+                backendOnline
+
+            };
+
+        }
+
+
+        /*
+         * =========================================================
+         * COMPONENT STATUS
+         * =========================================================
+         */
+
+        function statusBadge(
+            type,
+            text
+        ) {
+
+            const classMap = {
+
+                active:
+                    "status-green",
+
+                info:
+                    "status-purple",
+
+                warning:
+                    "status-yellow",
+
+                error:
+                    "status-red"
+
+            };
+
+
+            return `
+
+                <span
+                    class="status ${classMap[type] || "status-purple"}"
+                >
+
+                    <span class="dot"></span>
+
+                    ${escapeHTML(text)}
+
+                </span>
+
+            `;
+
+        }
+
+
+        /*
+         * =========================================================
+         * RENDER PAGE
+         * =========================================================
+         */
+
+        function renderPage(
+            user,
+            backendOnline
+        ) {
+
+            const data =
+                getSecurityData(
+                    user,
+                    backendOnline
+                );
+
+
+            const backendStatus =
+                backendOnline
+                    ? statusBadge(
+                        "active",
+                        "AKTIF"
+                    )
+                    : statusBadge(
+                        "warning",
+                        "TIDAK TERHUBUNG"
+                    );
+
+
+            const adminIdentityStatus =
+                data.emailIsPrimaryAdmin
+                    ? statusBadge(
+                        "active",
+                        "ADMIN UTAMA"
+                    )
+                    : statusBadge(
+                        "info",
+                        "ADMIN BACKEND"
+                    );
+
+
+            content.innerHTML = `
+
+                <!-- SECURITY OVERVIEW -->
+
+                <section class="section fade-in">
+
+                    <div class="section-head">
+
+                        <div>
+
+                            <div class="section-title">
+                                Security Overview
+                            </div>
+
+                            <div class="section-description">
+                                Ringkasan status keamanan sesi
+                                administrator saat ini.
+                            </div>
+
+                        </div>
+
+                        <div class="section-meta">
+                            Real-time session check
+                        </div>
+
+                    </div>
+
+
+                    <div class="overview-grid">
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                🔐
+                            </div>
+
+                            <div class="stat-value">
+                                AKTIF
+                            </div>
+
+                            <div class="stat-label">
+                                Firebase Authentication
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                🛡️
+                            </div>
+
+                            <div class="stat-value">
+                                ${backendOnline ? "AKTIF" : "OFFLINE"}
+                            </div>
+
+                            <div class="stat-label">
+                                Backend Authorization
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                👑
+                            </div>
+
+                            <div class="stat-value">
+                                ${data.emailIsPrimaryAdmin ? "ADMIN" : "VERIFIED"}
+                            </div>
+
+                            <div class="stat-label">
+                                Administrator Identity
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon">
+                                🔑
+                            </div>
+
+                            <div class="stat-value">
+                                BEARER
+                            </div>
+
+                            <div class="stat-label">
+                                API Authentication
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- SECURITY COMPONENTS -->
+
+                <section class="section fade-in">
+
+                    <div class="section-head">
+
+                        <div>
+
+                            <div class="section-title">
+                                Security Components
+                            </div>
+
+                            <div class="section-description">
+                                Komponen utama yang membentuk
+                                lapisan keamanan WebToolsKita.
+                            </div>
+
+                        </div>
+
+                        <div class="section-meta">
+                            6 components
+                        </div>
+
+                    </div>
+
+
+                    <div class="component-grid">
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    🔐
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Firebase Authentication
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        IDENTITY LAYER
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${statusBadge(
+                                "active",
+                                "AKTIF"
+                            )}
+
+                            <div class="component-description">
+                                Sistem login pengguna menggunakan
+                                Firebase Authentication dan
+                                Google Sign-In.
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    🪪
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Firebase ID Token
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        API AUTHENTICATION
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${statusBadge(
+                                "active",
+                                "AKTIF"
+                            )}
+
+                            <div class="component-description">
+                                Request administrator dikirim
+                                menggunakan Firebase ID Token
+                                melalui Authorization Bearer.
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    🛡️
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Server Admin Verification
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        AUTHORIZATION LAYER
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${
+                                backendOnline
+                                    ? statusBadge(
+                                        "active",
+                                        "AKTIF"
+                                    )
+                                    : statusBadge(
+                                        "warning",
+                                        "PERLU SERVER"
+                                    )
+                            }
+
+                            <div class="component-description">
+                                Endpoint admin diverifikasi
+                                melalui backend menggunakan
+                                Firebase Admin SDK.
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    👑
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Admin Identity
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        ADMINISTRATOR
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${adminIdentityStatus}
+
+                            <div class="component-description">
+                                Identitas administrator aktif:
+                                ${escapeHTML(data.email)}
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    🗄️
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Protected Database API
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        DATA PROTECTION
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${
+                                backendOnline
+                                    ? statusBadge(
+                                        "active",
+                                        "BACKEND PROTECTED"
+                                    )
+                                    : statusBadge(
+                                        "warning",
+                                        "BACKEND OFFLINE"
+                                    )
+                            }
+
+                            <div class="component-description">
+                                Endpoint database administrator
+                                seharusnya hanya dapat diakses
+                                setelah verifikasi autentikasi
+                                dan otorisasi server.
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    💳
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Payment / VIP Verification
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        SERVER-SIDE CONTROL
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${statusBadge(
+                                "info",
+                                "SERVER-SIDE"
+                            )}
+
+                            <div class="component-description">
+                                Status VIP dan pembayaran tidak
+                                boleh dipercaya hanya dari
+                                nilai yang diberikan frontend.
+                                Verifikasi final harus dilakukan
+                                server-side.
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- ADMIN SESSION -->
+
+                <section class="section fade-in">
+
+                    <div class="section-head">
+
+                        <div>
+
+                            <div class="section-title">
+                                Current Admin Session
+                            </div>
+
+                            <div class="section-description">
+                                Informasi sesi Firebase yang sedang
+                                digunakan oleh Security Center.
+                            </div>
+
+                        </div>
+
+                        <div class="section-meta">
+                            SESSION ACTIVE
+                        </div>
+
+                    </div>
+
+
+                    <div class="session-card">
+
+                        <div class="session-grid">
+
+
+                            <div class="session-row">
+
+                                <span class="session-label">
+                                    Nama
+                                </span>
+
+                                <span class="session-value">
+                                    ${escapeHTML(data.displayName)}
+                                </span>
+
+                            </div>
+
+
+                            <div class="session-row">
+
+                                <span class="session-label">
+                                    Email
+                                </span>
+
+                                <span class="session-value">
+                                    ${escapeHTML(data.email)}
+                                </span>
+
+                            </div>
+
+
+                            <div class="session-row">
+
+                                <span class="session-label">
+                                    UID
+                                </span>
+
+                                <span class="session-value">
+                                    ${escapeHTML(data.uid)}
+                                </span>
+
+                            </div>
+
+
+                            <div class="session-row">
+
+                                <span class="session-label">
+                                    Admin Identity
+                                </span>
+
+                                <span class="session-value">
+                                    ${data.emailIsPrimaryAdmin
+                                        ? "Primary Administrator"
+                                        : "Backend Verified Administrator"}
+                                </span>
+
+                            </div>
+
+
+                            <div class="session-row">
+
+                                <span class="session-label">
+                                    Firebase Auth
+                                </span>
+
+                                <span class="session-value">
+                                    ${statusBadge(
+                                        "active",
+                                        "AUTHENTICATED"
+                                    )}
+                                </span>
+
+                            </div>
+
+
+                            <div class="session-row">
+
+                                <span class="session-label">
+                                    Backend
+                                </span>
+
+                                <span class="session-value">
+                                    ${backendStatus}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ACCESS CONTROL -->
+
+                <section class="section fade-in">
+
+                    <div class="section-head">
+
+                        <div>
+
+                            <div class="section-title">
+                                Access Control
+                            </div>
+
+                            <div class="section-description">
+                                Prinsip yang digunakan untuk
+                                membatasi akses administrator.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="rules">
+
+
+                        <div class="rule">
+
+                            <div class="rule-number">
+                                01
+                            </div>
+
+                            <div class="rule-title">
+                                Authentication First
+                            </div>
+
+                            <div class="rule-text">
+                                Pengguna harus memiliki sesi
+                                Firebase Authentication yang valid
+                                sebelum mengakses area administrator.
+                            </div>
+
+                        </div>
+
+
+                        <div class="rule">
+
+                            <div class="rule-number">
+                                02
+                            </div>
+
+                            <div class="rule-title">
+                                Backend Authorization
+                            </div>
+
+                            <div class="rule-text">
+                                Status administrator tidak cukup
+                                ditentukan oleh JavaScript frontend.
+                                Backend harus melakukan verifikasi
+                                token dan hak akses.
+                            </div>
+
+                        </div>
+
+
+                        <div class="rule">
+
+                            <div class="rule-number">
+                                03
+                            </div>
+
+                            <div class="rule-title">
+                                Protected API
+                            </div>
+
+                            <div class="rule-text">
+                                Endpoint sensitif seperti database,
+                                user management, vault, dan admin
+                                API harus memiliki pemeriksaan
+                                autentikasi dan otorisasi.
+                            </div>
+
+                        </div>
+
+
+                        <div class="rule">
+
+                            <div class="rule-number">
+                                04
+                            </div>
+
+                            <div class="rule-title">
+                                No Frontend Secrets
+                            </div>
+
+                            <div class="rule-text">
+                                Service account, password database,
+                                private key, credential server, dan
+                                secret lainnya tidak boleh diletakkan
+                                di source code frontend.
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- SECURITY ROADMAP -->
+
+                <section class="section fade-in">
+
+                    <div class="section-head">
+
+                        <div>
+
+                            <div class="section-title">
+                                Security Infrastructure
+                            </div>
+
+                            <div class="section-description">
+                                Status lapisan keamanan yang
+                                nantinya dapat diperluas melalui
+                                backend WebToolsKita.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="component-grid">
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    📋
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Audit Log
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        SECURITY EVENTS
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${statusBadge(
+                                "info",
+                                "BACKEND FEATURE"
+                            )}
+
+                            <div class="component-description">
+                                Mencatat aktivitas penting
+                                administrator, termasuk akses
+                                endpoint sensitif dan perubahan
+                                konfigurasi.
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    🚦
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Rate Limiting
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        API PROTECTION
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${statusBadge(
+                                "info",
+                                "BACKEND FEATURE"
+                            )}
+
+                            <div class="component-description">
+                                Membatasi request berlebihan
+                                terhadap endpoint sensitif
+                                untuk mengurangi abuse dan
+                                automated attacks.
+                            </div>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div class="component-top">
+
+                                <div class="component-icon">
+                                    📝
+                                </div>
+
+                                <div>
+
+                                    <div class="component-title">
+                                        Security Event Log
+                                    </div>
+
+                                    <div class="component-subtitle">
+                                        EVENT MONITORING
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            ${statusBadge(
+                                "info",
+                                "BACKEND FEATURE"
+                            )}
+
+                            <div class="component-description">
+                                Infrastruktur untuk merekam
+                                login gagal, akses ditolak,
+                                perubahan hak akses, dan
+                                event keamanan lainnya.
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- SECURITY NOTICE -->
+
+                <section class="section fade-in">
+
+                    <div class="notice">
+
+                        <div class="notice-title">
+                            ⚠️ Security Notice
+                        </div>
+
+                        <div class="notice-text">
+
+                            Security Center ini berfungsi sebagai
+                            dashboard pemeriksaan keamanan.
+                            Fitur seperti rotasi credential,
+                            audit log terpusat, rate limiting,
+                            session management, security event
+                            management, dan perubahan konfigurasi
+                            keamanan harus diimplementasikan melalui
+                            endpoint backend yang benar-benar
+                            melakukan operasi tersebut.
+
+                            <br><br>
+
+                            Halaman frontend tidak akan menampilkan
+                            sebuah operasi sebagai "berhasil" hanya
+                            berdasarkan perubahan tampilan.
+                            Status keamanan harus berasal dari
+                            hasil pemeriksaan sistem yang sebenarnya.
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            `;
+
+        }
+
+
+        /*
+         * =========================================================
+         * ACCESS DENIED
+         * =========================================================
+         */
+
+        function renderAccessDenied(
+            reason
+        ) {
+
+            setTopStatus(
+                "AKSES DITOLAK",
+                "error"
+            );
+
+
+            let message =
+                "Akun ini tidak memiliki akses administrator.";
+
+
+            if (
+                reason ===
+                "NO_SESSION"
+            ) {
+
+                message =
+                    "Sesi login tidak ditemukan.";
+
+            }
+
+
+            if (
+                reason ===
+                "NETWORK_ERROR"
+            ) {
+
+                message =
+                    "Backend tidak dapat dihubungi.";
+
+            }
+
+
+            if (
+                reason ===
+                "SERVER_ERROR"
+            ) {
+
+                message =
+                    "Server gagal memverifikasi administrator.";
+
+            }
+
+
+            content.innerHTML = `
+
+                <div class="error-card fade-in">
+
+                    <div class="error-icon">
+                        🔒
+                    </div>
+
+                    <div class="error-title">
+                        Administrator Verification Failed
+                    </div>
+
+                    <div class="error-text">
+                        ${escapeHTML(message)}
+                        <br><br>
+                        Silakan kembali ke halaman login
+                        administrator.
+                    </div>
+
+                    <div class="toolbar"
+                         style="justify-content:center;">
+
+                        <button
+                            class="btn-primary"
+                            type="button"
+                            id="loginButton"
+                        >
+                            Kembali ke Login
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            const loginButton =
+                document.getElementById(
+                    "loginButton"
+                );
+
+
+            if (loginButton) {
+
+                loginButton.addEventListener(
+                    "click",
+                    function () {
+
+                        window.location.href =
+                            "index14.html";
+
+                    }
+                );
+
+            }
+
+        }
+
+
+        /*
+         * =========================================================
+         * MAIN SECURITY CHECK
+         * =========================================================
+         */
+
+        async function runSecurityCheck() {
+
+            loadingScreen(
+                "Memverifikasi administrator..."
+            );
+
+
+            setTopStatus(
+                "MEMVERIFIKASI",
+                "info"
+            );
+
+
+            if (!currentUser) {
+
+                renderAccessDenied(
+                    "NO_SESSION"
+                );
+
+                return;
+
+            }
+
+
+            const verification =
+                await verifyAdminBackend(
+                    currentUser
+                );
+
+
+            if (!verification.allowed) {
+
+                renderAccessDenied(
+                    verification.reason
+                );
+
+                return;
+
+            }
+
+
+            setTopStatus(
+                "SECURITY ACTIVE",
+                "success"
+            );
+
+
+            renderPage(
+                currentUser,
+                true
+            );
+
+        }
+
+
+        /*
+         * =========================================================
+         * EVENTS
+         * =========================================================
+         */
+
+        refreshButton.addEventListener(
+            "click",
+            async function () {
+
+                if (
+                    refreshButton.disabled
+                ) {
+                    return;
+                }
+
+
+                refreshButton.disabled =
+                    true;
+
+
+                refreshButton.textContent =
+                    "⟳ Memeriksa...";
+
+
+                try {
+
+                    await runSecurityCheck();
+
+                    showToast(
+                        "Security check selesai."
+                    );
+
+                } finally {
+
+                    refreshButton.disabled =
+                        false;
+
+                    refreshButton.textContent =
+                        "↻ Refresh Security Check";
+
+                }
+
+            }
+        );
+
+
+        backButton.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "index18.html";
+
+            }
+        );
+
+
+        /*
+         * =========================================================
+         * FIREBASE SESSION
+         * =========================================================
+         */
+
+        auth.onAuthStateChanged(
+            async function (user) {
+
+                currentUser =
+                    user || null;
+
+
+                if (!user) {
+
+                    renderAccessDenied(
+                        "NO_SESSION"
+                    );
+
+                    return;
+
+                }
+
+
+                try {
+
+                    await runSecurityCheck();
+
+                } catch (error) {
+
+                    console.error(
+                        "Security Center:",
+                        error
+                    );
+
+
+                    setTopStatus(
+                        "ERROR",
+                        "error"
+                    );
+
+
+                    content.innerHTML = `
+
+                        <div class="error-card fade-in">
+
+                            <div class="error-icon">
+                                ⚠️
+                            </div>
+
+                            <div class="error-title">
+                                Security Center Error
+                            </div>
+
+                            <div class="error-text">
+                                Terjadi kesalahan saat
+                                memuat pemeriksaan keamanan.
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

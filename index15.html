@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bantuan - WebToolsKita</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(128, 0, 255, 0.18),
+                    transparent 35%
+                ),
+                #050505;
+
+            color: white;
+
+            padding: 30px 18px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #c77dff;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .card {
+            background: rgba(18, 18, 18, 0.95);
+
+            border: 1px solid #292929;
+            border-radius: 16px;
+
+            padding: 22px;
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 0 20px rgba(128, 0, 255, 0.08);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            color: #c77dff;
+            margin-bottom: 18px;
+        }
+
+        .faq {
+            border: 1px solid #292929;
+            border-radius: 12px;
+
+            margin-bottom: 10px;
+
+            overflow: hidden;
+
+            background: #0d0d0d;
+        }
+
+        .faq:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq button {
+            width: 100%;
+
+            min-height: 50px;
+
+            background: transparent;
+            border: none;
+
+            color: white;
+
+            padding: 16px;
+
+            text-align: left;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .faq button:hover {
+            background: #151515;
+        }
+
+        .faq button span {
+            color: #aaa;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .faq .answer {
+            display: none;
+
+            padding: 0 16px 16px;
+
+            color: #aaa;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .faq.active .answer {
+            display: block;
+        }
+
+        .faq.active button {
+            color: #c77dff;
+        }
+
+        .faq.active button span {
+            color: #c77dff;
+        }
+
+        .step {
+            display: flex;
+
+            gap: 14px;
+
+            margin-bottom: 16px;
+
+            align-items: flex-start;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            min-width: 32px;
+            height: 32px;
+
+            border-radius: 50%;
+
+            background: #7b2cbf;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: bold;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            color: #aaa;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        .info-box {
+            border: 1px solid #452064;
+
+            background: rgba(123, 44, 191, 0.08);
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            color: #bbb;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .status-box {
+            border-radius: 12px;
+
+            padding: 15px 16px;
+
+            margin-bottom: 15px;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .status-box.active {
+            border: 1px solid rgba(34, 197, 94, 0.25);
+
+            background: rgba(34, 197, 94, 0.08);
+
+            color: #86efac;
+        }
+
+        .status-box.info {
+            border: 1px solid rgba(168, 85, 247, 0.25);
+
+            background: rgba(168, 85, 247, 0.08);
+
+            color: #d8b4fe;
+        }
+
+        .tool-list {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+        .tool-item {
+            padding: 12px;
+
+            border-radius: 10px;
+
+            background: #0d0d0d;
+
+            border: 1px solid #292929;
+
+            color: #bbb;
+
+            font-size: 13px;
+        }
+
+        .tool-item strong {
+            display: block;
+
+            color: white;
+
+            margin-bottom: 4px;
+        }
+
+        .vip-item {
+            border-color: rgba(245, 158, 11, 0.25);
+
+            background:
+                rgba(245, 158, 11, 0.05);
+        }
+
+        .vip-item strong {
+            color: #fbbf24;
+        }
+
+        .contact {
+            text-align: center;
+        }
+
+        .contact p {
+            color: #aaa;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            margin-bottom: 16px;
+        }
+
+        .contact-button {
+            display: inline-block;
+
+            padding: 12px 20px;
+
+            border-radius: 10px;
+
+            background: #7b2cbf;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            border: none;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .contact-button:hover {
+            background: #9d4edd;
+
+            transform: translateY(-1px);
+        }
+
+        .contact-email {
+            margin-top: 12px;
+
+            color: #777;
+
+            font-size: 12px;
+        }
+
+        .back-button {
+            width: 100%;
+
+            padding: 14px;
+
+            border: 1px solid #333;
+
+            background: #111;
+
+            color: white;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            margin-top: 8px;
+
+            transition: 0.2s;
+        }
+
+        .back-button:hover {
+            background: #1b1b1b;
+
+            border-color: #7b2cbf;
+        }
+
+        .footer {
+            text-align: center;
+
+            color: #555;
+
+            font-size: 12px;
+
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 22px 14px;
+            }
+
+            .header h1 {
+                font-size: 27px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .tool-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="icon">
+            ❓
+        </div>
+
+        <h1>
+            Bantuan
+        </h1>
+
+        <p>
+            Pusat bantuan dan panduan penggunaan WebToolsKita
+        </p>
+
+    </div>
+
+
+    <!-- FAQ -->
+
+    <div class="card">
+
+        <h2>
+            ❓ Pertanyaan Umum
+        </h2>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Apa struktur WebToolsKita saat ini?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                WebToolsKita saat ini menggunakan tiga kelompok
+                utama pada halaman tools:
+
+                <div class="tool-list">
+
+                    <div class="tool-item">
+                        <strong>FREE</strong>
+                        Tools yang tersedia untuk penggunaan gratis.
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>EXCLUSIVE</strong>
+                        Tools dan layanan khusus WebToolsKita.
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>INTELLIGENT [NEW]</strong>
+                        Fitur intelligent terbaru WebToolsKita.
+                    </div>
+
+                </div>
+
+                Urutan kategori pada halaman utama adalah:
+
+                <br><br>
+
+                <strong>
+                    FREE → EXCLUSIVE → INTELLIGENT [NEW]
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Bagaimana cara menggunakan WebToolsKita?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                Login menggunakan akun Google terlebih dahulu.
+
+                <br><br>
+
+                Setelah berhasil login, buka halaman utama
+                WebToolsKita dan pilih tools atau layanan yang
+                ingin digunakan.
+
+                <br><br>
+
+                Beberapa fitur dapat memiliki persyaratan akses
+                yang berbeda sesuai kategori dan status akun.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Apakah harus login untuk menggunakan WebToolsKita?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                WebToolsKita menggunakan Firebase Authentication
+                untuk sistem akun.
+
+                <br><br>
+
+                Fitur yang membutuhkan autentikasi akan memeriksa
+                status login sebelum dapat digunakan.
+
+                <br><br>
+
+                Jika sesi login tidak tersedia, pengguna dapat
+                diarahkan kembali ke halaman login.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Apa saja kategori tools WebToolsKita?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                Saat ini struktur utama WebToolsKita terdiri dari:
+
+                <div class="tool-list">
+
+                    <div class="tool-item">
+                        <strong>FREE</strong>
+                        4 Free Tools
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>EXCLUSIVE</strong>
+                        3 Exclusive Tools
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>INTELLIGENT [NEW]</strong>
+                        2 Intelligent Tools
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>ADMIN</strong>
+                        Modul administrasi berada pada area
+                        administrator WebToolsKita.
+                    </div>
+
+                </div>
+
+                Susunan kategori utama tetap:
+
+                <br><br>
+
+                <strong>
+                    FREE → EXCLUSIVE → INTELLIGENT [NEW]
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Apa itu VIP?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                VIP merupakan area fitur khusus WebToolsKita
+                yang memiliki akses berbeda dari tools gratis.
+
+                <br><br>
+
+                Salah satu perubahan terbaru adalah:
+
+                <div class="tool-list">
+
+                    <div class="tool-item vip-item">
+                        <strong>VIP Tool 1</strong>
+                        Penyaluran Data
+                    </div>
+
+                    <div class="tool-item vip-item">
+                        <strong>iPay</strong>
+                        Status COMING SOON
+                    </div>
+
+                    <div class="tool-item vip-item">
+                        <strong>iPay Edu</strong>
+                        Fitur edukasi pada index58.html
+                    </div>
+
+                </div>
+
+                Nama dan akses tool dapat diperbarui seiring
+                pengembangan WebToolsKita.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Apa saja layanan khusus WebToolsKita?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                Beberapa layanan yang telah ditetapkan dalam
+                pengembangan WebToolsKita antara lain:
+
+                <div class="tool-list">
+
+                    <div class="tool-item">
+                        <strong>QR Code Manager</strong>
+                        Pengelolaan QR Code dan pembayaran.
+                        <br>
+                        index47.html
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>CEO Command Center</strong>
+                        Command center untuk kebutuhan
+                        pengelolaan tingkat lanjut.
+                        <br>
+                        index48.html
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>Iklan Browsing</strong>
+                        Sistem pembuatan dan pengelolaan iklan.
+                        <br>
+                        index49.html
+                    </div>
+
+                    <div class="tool-item">
+                        <strong>Agensi</strong>
+                        Modul pengelolaan agensi dan layanan.
+                        <br>
+                        index34.html
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Bagaimana status iPay?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                <div class="status-box info">
+
+                    💳 <strong>iPay saat ini berstatus COMING SOON.</strong>
+
+                    <br><br>
+
+                    Sistem iPay belum boleh dianggap sebagai sistem
+                    pembayaran aktif hanya karena halaman atau tombol
+                    iPay tersedia.
+
+                    <br><br>
+
+                    Aktivasi pembayaran membutuhkan konfigurasi
+                    backend dan payment gateway yang sesuai.
+
+                </div>
+
+                <strong>
+                    iPay Edu
+                </strong>
+
+                merupakan bagian edukasi dan berada pada:
+
+                <br><br>
+
+                <strong>
+                    index58.html
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Bagaimana status CodeGuard?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                <div class="status-box active">
+
+                    🛡️ <strong>CodeGuard AKTIF.</strong>
+
+                    <br><br>
+
+                    CodeGuard digunakan untuk membantu memeriksa
+                    file atau folder secara lokal melalui browser.
+
+                </div>
+
+                Pemeriksaan dapat mendeteksi sejumlah pola kode
+                yang berpotensi bermasalah, termasuk:
+
+                <br><br>
+
+                • Credential hardcoded
+                <br>
+                • Private key
+                <br>
+                • Penggunaan eval
+                <br>
+                • Pola SQL berisiko
+                <br>
+                • Pola keamanan kode lainnya
+
+                <br><br>
+
+                Hasil pemeriksaan bergantung pada file dan pola
+                yang ditemukan oleh sistem.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Di mana Control Center WebToolsKita?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                Control Center merupakan modul pengelolaan
+                khusus WebToolsKita.
+
+                <br><br>
+
+                Halaman Control Center:
+
+                <br><br>
+
+                <strong>
+                    index62.html
+                </strong>
+
+                <br><br>
+
+                Modul ini digunakan untuk pengelolaan dan
+                pengaturan layanan yang berada di area
+                administrator.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq">
+
+            <button
+                type="button"
+                onclick="toggleFaq(this)"
+            >
+                <span>
+                    Bagaimana cara logout?
+                </span>
+
+                <span>
+                    ＋
+                </span>
+            </button>
+
+            <div class="answer">
+
+                Buka halaman yang menyediakan pengaturan akun
+                kemudian gunakan fungsi Logout.
+
+                <br><br>
+
+                Sistem Firebase akan mengakhiri sesi akun
+                yang sedang login.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PANDUAN -->
+
+    <div class="card">
+
+        <h2>
+            📖 Panduan Singkat
+        </h2>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                1
+            </div>
+
+            <div class="step-content">
+
+                <h3>
+                    Login
+                </h3>
+
+                <p>
+                    Login menggunakan akun Google untuk masuk
+                    ke WebToolsKita.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                2
+            </div>
+
+            <div class="step-content">
+
+                <h3>
+                    Buka Menu Utama
+                </h3>
+
+                <p>
+                    Setelah login, buka halaman utama WebToolsKita
+                    untuk melihat kategori tools yang tersedia.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                3
+            </div>
+
+            <div class="step-content">
+
+                <h3>
+                    Pilih Kategori
+                </h3>
+
+                <p>
+                    Gunakan kategori FREE, EXCLUSIVE, atau
+                    INTELLIGENT [NEW] sesuai akses dan fitur
+                    yang ingin digunakan.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                4
+            </div>
+
+            <div class="step-content">
+
+                <h3>
+                    Gunakan Tools
+                </h3>
+
+                <p>
+                    Masukkan data yang diperlukan lalu gunakan
+                    fungsi yang tersedia pada tools tersebut.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                5
+            </div>
+
+            <div class="step-content">
+
+                <h3>
+                    Selesai
+                </h3>
+
+                <p>
+                    Setelah selesai, kamu dapat kembali ke menu
+                    utama atau menggunakan tools lainnya.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMASI -->
+
+    <div class="card">
+
+        <h2>
+            ℹ️ Informasi WebToolsKita
+        </h2>
+
+
+        <div class="info-box">
+
+            WebToolsKita terus dikembangkan dan beberapa fitur
+            dapat mengalami perubahan nama, status, maupun
+            halaman tujuan selama proses pengembangan.
+
+            <br><br>
+
+            Struktur utama saat ini:
+
+            <br><br>
+
+            <strong>
+                FREE → EXCLUSIVE → INTELLIGENT [NEW]
+            </strong>
+
+            <br><br>
+
+            Beberapa halaman khusus yang telah ditetapkan:
+
+            <br>
+
+            • Agensi → index34.html
+            <br>
+            • QR Code Manager → index47.html
+            <br>
+            • CEO Command Center → index48.html
+            <br>
+            • Iklan Browsing → index49.html
+            <br>
+            • iPay Edu → index58.html
+            <br>
+            • Control Center → index62.html
+
+            <br><br>
+
+            Jika sebuah fitur berstatus
+            <strong>COMING SOON</strong>, fitur tersebut belum
+            boleh dianggap sebagai layanan aktif.
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPPORT -->
+
+    <div class="card contact">
+
+        <h2>
+            🛠️ Bantuan & Support
+        </h2>
+
+        <p>
+            Butuh bantuan atau menemukan masalah?
+            Klik tombol di bawah untuk menghubungi
+            support WebToolsKita melalui email.
+        </p>
+
+
+        <a
+            class="contact-button"
+            href="mailto:ganreffafk@gmail.com?subject=Support%20WebToolsKita"
+        >
+            💬 Hubungi Support
+        </a>
+
+
+        <div class="contact-email">
+            ganreffafk@gmail.com
+        </div>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <button
+        type="button"
+        class="back-button"
+        onclick="window.location.href='index3.html'"
+    >
+        ← Kembali ke Menu Utama
+    </button>
+
+
+    <div class="footer">
+        WebToolsKita
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==========================================
+    // FIREBASE CONFIG
+    // ==========================================
+
+    const firebaseConfig = {
+
+        apiKey:
+            "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+        authDomain:
+            "webtoolskita.firebaseapp.com",
+
+        projectId:
+            "webtoolskita",
+
+        storageBucket:
+            "webtoolskita.firebasestorage.app",
+
+        messagingSenderId:
+            "593680487717",
+
+        appId:
+            "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+        measurementId:
+            "G-YVEJ90678G"
+    };
+
+
+    firebase.initializeApp(
+        firebaseConfig
+    );
+
+
+    const auth =
+        firebase.auth();
+
+
+    // ==========================================
+    // AUTH GUARD
+    // ==========================================
+
+    auth.onAuthStateChanged(
+        (user) => {
+
+            if (!user) {
+
+                window.location.href =
+                    "index2.html";
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // FAQ
+    // ==========================================
+
+    function toggleFaq(button) {
+
+        const faq =
+            button.parentElement;
+
+
+        const allFaq =
+            document.querySelectorAll(
+                ".faq"
+            );
+
+
+        allFaq.forEach(
+            (item) => {
+
+                if (item !== faq) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+
+                    const icon =
+                        item.querySelector(
+                            "button span:last-child"
+                        );
+
+
+                    if (icon) {
+
+                        icon.textContent =
+                            "＋";
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        faq.classList.toggle(
+            "active"
+        );
+
+
+        const icon =
+            button.querySelector(
+                "span:last-child"
+            );
+
+
+        if (
+            faq.classList.contains(
+                "active"
+            )
+        ) {
+
+            icon.textContent =
+                "−";
+
+        } else {
+
+            icon.textContent =
+                "＋";
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>

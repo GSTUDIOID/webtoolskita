@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JWT Decoder — WebToolsKita</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    padding:30px 16px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:520px;
+    height:520px;
+    top:-280px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:#7b2cff;
+    filter:blur(180px);
+    opacity:.13;
+    pointer-events:none;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    position:relative;
+    z-index:1;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:-1.5px;
+
+    background:linear-gradient(
+        90deg,
+        #fff,
+        #b66cff,
+        #7b2cff
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#888;
+    font-size:13px;
+}
+
+.panel{
+    border:1px solid #292035;
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d0d0d,
+            #100b16
+        );
+
+    padding:18px;
+    margin-bottom:18px;
+
+    box-shadow:
+        inset 0 0 30px
+        rgba(123,44,255,.035);
+}
+
+
+/* =====================================================
+   TOKEN INPUT
+===================================================== */
+
+.section-title{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:9px;
+}
+
+.token-input{
+    width:100%;
+    min-height:135px;
+    resize:vertical;
+
+    padding:14px;
+
+    border-radius:11px;
+    border:1px solid #30263c;
+
+    background:#080808;
+    color:#ddd;
+
+    outline:none;
+
+    font-family:
+        Consolas,
+        Monaco,
+        "Courier New",
+        monospace;
+
+    font-size:11px;
+    line-height:1.6;
+}
+
+.token-input:focus{
+    border-color:#7b2cff;
+}
+
+.token-input::placeholder{
+    color:#444;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:13px;
+}
+
+.button{
+    padding:11px 16px;
+
+    border-radius:9px;
+
+    border:1px solid #30263c;
+
+    background:#111;
+
+    color:#ccc;
+
+    font-size:11px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+}
+
+.button:hover{
+    color:#fff;
+    border-color:#7b2cff;
+    background:#17111e;
+    transform:translateY(-1px);
+}
+
+.button.primary{
+    background:#7b2cff;
+    border-color:#9b5cff;
+    color:#fff;
+}
+
+.button.primary:hover{
+    background:#8d45ff;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status{
+    margin-top:13px;
+
+    padding:10px 12px;
+
+    border-radius:9px;
+
+    border:1px solid #292035;
+
+    background:#090909;
+
+    color:#777;
+
+    font-size:10px;
+
+    text-align:center;
+
+    line-height:1.5;
+}
+
+.status.success{
+    color:#b66cff;
+    border-color:#4a315f;
+    background:#120b18;
+}
+
+.status.error{
+    color:#ff9b9b;
+    border-color:#5a3030;
+    background:#180b0b;
+}
+
+
+/* =====================================================
+   TOKEN PARTS
+===================================================== */
+
+.token-parts{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:10px;
+
+    margin-top:15px;
+}
+
+.part{
+    min-width:0;
+
+    padding:12px;
+
+    border:1px solid #292035;
+
+    border-radius:11px;
+
+    background:#090909;
+}
+
+.part-title{
+    color:#b66cff;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    margin-bottom:7px;
+}
+
+.part-value{
+    color:#666;
+
+    font-family:monospace;
+
+    font-size:9px;
+
+    line-height:1.5;
+
+    word-break:break-all;
+}
+
+
+/* =====================================================
+   DATA GRID
+===================================================== */
+
+.data-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:14px;
+}
+
+.data-card{
+    min-width:0;
+}
+
+.data-title{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:8px;
+}
+
+.data-title span:first-child{
+    color:#b66cff;
+
+    font-size:12px;
+
+    font-weight:800;
+}
+
+.data-title span:last-child{
+    color:#555;
+
+    font-size:9px;
+
+    font-weight:700;
+}
+
+.code-box{
+    width:100%;
+
+    min-height:300px;
+
+    resize:vertical;
+
+    padding:13px;
+
+    border-radius:10px;
+
+    border:1px solid #30263c;
+
+    background:#080808;
+
+    color:#ddd;
+
+    outline:none;
+
+    font-family:
+        Consolas,
+        Monaco,
+        "Courier New",
+        monospace;
+
+    font-size:11px;
+
+    line-height:1.6;
+}
+
+.code-box:focus{
+    border-color:#7b2cff;
+}
+
+
+/* =====================================================
+   CLAIMS
+===================================================== */
+
+.claims{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:10px;
+
+    margin-top:14px;
+}
+
+.claim{
+    padding:12px;
+
+    border:1px solid #292035;
+
+    border-radius:10px;
+
+    background:#090909;
+}
+
+.claim-label{
+    color:#555;
+
+    font-size:9px;
+
+    font-weight:800;
+
+    margin-bottom:5px;
+}
+
+.claim-value{
+    color:#bbb;
+
+    font-size:11px;
+
+    word-break:break-word;
+}
+
+
+/* =====================================================
+   WARNING
+===================================================== */
+
+.warning{
+    margin-top:14px;
+
+    padding:12px;
+
+    border:1px solid #4d3820;
+
+    border-radius:10px;
+
+    background:#151008;
+
+    color:#b99b70;
+
+    font-size:10px;
+
+    line-height:1.55;
+}
+
+
+/* =====================================================
+   INFO
+===================================================== */
+
+.info{
+    color:#666;
+
+    font-size:10px;
+
+    line-height:1.6;
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+.back{
+    display:block;
+
+    text-align:center;
+
+    margin-top:24px;
+
+    color:#777;
+
+    text-decoration:none;
+
+    font-size:12px;
+}
+
+.back:hover{
+    color:#b66cff;
+}
+
+.footer{
+    text-align:center;
+
+    color:#444;
+
+    font-size:11px;
+
+    margin-top:10px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:750px){
+
+    body{
+        padding:22px 12px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .token-parts{
+        grid-template-columns:1fr;
+    }
+
+    .data-grid{
+        grid-template-columns:1fr;
+    }
+
+    .claims{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+}
+
+@media(max-width:420px){
+
+    .claims{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <h1 class="logo">
+        JWT Decoder
+    </h1>
+
+    <p class="subtitle">
+        Decode dan inspeksi JSON Web Token langsung di browser.
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     INPUT
+===================================================== -->
+
+<section class="panel">
+
+    <div class="section-title">
+        JWT TOKEN
+    </div>
+
+    <textarea
+        id="tokenInput"
+        class="token-input"
+        spellcheck="false"
+        placeholder="Tempel JWT token di sini...
+
+Contoh:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IldlYlRvb2xzS2l0YSJ9.signature"
+    ></textarea>
+
+
+    <div class="actions">
+
+        <button
+            id="decodeButton"
+            class="button primary"
+        >
+            ⚡ Decode JWT
+        </button>
+
+        <button
+            id="sampleButton"
+            class="button"
+        >
+            ✦ Sample
+        </button>
+
+        <button
+            id="copyTokenButton"
+            class="button"
+        >
+            ⧉ Copy Token
+        </button>
+
+        <button
+            id="clearButton"
+            class="button"
+        >
+            × Clear
+        </button>
+
+    </div>
+
+
+    <div
+        id="status"
+        class="status"
+    >
+        Masukkan JWT token lalu tekan Decode JWT.
+    </div>
+
+
+    <div
+        id="tokenParts"
+        class="token-parts"
+        style="display:none;"
+    >
+
+        <div class="part">
+
+            <div class="part-title">
+                HEADER
+            </div>
+
+            <div
+                id="headerPart"
+                class="part-value"
+            ></div>
+
+        </div>
+
+
+        <div class="part">
+
+            <div class="part-title">
+                PAYLOAD
+            </div>
+
+            <div
+                id="payloadPart"
+                class="part-value"
+            ></div>
+
+        </div>
+
+
+        <div class="part">
+
+            <div class="part-title">
+                SIGNATURE
+            </div>
+
+            <div
+                id="signaturePart"
+                class="part-value"
+            ></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HEADER / PAYLOAD
+===================================================== -->
+
+<section
+    id="dataPanel"
+    class="panel"
+    style="display:none;"
+>
+
+    <div class="data-grid">
+
+
+        <!-- HEADER -->
+
+        <div class="data-card">
+
+            <div class="data-title">
+
+                <span>
+                    HEADER
+                </span>
+
+                <span>
+                    JSON
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="headerOutput"
+                class="code-box"
+                readonly
+            ></textarea>
+
+
+            <div class="actions">
+
+                <button
+                    id="copyHeaderButton"
+                    class="button"
+                >
+                    ⧉ Copy Header
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYLOAD -->
+
+        <div class="data-card">
+
+            <div class="data-title">
+
+                <span>
+                    PAYLOAD
+                </span>
+
+                <span>
+                    JSON
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="payloadOutput"
+                class="code-box"
+                readonly
+            ></textarea>
+
+
+            <div class="actions">
+
+                <button
+                    id="copyPayloadButton"
+                    class="button"
+                >
+                    ⧉ Copy Payload
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CLAIMS -->
+
+    <div
+        id="claims"
+        class="claims"
+    >
+
+        <div class="claim">
+
+            <div class="claim-label">
+                ALGORITHM
+            </div>
+
+            <div
+                id="algorithm"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                TYPE
+            </div>
+
+            <div
+                id="tokenType"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                ISSUER
+            </div>
+
+            <div
+                id="issuer"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                SUBJECT
+            </div>
+
+            <div
+                id="subject"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                ISSUED AT
+            </div>
+
+            <div
+                id="issuedAt"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                EXPIRES
+            </div>
+
+            <div
+                id="expiresAt"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                STATUS
+            </div>
+
+            <div
+                id="tokenStatus"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="claim">
+
+            <div class="claim-label">
+                AUDIENCE
+            </div>
+
+            <div
+                id="audience"
+                class="claim-value"
+            >
+                —
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="warning">
+
+        ⚠ <strong>Catatan keamanan:</strong>
+        Decoder ini hanya melakukan decoding payload JWT.
+        Decoding JWT <strong>bukan</strong> berarti signature token telah diverifikasi.
+        Jangan memasukkan token sensitif ke situs yang tidak kamu percayai.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     INFO
+===================================================== -->
+
+<section class="panel">
+
+    <div class="info">
+
+        <strong style="color:#b66cff;">
+            JSON Web Token (JWT)
+        </strong>
+
+        biasanya terdiri dari tiga bagian:
+
+        <br><br>
+
+        <strong style="color:#aaa;">
+            Header
+        </strong>
+        berisi informasi seperti algoritma dan tipe token.
+
+        <br>
+
+        <strong style="color:#aaa;">
+            Payload
+        </strong>
+        berisi claims atau data token.
+
+        <br>
+
+        <strong style="color:#aaa;">
+            Signature
+        </strong>
+        digunakan untuk verifikasi integritas token.
+
+        <br><br>
+
+        Semua decoding dilakukan secara lokal di browser.
+
+    </div>
+
+</section>
+
+
+<a
+    href="index3.html"
+    class="back"
+>
+    ← Kembali ke Advance Tools
+</a>
+
+
+<div class="footer">
+    © 2026 WebToolsKita
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const tokenInput =
+    document.getElementById(
+        "tokenInput"
+    );
+
+const decodeButton =
+    document.getElementById(
+        "decodeButton"
+    );
+
+const sampleButton =
+    document.getElementById(
+        "sampleButton"
+    );
+
+const copyTokenButton =
+    document.getElementById(
+        "copyTokenButton"
+    );
+
+const clearButton =
+    document.getElementById(
+        "clearButton"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const tokenParts =
+    document.getElementById(
+        "tokenParts"
+    );
+
+const headerPart =
+    document.getElementById(
+        "headerPart"
+    );
+
+const payloadPart =
+    document.getElementById(
+        "payloadPart"
+    );
+
+const signaturePart =
+    document.getElementById(
+        "signaturePart"
+    );
+
+const dataPanel =
+    document.getElementById(
+        "dataPanel"
+    );
+
+const headerOutput =
+    document.getElementById(
+        "headerOutput"
+    );
+
+const payloadOutput =
+    document.getElementById(
+        "payloadOutput"
+    );
+
+const copyHeaderButton =
+    document.getElementById(
+        "copyHeaderButton"
+    );
+
+const copyPayloadButton =
+    document.getElementById(
+        "copyPayloadButton"
+    );
+
+const algorithm =
+    document.getElementById(
+        "algorithm"
+    );
+
+const tokenType =
+    document.getElementById(
+        "tokenType"
+    );
+
+const issuer =
+    document.getElementById(
+        "issuer"
+    );
+
+const subject =
+    document.getElementById(
+        "subject"
+    );
+
+const issuedAt =
+    document.getElementById(
+        "issuedAt"
+    );
+
+const expiresAt =
+    document.getElementById(
+        "expiresAt"
+    );
+
+const tokenStatus =
+    document.getElementById(
+        "tokenStatus"
+    );
+
+const audience =
+    document.getElementById(
+        "audience"
+    );
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(
+    message,
+    type=""
+){
+
+    status.textContent =
+        message;
+
+    status.className =
+        "status";
+
+    if(type){
+
+        status.classList.add(
+            type
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BASE64URL DECODE
+===================================================== */
+
+function decodeBase64Url(
+    value
+){
+
+    let base64 =
+        value
+            .replace(
+                /-/g,
+                "+"
+            )
+            .replace(
+                /_/g,
+                "/"
+            );
+
+
+    while(
+        base64.length % 4
+    ){
+
+        base64 += "=";
+
+    }
+
+
+    try{
+
+        const binary =
+            atob(
+                base64
+            );
+
+
+        const bytes =
+            new Uint8Array(
+                binary.length
+            );
+
+
+        for(
+            let i=0;
+            i<binary.length;
+            i++
+        ){
+
+            bytes[i] =
+                binary.charCodeAt(
+                    i
+                );
+
+        }
+
+
+        return new TextDecoder(
+            "utf-8"
+        ).decode(
+            bytes
+        );
+
+    }catch(error){
+
+        throw new Error(
+            "Base64URL JWT tidak valid."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DATE FORMAT
+===================================================== */
+
+function formatDate(
+    timestamp
+){
+
+    if(
+        timestamp === undefined ||
+        timestamp === null ||
+        timestamp === ""
+    ){
+
+        return "—";
+
+    }
+
+
+    const number =
+        Number(
+            timestamp
+        );
+
+
+    if(
+        !Number.isFinite(
+            number
+        )
+    ){
+
+        return String(
+            timestamp
+        );
+
+    }
+
+
+    const date =
+        new Date(
+            number * 1000
+        );
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return String(
+            timestamp
+        );
+
+    }
+
+
+    return (
+        date.toLocaleString(
+            "id-ID"
+        )
+    );
+
+}
+
+
+/* =====================================================
+   CLAIM VALUE
+===================================================== */
+
+function claimValue(
+    value
+){
+
+    if(
+        value === undefined ||
+        value === null
+    ){
+
+        return "—";
+
+    }
+
+
+    if(
+        typeof value ===
+            "object"
+    ){
+
+        try{
+
+            return JSON.stringify(
+                value
+            );
+
+        }catch{
+
+            return String(
+                value
+            );
+
+        }
+
+    }
+
+
+    return String(
+        value
+    );
+
+}
+
+
+/* =====================================================
+   DECODE JWT
+===================================================== */
+
+function decodeJWT(){
+
+    const token =
+        tokenInput.value
+            .trim();
+
+
+    if(
+        !token
+    ){
+
+        setStatus(
+            "JWT token masih kosong.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        /*
+         * Hilangkan prefix Bearer
+         * jika user menempelkan:
+         *
+         * Bearer eyJ...
+         */
+
+        const cleanToken =
+            token.replace(
+                /^Bearer\s+/i,
+                ""
+            );
+
+
+        const parts =
+            cleanToken.split(
+                "."
+            );
+
+
+        if(
+            parts.length !== 3
+        ){
+
+            throw new Error(
+                "JWT harus terdiri dari 3 bagian: Header.Payload.Signature."
+            );
+
+        }
+
+
+        const headerJson =
+            decodeBase64Url(
+                parts[0]
+            );
+
+
+        const payloadJson =
+            decodeBase64Url(
+                parts[1]
+            );
+
+
+        let header;
+
+        let payload;
+
+
+        try{
+
+            header =
+                JSON.parse(
+                    headerJson
+                );
+
+        }catch{
+
+            throw new Error(
+                "Header JWT bukan JSON yang valid."
+            );
+
+        }
+
+
+        try{
+
+            payload =
+                JSON.parse(
+                    payloadJson
+                );
+
+        }catch{
+
+            throw new Error(
+                "Payload JWT bukan JSON yang valid."
+            );
+
+        }
+
+
+        /*
+         * Output
+         */
+
+        headerOutput.value =
+            JSON.stringify(
+                header,
+                null,
+                2
+            );
+
+
+        payloadOutput.value =
+            JSON.stringify(
+                payload,
+                null,
+                2
+            );
+
+
+        headerPart.textContent =
+            parts[0];
+
+
+        payloadPart.textContent =
+            parts[1];
+
+
+        signaturePart.textContent =
+            parts[2];
+
+
+        /*
+         * Claims
+         */
+
+        algorithm.textContent =
+            claimValue(
+                header.alg
+            );
+
+
+        tokenType.textContent =
+            claimValue(
+                header.typ
+            );
+
+
+        issuer.textContent =
+            claimValue(
+                payload.iss
+            );
+
+
+        subject.textContent =
+            claimValue(
+                payload.sub
+            );
+
+
+        audience.textContent =
+            claimValue(
+                payload.aud
+            );
+
+
+        issuedAt.textContent =
+            formatDate(
+                payload.iat
+            );
+
+
+        expiresAt.textContent =
+            formatDate(
+                payload.exp
+            );
+
+
+        /*
+         * Expiration status
+         */
+
+        if(
+            payload.exp !== undefined
+        ){
+
+            const now =
+                Math.floor(
+                    Date.now() /
+                    1000
+                );
+
+
+            const expiration =
+                Number(
+                    payload.exp
+                );
+
+
+            if(
+                Number.isFinite(
+                    expiration
+                )
+            ){
+
+                if(
+                    expiration <
+                    now
+                ){
+
+                    tokenStatus.textContent =
+                        "EXPIRED";
+
+                }else{
+
+                    tokenStatus.textContent =
+                        "ACTIVE";
+
+                }
+
+            }else{
+
+                tokenStatus.textContent =
+                    "UNKNOWN";
+
+            }
+
+        }else{
+
+            tokenStatus.textContent =
+                "NO EXP CLAIM";
+
+        }
+
+
+        tokenParts.style.display =
+            "grid";
+
+
+        dataPanel.style.display =
+            "block";
+
+
+        setStatus(
+            "JWT berhasil di-decode. Signature belum diverifikasi.",
+            "success"
+        );
+
+
+        dataPanel.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest"
+        });
+
+    }catch(error){
+
+        tokenParts.style.display =
+            "none";
+
+        dataPanel.style.display =
+            "none";
+
+
+        setStatus(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   COPY HELPER
+===================================================== */
+
+async function copyText(
+    value,
+    button,
+    defaultText
+){
+
+    if(
+        !value
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        await navigator
+            .clipboard
+            .writeText(
+                value
+            );
+
+
+        button.textContent =
+            "✓ Tersalin";
+
+
+        setTimeout(
+            () => {
+
+                button.textContent =
+                    defaultText;
+
+            },
+            1500
+        );
+
+    }catch{
+
+        setStatus(
+            "Clipboard tidak tersedia pada browser.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DECODE BUTTON
+===================================================== */
+
+decodeButton.addEventListener(
+    "click",
+    decodeJWT
+);
+
+
+/* =====================================================
+   SAMPLE
+===================================================== */
+
+sampleButton.addEventListener(
+    "click",
+    () => {
+
+        /*
+         * Sample JWT tanpa signature
+         * valid secara kriptografis.
+         *
+         * Signature hanya contoh.
+         */
+
+        const header = {
+            alg:"HS256",
+            typ:"JWT"
+        };
+
+
+        const now =
+            Math.floor(
+                Date.now() /
+                1000
+            );
+
+
+        const payload = {
+
+            sub:"1234567890",
+
+            name:"WebToolsKita",
+
+            role:"developer",
+
+            iss:"webtoolskita",
+
+            iat:now,
+
+            exp:
+                now +
+                3600
+
+        };
+
+
+        function encode(
+            object
+        ){
+
+            const json =
+                JSON.stringify(
+                    object
+                );
+
+
+            const bytes =
+                new TextEncoder()
+                    .encode(
+                        json
+                    );
+
+
+            let binary = "";
+
+            bytes.forEach(
+                byte => {
+
+                    binary +=
+                        String.fromCharCode(
+                            byte
+                        );
+
+                }
+            );
+
+
+            return btoa(
+                binary
+            )
+            .replace(
+                /\+/g,
+                "-"
+            )
+            .replace(
+                /\//g,
+                "_"
+            )
+            .replace(
+                /=+$/,
+                ""
+            );
+
+        }
+
+
+        const sampleToken =
+            encode(header) +
+            "." +
+            encode(payload) +
+            "." +
+            "example-signature";
+
+
+        tokenInput.value =
+            sampleToken;
+
+
+        decodeJWT();
+
+    }
+);
+
+
+/* =====================================================
+   COPY TOKEN
+===================================================== */
+
+copyTokenButton.addEventListener(
+    "click",
+    () => {
+
+        copyText(
+            tokenInput.value.trim(),
+            copyTokenButton,
+            "⧉ Copy Token"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   COPY HEADER
+===================================================== */
+
+copyHeaderButton.addEventListener(
+    "click",
+    () => {
+
+        copyText(
+            headerOutput.value,
+            copyHeaderButton,
+            "⧉ Copy Header"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   COPY PAYLOAD
+===================================================== */
+
+copyPayloadButton.addEventListener(
+    "click",
+    () => {
+
+        copyText(
+            payloadOutput.value,
+            copyPayloadButton,
+            "⧉ Copy Payload"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    () => {
+
+        tokenInput.value =
+            "";
+
+        headerOutput.value =
+            "";
+
+        payloadOutput.value =
+            "";
+
+
+        headerPart.textContent =
+            "";
+
+        payloadPart.textContent =
+            "";
+
+        signaturePart.textContent =
+            "";
+
+
+        tokenParts.style.display =
+            "none";
+
+        dataPanel.style.display =
+            "none";
+
+
+        algorithm.textContent =
+            "—";
+
+        tokenType.textContent =
+            "—";
+
+        issuer.textContent =
+            "—";
+
+        subject.textContent =
+            "—";
+
+        issuedAt.textContent =
+            "—";
+
+        expiresAt.textContent =
+            "—";
+
+        tokenStatus.textContent =
+            "—";
+
+        audience.textContent =
+            "—";
+
+
+        setStatus(
+            "JWT berhasil dibersihkan."
+        );
+
+        tokenInput.focus();
+
+    }
+);
+
+
+/* =====================================================
+   CTRL + ENTER
+===================================================== */
+
+tokenInput.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.ctrlKey &&
+            event.key === "Enter"
+        ){
+
+            decodeJWT();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

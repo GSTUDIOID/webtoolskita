@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login — WebToolsKita</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+
+            width: 500px;
+            height: 500px;
+
+            background: #7b2cff;
+            border-radius: 50%;
+
+            filter: blur(180px);
+            opacity: 0.18;
+
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+
+            width: 90%;
+            max-width: 420px;
+
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+
+            margin-bottom: 12px;
+
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #b66cff,
+                #7b2cff
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.7;
+
+            margin-bottom: 32px;
+        }
+
+        .login-card {
+            background: rgba(17, 17, 17, 0.92);
+
+            border: 1px solid #292035;
+            border-radius: 20px;
+
+            padding: 32px 25px;
+
+            box-shadow:
+                0 0 35px rgba(123, 44, 255, 0.12);
+        }
+
+        .login-card h2 {
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.6;
+
+            margin-bottom: 25px;
+        }
+
+        .google-button {
+            width: 100%;
+            min-height: 52px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+
+            border: 1px solid #39313f;
+            border-radius: 12px;
+
+            background: #17141c;
+            color: white;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .google-button:hover {
+            background: #241832;
+            border-color: #8b4dff;
+
+            box-shadow:
+                0 0 22px rgba(123, 44, 255, 0.2);
+
+            transform: translateY(-2px);
+        }
+
+        .google-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        .google-icon {
+            width: 21px;
+            height: 21px;
+        }
+
+        .status {
+            display: none;
+
+            margin-top: 20px;
+            padding: 12px;
+
+            border-radius: 10px;
+
+            background: #17141c;
+            border: 1px solid #39313f;
+
+            color: #c9a8ff;
+            font-size: 13px;
+            line-height: 1.6;
+
+            overflow-wrap: anywhere;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status.error {
+            color: #ffaaaa;
+            border-color: #633333;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        .user-info.show {
+            display: block;
+        }
+
+        .avatar {
+            width: 75px;
+            height: 75px;
+
+            border-radius: 50%;
+            border: 2px solid #8b4dff;
+
+            margin: 0 auto 18px;
+            object-fit: cover;
+        }
+
+        .user-email {
+            color: #c9a8ff !important;
+            overflow-wrap: anywhere;
+        }
+
+        .secondary-button {
+            width: 100%;
+            padding: 13px;
+
+            margin-top: 12px;
+
+            border-radius: 10px;
+            border: 1px solid #39313f;
+
+            background: transparent;
+            color: #ddd;
+
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .secondary-button:hover {
+            border-color: #8b4dff;
+            color: white;
+        }
+
+        .back-link {
+            display: inline-block;
+
+            margin-top: 25px;
+
+            color: #888;
+            font-size: 13px;
+            text-decoration: none;
+
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #b66cff;
+        }
+
+        .footer {
+            margin-top: 35px;
+            color: #555;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 32px;
+            }
+
+            .login-card {
+                padding: 28px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1 class="logo">WebToolsKita</h1>
+
+        <p class="subtitle">
+            Satu akun untuk mengakses tools favoritmu.
+        </p>
+
+        <section class="login-card">
+
+            <div id="loginSection">
+
+                <h2>Selamat Datang</h2>
+
+                <p>
+                    Masuk menggunakan akun Google kamu
+                    untuk melanjutkan.
+                </p>
+
+                <button
+                    class="google-button"
+                    id="googleLogin"
+                    type="button"
+                >
+                    <svg
+                        class="google-icon"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                    >
+                        <path fill="#EA4335"
+                            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                            transform="translate(0 4)"
+                        />
+                        <path fill="#4285F4"
+                            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.76 7.18l7.73 6C44.42 37.99 46.98 31.95 46.98 24.55z"
+                        />
+                        <path fill="#FBBC05"
+                            d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.9 23.9 0 0 0 0 21.56l7.98-6.19z"
+                            transform="translate(0 4)"
+                        />
+                        <path fill="#34A853"
+                            d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                            transform="translate(0 -4)"
+                        />
+                    </svg>
+
+                    Lanjutkan dengan Google
+                </button>
+
+            </div>
+
+            <div id="userSection" class="user-info">
+
+                <img
+                    id="userAvatar"
+                    class="avatar"
+                    alt="Foto profil"
+                >
+
+                <h2 id="userName">Berhasil Login</h2>
+
+                <p id="userEmail" class="user-email"></p>
+
+                <p>
+                    Kamu berhasil masuk ke WebToolsKita.
+                </p>
+
+                <button
+                    class="google-button"
+                    id="continueButton"
+                    type="button"
+                >
+                    Lanjutkan ke Menu
+                </button>
+
+                <button
+                    class="secondary-button"
+                    id="logoutButton"
+                    type="button"
+                >
+                    Keluar dari Akun
+                </button>
+
+            </div>
+
+            <div id="status" class="status" role="status"></div>
+
+        </section>
+
+        <a href="index1.html" class="back-link">
+            ← Kembali ke Beranda
+        </a>
+
+        <div class="footer">
+            © 2026 WebToolsKita
+        </div>
+
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+            authDomain: "webtoolskita.firebaseapp.com",
+            projectId: "webtoolskita",
+            storageBucket: "webtoolskita.firebasestorage.app",
+            messagingSenderId: "593680487717",
+            appId: "1:593680487717:web:33ef7a4bc9be02f99276cc",
+            measurementId: "G-YVEJ90678G"
+        };
+
+        const LOGIN_PENDING_KEY = "webtoolskita_login_pending";
+        const loginButton = document.getElementById("googleLogin");
+        const loginSection = document.getElementById("loginSection");
+        const userSection = document.getElementById("userSection");
+        const statusBox = document.getElementById("status");
+
+        function showStatus(message, isError = false) {
+            statusBox.textContent = message;
+            statusBox.className = "status show";
+            if (isError) statusBox.classList.add("error");
+        }
+
+        function showUser(user) {
+            loginSection.style.display = "none";
+            userSection.classList.add("show");
+            document.getElementById("userName").textContent =
+                user.displayName || "Pengguna Google";
+            document.getElementById("userEmail").textContent = user.email || "";
+
+            const avatar = document.getElementById("userAvatar");
+            if (user.photoURL) {
+                avatar.src = user.photoURL;
+                avatar.style.display = "block";
+            } else {
+                avatar.style.display = "none";
+            }
+            statusBox.className = "status";
+        }
+
+        function showLogin() {
+            loginSection.style.display = "block";
+            userSection.classList.remove("show");
+            statusBox.className = "status";
+        }
+
+        function pendingLogin(value) {
+            try {
+                if (value) sessionStorage.setItem(LOGIN_PENDING_KEY, "1");
+                else sessionStorage.removeItem(LOGIN_PENDING_KEY);
+            } catch (e) {}
+        }
+
+        function isPendingLogin() {
+            try {
+                return sessionStorage.getItem(LOGIN_PENDING_KEY) === "1";
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function friendlyAuthError(error) {
+            console.error("WebToolsKita Firebase Auth:", error);
+
+            switch (error && error.code) {
+                case "auth/popup-closed-by-user":
+                    return "Jendela login ditutup. Silakan coba lagi.";
+                case "auth/popup-blocked":
+                    return "Popup Google diblokir browser. Izinkan popup lalu coba lagi.";
+                case "auth/cancelled-popup-request":
+                    return "Permintaan login dibatalkan. Coba lagi.";
+                case "auth/network-request-failed":
+                    return "Koneksi internet bermasalah. Periksa koneksi lalu coba lagi.";
+                case "auth/unauthorized-domain":
+                    return "Website ini belum diizinkan oleh Firebase Authentication.";
+                case "auth/operation-not-allowed":
+                    return "Login Google belum aktif di Firebase Authentication.";
+                case "auth/internal-error":
+                    return "Login Google mengalami masalah sementara. Silakan coba lagi.";
+                default:
+                    return "Login gagal. Silakan coba lagi.";
+            }
+        }
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const provider = new firebase.auth.GoogleAuthProvider();
+
+            // Satu sesi login tetap tersimpan di browser.
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .catch(error => console.warn("Firebase persistence:", error));
+
+            // Jika popup gagal dan kita memakai redirect, selesaikan hasil redirect di sini.
+            auth.getRedirectResult().then(result => {
+                if (result && result.user) {
+                    pendingLogin(false);
+                    showUser(result.user);
+                    showStatus("Login berhasil.");
+                    setTimeout(() => {
+                        window.location.href = "index3.html";
+                    }, 300);
+                } else if (isPendingLogin()) {
+                    pendingLogin(false);
+                }
+            }).catch(error => {
+                pendingLogin(false);
+                showLogin();
+                showStatus(friendlyAuthError(error), true);
+            });
+
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    pendingLogin(false);
+                    showUser(user);
+                    return;
+                }
+                if (!isPendingLogin()) showLogin();
+            });
+
+            loginButton.addEventListener("click", async () => {
+                if (loginButton.disabled) return;
+
+                loginButton.disabled = true;
+                showStatus("Menghubungkan ke Google...");
+
+                try {
+                    await auth.signInWithPopup(provider);
+                    pendingLogin(false);
+                    window.location.href = "index3.html";
+                } catch (error) {
+                    console.error("Popup Google gagal:", error);
+
+                    // Fallback otomatis: jika popup mengalami internal-error,
+                    // pindah ke halaman login Google tanpa popup.
+                    if (error && error.code === "auth/internal-error") {
+                        pendingLogin(true);
+                        showStatus("Mencoba metode login Google yang lebih aman...");
+                        try {
+                            await auth.signInWithRedirect(provider);
+                            return;
+                        } catch (redirectError) {
+                            pendingLogin(false);
+                            showStatus(friendlyAuthError(redirectError), true);
+                        }
+                    } else {
+                        showStatus(friendlyAuthError(error), true);
+                    }
+                } finally {
+                    loginButton.disabled = false;
+                }
+            });
+
+            document.getElementById("logoutButton").addEventListener("click", async () => {
+                try {
+                    await auth.signOut();
+                    pendingLogin(false);
+                    showLogin();
+                } catch (error) {
+                    console.error("WebToolsKita logout:", error);
+                    showStatus("Gagal keluar dari akun. Coba lagi.", true);
+                }
+            });
+
+            document.getElementById("continueButton").addEventListener("click", () => {
+                window.location.href = "index3.html";
+            });
+        } catch (error) {
+            console.error("WebToolsKita Firebase init:", error);
+            showStatus("Firebase gagal dimuat. Periksa koneksi internet lalu coba lagi.", true);
+        }
+    </script>
+
+</body>
+</html>s

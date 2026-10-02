@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>QR Scanner - WebToolsKita</title>
+
+<!--
+  QR DECODER
+  Tidak menggunakan BarcodeDetector.
+  jsQR bekerja langsung pada ImageData.
+-->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(123,44,255,.12),
+      transparent 32%
+    ),
+    #050505;
+  color:#f4f1f8;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+  width:min(1000px,calc(100% - 30px));
+  margin:auto;
+  padding:30px 0 40px;
+}
+
+.back{
+  display:inline-block;
+  color:#777;
+  text-decoration:none;
+  font-size:12px;
+  margin-bottom:24px;
+}
+
+.back:hover{
+  color:#b66cff;
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:28px;
+}
+
+.hero h1{
+  margin:0;
+  color:#b66cff;
+  font-size:36px;
+  text-shadow:
+    0 0 25px rgba(123,44,255,.2);
+}
+
+.hero p{
+  margin:9px 0 0;
+  color:#777;
+  font-size:13px;
+}
+
+.panel{
+  background:
+    linear-gradient(
+      145deg,
+      #0c0c0c,
+      #100b16
+    );
+  border:1px solid #292035;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+
+  box-shadow:
+    inset 0 0 30px rgba(123,44,255,.025);
+}
+
+.section-title{
+  color:#b66cff;
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:14px;
+  text-transform:uppercase;
+}
+
+.camera-box{
+  position:relative;
+  width:100%;
+  max-width:650px;
+  aspect-ratio:4/3;
+  margin:auto;
+
+  overflow:hidden;
+
+  border:1px solid #292035;
+  border-radius:16px;
+
+  background:#030303;
+}
+
+video{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#000;
+}
+
+.camera-placeholder{
+  position:absolute;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  padding:30px;
+
+  color:#666;
+
+  font-size:12px;
+  line-height:1.6;
+
+  pointer-events:none;
+}
+
+.scan-frame{
+  position:absolute;
+
+  width:55%;
+  aspect-ratio:1/1;
+
+  left:50%;
+  top:50%;
+
+  transform:translate(-50%,-50%);
+
+  border:2px solid rgba(182,108,255,.7);
+
+  border-radius:18px;
+
+  box-shadow:
+    0 0 0 9999px rgba(0,0,0,.12),
+    0 0 25px rgba(123,44,255,.2);
+
+  pointer-events:none;
+
+  display:none;
+}
+
+.scan-frame::before,
+.scan-frame::after{
+  content:"";
+
+  position:absolute;
+
+  width:35px;
+  height:35px;
+
+  border-color:#b66cff;
+  border-style:solid;
+}
+
+.scan-frame::before{
+  left:-3px;
+  top:-3px;
+
+  border-width:4px 0 0 4px;
+
+  border-radius:12px 0 0 0;
+}
+
+.scan-frame::after{
+  right:-3px;
+  bottom:-3px;
+
+  border-width:0 4px 4px 0;
+
+  border-radius:0 0 12px 0;
+}
+
+.scan-line{
+  position:absolute;
+
+  left:24%;
+  right:24%;
+
+  height:2px;
+
+  top:25%;
+
+  background:#b66cff;
+
+  box-shadow:
+    0 0 10px #7b2cff,
+    0 0 20px rgba(123,44,255,.7);
+
+  display:none;
+
+  animation:scan 2s linear infinite;
+}
+
+@keyframes scan{
+
+  0%{
+    top:25%;
+  }
+
+  50%{
+    top:75%;
+  }
+
+  100%{
+    top:25%;
+  }
+
+}
+
+.controls{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+
+  margin-top:15px;
+}
+
+select,
+button{
+  width:100%;
+
+  border:1px solid #332541;
+
+  border-radius:11px;
+
+  padding:11px 13px;
+
+  color:#eee;
+
+  background:#15101b;
+
+  font-size:12px;
+
+  font-weight:700;
+}
+
+select{
+  outline:none;
+}
+
+button{
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{
+  border-color:#7b2cff;
+  background:#1b1027;
+}
+
+button.primary{
+  background:#7b2cff;
+  border-color:#7b2cff;
+}
+
+button.primary:hover{
+  background:#923dff;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.file-label{
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  min-height:42px;
+
+  border:1px solid #332541;
+  border-radius:11px;
+
+  color:#eee;
+
+  background:#15101b;
+
+  font-size:12px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.file-label:hover{
+  border-color:#7b2cff;
+  background:#1b1027;
+}
+
+input[type="file"]{
+  display:none;
+}
+
+.status{
+  padding:12px 14px;
+
+  border:1px solid #292035;
+
+  border-radius:12px;
+
+  background:#080808;
+
+  color:#777;
+
+  font-size:11px;
+
+  line-height:1.55;
+
+  margin-top:15px;
+}
+
+.status.success{
+  color:#aaa;
+  border-color:#392650;
+}
+
+.status.error{
+  color:#b66cff;
+  border-color:#492660;
+}
+
+.result{
+  min-height:130px;
+
+  padding:15px;
+
+  border:1px solid #292035;
+
+  border-radius:14px;
+
+  background:#070707;
+}
+
+.result-empty{
+  color:#555;
+
+  font-size:12px;
+
+  text-align:center;
+
+  padding:35px 10px;
+}
+
+.result-text{
+  width:100%;
+
+  min-height:110px;
+
+  resize:vertical;
+
+  padding:12px;
+
+  border:1px solid #292035;
+
+  border-radius:10px;
+
+  outline:none;
+
+  background:#050505;
+
+  color:#ddd;
+
+  font-family:Consolas,monospace;
+
+  font-size:12px;
+
+  line-height:1.5;
+}
+
+.result-actions{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:10px;
+
+  margin-top:10px;
+}
+
+.info{
+  color:#666;
+
+  font-size:11px;
+
+  line-height:1.65;
+}
+
+.info strong{
+  color:#999;
+}
+
+canvas{
+  display:none;
+}
+
+footer{
+  text-align:center;
+
+  color:#555;
+
+  font-size:11px;
+
+  padding-top:5px;
+}
+
+footer a{
+  color:#666;
+
+  text-decoration:none;
+}
+
+footer a:hover{
+  color:#b66cff;
+}
+
+@media(max-width:650px){
+
+  .container{
+    width:
+      min(
+        100% - 20px,
+        1000px
+      );
+
+    padding-top:20px;
+  }
+
+  .panel{
+    padding:14px;
+  }
+
+  .hero h1{
+    font-size:29px;
+  }
+
+  .controls,
+  .result-actions{
+    grid-template-columns:1fr;
+  }
+
+  .camera-box{
+    aspect-ratio:1/1;
+  }
+
+  .scan-frame{
+    width:65%;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<a
+  class="back"
+  href="index3.html"
+>
+  ← Kembali ke Advance Tools
+</a>
+
+
+<div class="hero">
+
+  <h1>
+    QR Scanner
+  </h1>
+
+  <p>
+    Scan QR Code menggunakan kamera atau gambar.
+  </p>
+
+</div>
+
+
+<!-- =====================================================
+     CAMERA
+===================================================== -->
+
+<section class="panel">
+
+
+<div class="section-title">
+  Camera Scanner
+</div>
+
+
+<div class="camera-box">
+
+
+<video
+  id="video"
+  autoplay
+  muted
+  playsinline
+></video>
+
+
+<div
+  id="placeholder"
+  class="camera-placeholder"
+>
+  Kamera belum dimulai.
+  <br>
+  Klik "Mulai Kamera" untuk memulai scanner.
+</div>
+
+
+<div
+  id="scanFrame"
+  class="scan-frame"
+></div>
+
+
+<div
+  id="scanLine"
+  class="scan-line"
+></div>
+
+
+</div>
+
+
+<div class="controls">
+
+
+<select
+  id="cameraSelect"
+>
+
+<option value="">
+  Pilih kamera
+</option>
+
+</select>
+
+
+<button
+  id="startBtn"
+  class="primary"
+>
+  ▶ Mulai Kamera
+</button>
+
+
+<button
+  id="stopBtn"
+>
+  ■ Hentikan Kamera
+</button>
+
+
+<label
+  class="file-label"
+  for="imageInput"
+>
+  🖼 Scan dari Gambar
+</label>
+
+
+<input
+  id="imageInput"
+  type="file"
+  accept="image/*"
+>
+
+
+</div>
+
+
+<div
+  id="status"
+  class="status"
+>
+  Memeriksa QR decoder...
+</div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     RESULT
+===================================================== -->
+
+<section class="panel">
+
+
+<div class="section-title">
+  Hasil Scan
+</div>
+
+
+<div class="result">
+
+
+<div
+  id="emptyResult"
+  class="result-empty"
+>
+  Belum ada QR Code yang berhasil dibaca.
+</div>
+
+
+<textarea
+  id="resultText"
+  class="result-text"
+  readonly
+  hidden
+></textarea>
+
+
+<div
+  id="resultActions"
+  class="result-actions"
+  hidden
+>
+
+
+<button
+  id="copyBtn"
+  class="primary"
+>
+  Copy Hasil
+</button>
+
+
+<button
+  id="openBtn"
+>
+  Buka URL
+</button>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     INFO
+===================================================== -->
+
+<section class="panel">
+
+
+<div class="section-title">
+  Informasi Scanner
+</div>
+
+
+<div class="info">
+
+
+<strong>QR Decoder:</strong>
+
+jsQR 1.4.0.
+
+
+<br><br>
+
+
+<strong>Kamera:</strong>
+
+Scanner menggunakan kamera perangkat
+dan memproses frame langsung di browser.
+
+
+<br><br>
+
+
+<strong>Upload:</strong>
+
+Kamu dapat memilih PNG, JPG, JPEG,
+WEBP, atau format gambar lain
+yang dapat dibaca browser.
+
+
+<br><br>
+
+
+<strong>Privasi:</strong>
+
+Gambar dan frame kamera diproses
+secara lokal di browser.
+
+
+<br><br>
+
+
+<strong>Firefox:</strong>
+
+Scanner tidak bergantung pada
+BarcodeDetector.
+
+
+<br><br>
+
+
+<strong>Catatan kamera:</strong>
+
+Akses kamera biasanya membutuhkan
+HTTPS atau localhost.
+
+</div>
+
+
+</section>
+
+
+
+<footer>
+
+
+<div>
+
+<a href="index3.html">
+  ← Kembali ke Advance Tools
+</a>
+
+</div>
+
+
+<div style="margin-top:8px;">
+
+© 2026 WebToolsKita
+
+</div>
+
+
+</footer>
+
+
+</div>
+
+
+<canvas
+  id="canvas"
+></canvas>
+
+
+
+<script>
+
+"use strict";
+
+
+/* =====================================================
+   ELEMENT
+===================================================== */
+
+const video =
+  document.getElementById(
+    "video"
+  );
+
+const canvas =
+  document.getElementById(
+    "canvas"
+  );
+
+const ctx =
+  canvas.getContext(
+    "2d",
+    {
+      willReadFrequently:true
+    }
+  );
+
+const cameraSelect =
+  document.getElementById(
+    "cameraSelect"
+  );
+
+const startBtn =
+  document.getElementById(
+    "startBtn"
+  );
+
+const stopBtn =
+  document.getElementById(
+    "stopBtn"
+  );
+
+const imageInput =
+  document.getElementById(
+    "imageInput"
+  );
+
+const statusBox =
+  document.getElementById(
+    "status"
+  );
+
+const placeholder =
+  document.getElementById(
+    "placeholder"
+  );
+
+const scanFrame =
+  document.getElementById(
+    "scanFrame"
+  );
+
+const scanLine =
+  document.getElementById(
+    "scanLine"
+  );
+
+const emptyResult =
+  document.getElementById(
+    "emptyResult"
+  );
+
+const resultText =
+  document.getElementById(
+    "resultText"
+  );
+
+const resultActions =
+  document.getElementById(
+    "resultActions"
+  );
+
+const copyBtn =
+  document.getElementById(
+    "copyBtn"
+  );
+
+const openBtn =
+  document.getElementById(
+    "openBtn"
+  );
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let stream = null;
+
+let scanning = false;
+
+let animationFrame = null;
+
+let lastResult = "";
+
+let lastScanTime = 0;
+
+let scanBusy = false;
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(
+  message,
+  type = ""
+){
+
+  statusBox.textContent =
+    message;
+
+  statusBox.className =
+    "status" +
+    (
+      type
+        ? " " + type
+        : ""
+    );
+}
+
+
+/* =====================================================
+   CHECK DECODER
+===================================================== */
+
+function decoderReady(){
+
+  return (
+    typeof window.jsQR ===
+    "function"
+  );
+
+}
+
+
+/* =====================================================
+   RESULT
+===================================================== */
+
+function showResult(
+  value
+){
+
+  if(
+    value === undefined ||
+    value === null
+  ){
+    return;
+  }
+
+
+  value =
+    String(value);
+
+
+  if(
+    !value.trim()
+  ){
+    return;
+  }
+
+
+  lastResult =
+    value;
+
+
+  emptyResult.hidden =
+    true;
+
+
+  resultText.hidden =
+    false;
+
+
+  resultText.value =
+    value;
+
+
+  resultActions.hidden =
+    false;
+
+
+  const isUrl =
+    /^https?:\/\/[^\s]+$/i
+      .test(
+        value.trim()
+      );
+
+
+  openBtn.disabled =
+    !isUrl;
+
+
+  setStatus(
+    "QR Code berhasil dibaca.",
+    "success"
+  );
+
+
+  stopCamera(
+    false
+  );
+
+}
+
+
+/* =====================================================
+   LOAD CAMERA LIST
+===================================================== */
+
+async function loadCameras(){
+
+  if(
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.enumerateDevices
+  ){
+
+    return;
+  }
+
+
+  try{
+
+    const devices =
+      await navigator.mediaDevices
+        .enumerateDevices();
+
+
+    const cameras =
+      devices.filter(
+        device =>
+          device.kind ===
+          "videoinput"
+      );
+
+
+    cameraSelect.innerHTML =
+      "";
+
+
+    if(
+      cameras.length === 0
+    ){
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        "";
+
+
+      option.textContent =
+        "Kamera tidak ditemukan";
+
+
+      cameraSelect.appendChild(
+        option
+      );
+
+
+      return;
+    }
+
+
+    cameras.forEach(
+      (
+        camera,
+        index
+      ) => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          camera.deviceId;
+
+
+        option.textContent =
+          camera.label ||
+          "Kamera " +
+          (index + 1);
+
+
+        cameraSelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   START CAMERA
+===================================================== */
+
+async function startCamera(){
+
+  if(
+    !decoderReady()
+  ){
+
+    setStatus(
+      "QR decoder belum berhasil dimuat. Periksa koneksi internet lalu refresh halaman.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ){
+
+    setStatus(
+      "Browser ini tidak mendukung akses kamera.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  stopCamera(
+    false
+  );
+
+
+  try{
+
+    const selected =
+      cameraSelect.value;
+
+
+    let constraints;
+
+
+    if(
+      selected
+    ){
+
+      constraints = {
+
+        video:{
+          deviceId:{
+            exact:selected
+          },
+
+          width:{
+            ideal:1280
+          },
+
+          height:{
+            ideal:720
+          }
+        },
+
+        audio:false
+
+      };
+
+    }else{
+
+      constraints = {
+
+        video:{
+          facingMode:{
+            ideal:"environment"
+          },
+
+          width:{
+            ideal:1280
+          },
+
+          height:{
+            ideal:720
+          }
+        },
+
+        audio:false
+
+      };
+
+    }
+
+
+    stream =
+      await navigator.mediaDevices
+        .getUserMedia(
+          constraints
+        );
+
+
+    video.srcObject =
+      stream;
+
+
+    await video.play();
+
+
+    scanning =
+      true;
+
+
+    placeholder.style.display =
+      "none";
+
+
+    scanFrame.style.display =
+      "block";
+
+
+    scanLine.style.display =
+      "block";
+
+
+    setStatus(
+      "Kamera aktif. Arahkan QR Code ke kotak scanner."
+    );
+
+
+    /*
+      Setelah permission kamera
+      diberikan, browser biasanya
+      memberikan label kamera.
+    */
+
+    await loadCameras();
+
+
+    scanLoop();
+
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+
+    scanning =
+      false;
+
+
+    scanFrame.style.display =
+      "none";
+
+
+    scanLine.style.display =
+      "none";
+
+
+    if(
+      error.name ===
+      "NotAllowedError"
+    ){
+
+      setStatus(
+        "Akses kamera ditolak. Izinkan kamera pada browser.",
+        "error"
+      );
+
+    }else if(
+      error.name ===
+      "NotFoundError"
+    ){
+
+      setStatus(
+        "Kamera tidak ditemukan.",
+        "error"
+      );
+
+    }else if(
+      error.name ===
+      "NotReadableError"
+    ){
+
+      setStatus(
+        "Kamera sedang digunakan aplikasi lain.",
+        "error"
+      );
+
+    }else{
+
+      setStatus(
+        "Gagal membuka kamera: " +
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   STOP CAMERA
+===================================================== */
+
+function stopCamera(
+  updateStatus = true
+){
+
+  scanning =
+    false;
+
+
+  if(
+    animationFrame
+  ){
+
+    cancelAnimationFrame(
+      animationFrame
+    );
+
+    animationFrame =
+      null;
+  }
+
+
+  if(
+    stream
+  ){
+
+    stream
+      .getTracks()
+      .forEach(
+        track =>
+          track.stop()
+      );
+
+
+    stream =
+      null;
+  }
+
+
+  video.srcObject =
+    null;
+
+
+  scanFrame.style.display =
+    "none";
+
+
+  scanLine.style.display =
+    "none";
+
+
+  placeholder.style.display =
+    "flex";
+
+
+  if(
+    updateStatus
+  ){
+
+    setStatus(
+      "Kamera dihentikan."
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   GET CAMERA FRAME
+===================================================== */
+
+function getCameraFrame(){
+
+  const width =
+    video.videoWidth;
+
+  const height =
+    video.videoHeight;
+
+
+  if(
+    !width ||
+    !height
+  ){
+
+    return null;
+  }
+
+
+  /*
+    Gunakan resolusi maksimal 1280.
+    Ini menjaga performa Firefox
+    tetap nyaman.
+  */
+
+  const maxWidth =
+    1280;
+
+
+  const scale =
+    Math.min(
+      1,
+      maxWidth / width
+    );
+
+
+  const targetWidth =
+    Math.max(
+      1,
+      Math.round(
+        width * scale
+      )
+    );
+
+
+  const targetHeight =
+    Math.max(
+      1,
+      Math.round(
+        height * scale
+      )
+    );
+
+
+  canvas.width =
+    targetWidth;
+
+
+  canvas.height =
+    targetHeight;
+
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    targetWidth,
+    targetHeight
+  );
+
+
+  return ctx.getImageData(
+    0,
+    0,
+    targetWidth,
+    targetHeight
+  );
+
+}
+
+
+/* =====================================================
+   CAMERA SCANNER
+===================================================== */
+
+function scanLoop(){
+
+  if(
+    !scanning
+  ){
+
+    return;
+  }
+
+
+  const now =
+    performance.now();
+
+
+  /*
+    Scan sekitar 5 kali per detik.
+  */
+
+  if(
+    now - lastScanTime >= 200 &&
+    !scanBusy
+  ){
+
+    lastScanTime =
+      now;
+
+
+    const frame =
+      getCameraFrame();
+
+
+    if(
+      frame
+    ){
+
+      scanBusy =
+        true;
+
+
+      try{
+
+        const code =
+          window.jsQR(
+            frame.data,
+            frame.width,
+            frame.height,
+            {
+              inversionAttempts:
+                "attemptBoth"
+            }
+          );
+
+
+        if(
+          code &&
+          code.data
+        ){
+
+          showResult(
+            code.data
+          );
+
+
+          scanBusy =
+            false;
+
+
+          return;
+        }
+
+
+      }catch(error){
+
+        console.error(
+          "QR scan error:",
+          error
+        );
+
+      }
+
+
+      scanBusy =
+        false;
+    }
+
+  }
+
+
+  animationFrame =
+    requestAnimationFrame(
+      scanLoop
+    );
+
+}
+
+
+/* =====================================================
+   LOAD IMAGE
+===================================================== */
+
+function loadImage(
+  file
+){
+
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+
+      const url =
+        URL.createObjectURL(
+          file
+        );
+
+
+      const img =
+        new Image();
+
+
+      img.onload =
+        function(){
+
+          URL.revokeObjectURL(
+            url
+          );
+
+
+          resolve(
+            img
+          );
+
+        };
+
+
+      img.onerror =
+        function(){
+
+          URL.revokeObjectURL(
+            url
+          );
+
+
+          reject(
+            new Error(
+              "Gambar tidak dapat dibaca."
+            )
+          );
+
+        };
+
+
+      img.src =
+        url;
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   SCAN IMAGE
+===================================================== */
+
+async function scanImage(
+  file
+){
+
+  if(
+    !file
+  ){
+
+    return;
+  }
+
+
+  if(
+    !file.type.startsWith(
+      "image/"
+    )
+  ){
+
+    setStatus(
+      "File yang dipilih bukan gambar.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(
+    !decoderReady()
+  ){
+
+    setStatus(
+      "QR decoder belum berhasil dimuat.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  setStatus(
+    "Menganalisis gambar QR..."
+  );
+
+
+  try{
+
+    const img =
+      await loadImage(
+        file
+      );
+
+
+    const originalWidth =
+      img.naturalWidth;
+
+
+    const originalHeight =
+      img.naturalHeight;
+
+
+    /*
+      Jangan mengecilkan gambar
+      jika ukurannya sudah kecil.
+
+      Batas maksimal 2000px.
+    */
+
+    const maxSize =
+      2000;
+
+
+    const scale =
+      Math.min(
+        1,
+        maxSize /
+        Math.max(
+          originalWidth,
+          originalHeight
+        )
+      );
+
+
+    const width =
+      Math.max(
+        1,
+        Math.round(
+          originalWidth *
+          scale
+        )
+      );
+
+
+    const height =
+      Math.max(
+        1,
+        Math.round(
+          originalHeight *
+          scale
+        )
+      );
+
+
+    canvas.width =
+      width;
+
+
+    canvas.height =
+      height;
+
+
+    ctx.clearRect(
+      0,
+      0,
+      width,
+      height
+    );
+
+
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      width,
+      height
+    );
+
+
+    const imageData =
+      ctx.getImageData(
+        0,
+        0,
+        width,
+        height
+      );
+
+
+    /*
+      Percobaan utama.
+    */
+
+    let code =
+      window.jsQR(
+        imageData.data,
+        imageData.width,
+        imageData.height,
+        {
+          inversionAttempts:
+            "attemptBoth"
+        }
+      );
+
+
+    if(
+      code &&
+      code.data
+    ){
+
+      showResult(
+        code.data
+      );
+
+      return;
+    }
+
+
+    /*
+      Percobaan crop tengah.
+      Membantu jika gambar memiliki
+      background yang sangat besar.
+    */
+
+    const cropWidth =
+      Math.floor(
+        width * .8
+      );
+
+
+    const cropHeight =
+      Math.floor(
+        height * .8
+      );
+
+
+    if(
+      cropWidth > 50 &&
+      cropHeight > 50
+    ){
+
+      const cropCanvas =
+        document.createElement(
+          "canvas"
+        );
+
+
+      cropCanvas.width =
+        cropWidth;
+
+
+      cropCanvas.height =
+        cropHeight;
+
+
+      const cropCtx =
+        cropCanvas.getContext(
+          "2d",
+          {
+            willReadFrequently:true
+          }
+        );
+
+
+      cropCtx.drawImage(
+        img,
+
+        Math.floor(
+          (originalWidth -
+           originalWidth * .8) / 2
+        ),
+
+        Math.floor(
+          (originalHeight -
+           originalHeight * .8) / 2
+        ),
+
+        originalWidth * .8,
+        originalHeight * .8,
+
+        0,
+        0,
+
+        cropWidth,
+        cropHeight
+      );
+
+
+      const cropData =
+        cropCtx.getImageData(
+          0,
+          0,
+          cropWidth,
+          cropHeight
+        );
+
+
+      code =
+        window.jsQR(
+          cropData.data,
+          cropData.width,
+          cropData.height,
+          {
+            inversionAttempts:
+              "attemptBoth"
+          }
+        );
+
+
+      if(
+        code &&
+        code.data
+      ){
+
+        showResult(
+          code.data
+        );
+
+        return;
+      }
+
+    }
+
+
+    setStatus(
+      "QR Code tidak ditemukan. Pastikan QR terlihat jelas dan tidak terlalu kecil.",
+      "error"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+
+    setStatus(
+      "Gagal memproses gambar: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   COPY
+===================================================== */
+
+async function copyResult(){
+
+  if(
+    !lastResult
+  ){
+
+    return;
+  }
+
+
+  try{
+
+    await navigator.clipboard
+      .writeText(
+        lastResult
+      );
+
+
+    setStatus(
+      "Hasil QR berhasil disalin.",
+      "success"
+    );
+
+
+  }catch(error){
+
+    resultText.focus();
+
+    resultText.select();
+
+
+    try{
+
+      document.execCommand(
+        "copy"
+      );
+
+    }catch(
+      copyError
+    ){
+
+      console.error(
+        copyError
+      );
+
+    }
+
+
+    setStatus(
+      "Hasil QR berhasil disalin.",
+      "success"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   OPEN URL
+===================================================== */
+
+function openResult(){
+
+  if(
+    !lastResult
+  ){
+
+    return;
+  }
+
+
+  const url =
+    lastResult.trim();
+
+
+  if(
+    !/^https?:\/\/[^\s]+$/i
+      .test(
+        url
+      )
+  ){
+
+    setStatus(
+      "Hasil QR bukan URL HTTP/HTTPS.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+}
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+startBtn.addEventListener(
+  "click",
+  startCamera
+);
+
+
+stopBtn.addEventListener(
+  "click",
+  function(){
+
+    stopCamera();
+
+  }
+);
+
+
+cameraSelect.addEventListener(
+  "change",
+  function(){
+
+    if(
+      scanning
+    ){
+
+      startCamera();
+
+    }
+
+  }
+);
+
+
+imageInput.addEventListener(
+  "change",
+  function(event){
+
+    const file =
+      event.target.files &&
+      event.target.files[0];
+
+
+    if(
+      file
+    ){
+
+      scanImage(
+        file
+      );
+
+    }
+
+
+    /*
+      Supaya gambar yang sama
+      bisa dipilih kembali.
+    */
+
+    event.target.value =
+      "";
+
+  }
+);
+
+
+copyBtn.addEventListener(
+  "click",
+  copyResult
+);
+
+
+openBtn.addEventListener(
+  "click",
+  openResult
+);
+
+
+window.addEventListener(
+  "beforeunload",
+  function(){
+
+    stopCamera(
+      false
+    );
+
+  }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+async function initialize(){
+
+  /*
+    Pastikan jsQR benar-benar tersedia.
+  */
+
+  if(
+    decoderReady()
+  ){
+
+    setStatus(
+      "QR decoder siap. Pilih kamera atau upload gambar.",
+      "success"
+    );
+
+  }else{
+
+    setStatus(
+      "QR decoder gagal dimuat. Periksa koneksi internet lalu refresh halaman.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  await loadCameras();
+
+}
+
+
+initialize();
+
+</script>
+
+
+</body>
+</html>

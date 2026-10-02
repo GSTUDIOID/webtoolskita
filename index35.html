@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Remove Duplicate Lines — WebToolsKita</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+}
+
+body{
+  background:
+    radial-gradient(circle at 15% 10%,rgba(124,58,237,.20),transparent 25%),
+    radial-gradient(circle at 85% 80%,rgba(79,70,229,.08),transparent 28%),
+    #070711;
+  color:#f7f7fb;
+  font-family:Inter,Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.20;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:37px 37px;
+}
+
+.container{
+  width:min(1780px,calc(100% - 70px));
+  margin:auto;
+  padding:28px 0 50px;
+  position:relative;
+  z-index:1;
+}
+
+/* HEADER */
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:28px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.icon{
+  width:86px;
+  height:86px;
+  border-radius:25px;
+  background:linear-gradient(145deg,#8b5cf6,#7c3aed);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  box-shadow:0 15px 45px rgba(124,58,237,.25);
+}
+
+.header h1{
+  margin:0;
+  font-size:38px;
+  line-height:1.1;
+  letter-spacing:-1px;
+}
+
+.header p{
+  margin:8px 0 0;
+  color:#9b9aac;
+  font-size:16px;
+}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:158px;
+  padding:14px 22px;
+  border-radius:16px;
+  border:1px solid #29283a;
+  background:rgba(20,20,32,.75);
+  color:#f5f5f7;
+  text-decoration:none;
+  font-weight:700;
+  transition:.2s;
+}
+
+.back:hover{
+  border-color:#8b5cf6;
+  background:#181526;
+  transform:translateY(-2px);
+}
+
+/* MAIN PANEL */
+
+.panel{
+  background:rgba(14,14,26,.78);
+  border:1px solid #27263a;
+  border-radius:28px;
+  padding:32px;
+  box-shadow:
+    0 25px 80px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter:blur(18px);
+}
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-bottom:26px;
+}
+
+button{
+  font:inherit;
+}
+
+.action{
+  border:1px solid #302e43;
+  background:#191827;
+  color:#f5f4fa;
+  border-radius:16px;
+  padding:14px 24px;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.action:hover{
+  border-color:#8b5cf6;
+  background:#211b36;
+  transform:translateY(-2px);
+}
+
+.action.primary{
+  background:linear-gradient(135deg,#7c3aed,#8b5cf6);
+  border-color:#8b5cf6;
+  box-shadow:0 10px 30px rgba(124,58,237,.25);
+}
+
+.action.primary:hover{
+  filter:brightness(1.08);
+}
+
+.action.danger{
+  color:#ffb0b0;
+}
+
+.action.danger:hover{
+  border-color:#ef4444;
+  background:#251518;
+}
+
+/* OPTIONS */
+
+.options{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:28px;
+}
+
+.option{
+  min-height:90px;
+  border:1px solid #2a293c;
+  background:rgba(25,24,40,.65);
+  border-radius:18px;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.option:hover{
+  border-color:#54417c;
+}
+
+.option input{
+  width:25px;
+  height:25px;
+  accent-color:#8b5cf6;
+  cursor:pointer;
+  flex:none;
+}
+
+.option-text{
+  min-width:0;
+}
+
+.option-title{
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.option-desc{
+  color:#8e8c9d;
+  font-size:14px;
+}
+
+/* EDITORS */
+
+.editors{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.editor{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #29283a;
+  border-radius:22px;
+  background:#090914;
+}
+
+.editor-head{
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  border-bottom:1px solid #252437;
+}
+
+.editor-title{
+  font-size:18px;
+  font-weight:800;
+}
+
+.counter{
+  color:#858294;
+  font-size:14px;
+}
+
+textarea{
+  display:block;
+  width:100%;
+  height:480px;
+  resize:vertical;
+  min-height:300px;
+  padding:28px 26px;
+  border:0;
+  outline:none;
+  background:#080811;
+  color:#e9e7f1;
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  font-size:16px;
+  line-height:1.65;
+}
+
+textarea::placeholder{
+  color:#555365;
+}
+
+textarea:focus{
+  box-shadow:inset 0 0 0 1px rgba(139,92,246,.22);
+}
+
+/* FOOTER INFO */
+
+.info{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-top:20px;
+}
+
+.stat{
+  border:1px solid #28273a;
+  background:rgba(20,20,33,.65);
+  border-radius:18px;
+  padding:18px 20px;
+}
+
+.stat-label{
+  color:#858294;
+  font-size:13px;
+  margin-bottom:7px;
+}
+
+.stat-value{
+  font-size:20px;
+  font-weight:800;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  right:28px;
+  bottom:28px;
+  padding:17px 24px;
+  border-radius:17px;
+  background:rgba(15,15,25,.95);
+  border:1px solid #303044;
+  box-shadow:0 15px 45px rgba(0,0,0,.35);
+  color:#f2f1f6;
+  opacity:0;
+  transform:translateY(15px);
+  pointer-events:none;
+  transition:.25s;
+  z-index:20;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.toast.success{
+  border-color:#15803d;
+}
+
+.toast.error{
+  border-color:#b91c1c;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+  .options{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .info{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:800px){
+
+  .container{
+    width:min(100% - 30px,700px);
+    padding-top:18px;
+  }
+
+  .header{
+    align-items:flex-start;
+  }
+
+  .brand{
+    align-items:flex-start;
+  }
+
+  .icon{
+    width:65px;
+    height:65px;
+    border-radius:19px;
+    font-size:30px;
+  }
+
+  .header h1{
+    font-size:27px;
+  }
+
+  .header p{
+    font-size:14px;
+  }
+
+  .back{
+    min-width:auto;
+    padding:12px 16px;
+  }
+
+  .panel{
+    padding:20px;
+    border-radius:22px;
+  }
+
+  .editors{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .header{
+    flex-direction:column;
+  }
+
+  .back{
+    width:100%;
+  }
+
+  .options{
+    grid-template-columns:1fr;
+  }
+
+  .info{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .action{
+    padding:13px 10px;
+    font-size:14px;
+  }
+
+}
+
+@media(max-width:430px){
+
+  .info{
+    grid-template-columns:1fr;
+  }
+
+  .actions{
+    grid-template-columns:1fr;
+  }
+
+  textarea{
+    height:380px;
+    font-size:14px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header class="header">
+
+    <div class="brand">
+
+      <div class="icon">🧹</div>
+
+      <div>
+        <h1>Remove Duplicate Lines</h1>
+        <p>Hapus baris duplikat dengan cepat dan bersih.</p>
+      </div>
+
+    </div>
+
+    <a href="index3.html" class="back">← Kembali</a>
+
+  </header>
+
+
+  <main class="panel">
+
+    <!-- ACTIONS -->
+
+    <div class="actions">
+
+      <button class="action primary" id="removeBtn">
+        🧹 Hapus Duplikat
+      </button>
+
+      <button class="action" id="copyBtn">
+        📋 Copy Hasil
+      </button>
+
+      <button class="action" id="downloadBtn">
+        ⬇️ Download TXT
+      </button>
+
+      <button class="action" id="swapBtn">
+        ⇄ Tukar
+      </button>
+
+      <button class="action danger" id="clearBtn">
+        🗑️ Bersihkan
+      </button>
+
+    </div>
+
+
+    <!-- OPTIONS -->
+
+    <div class="options">
+
+      <label class="option">
+        <input type="checkbox" id="trimOption" checked>
+
+        <div class="option-text">
+          <div class="option-title">Trim Spasi</div>
+          <div class="option-desc">Hapus spasi awal/akhir</div>
+        </div>
+      </label>
+
+
+      <label class="option">
+        <input type="checkbox" id="ignoreCase" checked>
+
+        <div class="option-text">
+          <div class="option-title">Abaikan Huruf Besar</div>
+          <div class="option-desc">Apple = apple</div>
+        </div>
+      </label>
+
+
+      <label class="option">
+        <input type="checkbox" id="removeEmpty" checked>
+
+        <div class="option-text">
+          <div class="option-title">Hapus Baris Kosong</div>
+          <div class="option-desc">Buang empty lines</div>
+        </div>
+      </label>
+
+
+      <label class="option">
+        <input type="checkbox" id="sortAZ" checked>
+
+        <div class="option-text">
+          <div class="option-title">Urutkan A–Z</div>
+          <div class="option-desc">Sort hasil akhir</div>
+        </div>
+      </label>
+
+    </div>
+
+
+    <!-- EDITORS -->
+
+    <div class="editors">
+
+      <section class="editor">
+
+        <div class="editor-head">
+
+          <div class="editor-title">
+            Input
+          </div>
+
+          <div class="counter" id="inputCounter">
+            0 baris
+          </div>
+
+        </div>
+
+        <textarea
+          id="inputText"
+          spellcheck="false"
+          placeholder="Masukkan teks di sini...&#10;&#10;Contoh:&#10;apple&#10;banana&#10;apple&#10;orange&#10;banana"
+        ></textarea>
+
+      </section>
+
+
+      <section class="editor">
+
+        <div class="editor-head">
+
+          <div class="editor-title">
+            Hasil
+          </div>
+
+          <div class="counter" id="outputCounter">
+            0 baris
+          </div>
+
+        </div>
+
+        <textarea
+          id="outputText"
+          spellcheck="false"
+          readonly
+          placeholder="Hasil akan muncul di sini..."
+        ></textarea>
+
+      </section>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="info">
+
+      <div class="stat">
+        <div class="stat-label">Baris Awal</div>
+        <div class="stat-value" id="startCount">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Baris Akhir</div>
+        <div class="stat-value" id="endCount">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Duplikat Dihapus</div>
+        <div class="stat-value" id="duplicateCount">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Karakter Hasil</div>
+        <div class="stat-value" id="characterCount">0</div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+const inputText=document.getElementById("inputText");
+const outputText=document.getElementById("outputText");
+
+const trimOption=document.getElementById("trimOption");
+const ignoreCase=document.getElementById("ignoreCase");
+const removeEmpty=document.getElementById("removeEmpty");
+const sortAZ=document.getElementById("sortAZ");
+
+const inputCounter=document.getElementById("inputCounter");
+const outputCounter=document.getElementById("outputCounter");
+
+const startCount=document.getElementById("startCount");
+const endCount=document.getElementById("endCount");
+const duplicateCount=document.getElementById("duplicateCount");
+const characterCount=document.getElementById("characterCount");
+
+const toast=document.getElementById("toast");
+
+
+function showToast(message,type="success"){
+
+  toast.textContent=message;
+
+  toast.className="toast show "+type;
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer=setTimeout(()=>{
+    toast.className="toast";
+  },2500);
+
+}
+
+
+function getLines(text){
+
+  if(!text){
+    return [];
+  }
+
+  let lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n");
+
+  if(trimOption.checked){
+    lines=lines.map(line=>line.trim());
+  }
+
+  if(removeEmpty.checked){
+    lines=lines.filter(line=>line.length>0);
+  }
+
+  return lines;
+
+}
+
+
+function updateInputStats(){
+
+  const raw=inputText.value;
+
+  const lines=raw?
+    raw.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n"):
+    [];
+
+  inputCounter.textContent=lines.length+" baris";
+
+}
+
+
+function processText(showMessage=true){
+
+  const raw=inputText.value;
+
+  let lines=getLines(raw);
+
+  const originalCount=lines.length;
+
+  const seen=new Set();
+  const unique=[];
+
+  for(const line of lines){
+
+    const key=ignoreCase.checked?
+      line.toLocaleLowerCase():
+      line;
+
+    if(!seen.has(key)){
+
+      seen.add(key);
+      unique.push(line);
+
+    }
+
+  }
+
+
+  if(sortAZ.checked){
+
+    unique.sort((a,b)=>
+      a.localeCompare(
+        b,
+        undefined,
+        {
+          sensitivity:ignoreCase.checked?"base":"variant"
+        }
+      )
+    );
+
+  }
+
+
+  const result=unique.join("\n");
+
+  outputText.value=result;
+
+
+  const removed=originalCount-unique.length;
+
+  inputCounter.textContent=originalCount+" baris";
+  outputCounter.textContent=unique.length+" baris";
+
+  startCount.textContent=originalCount;
+  endCount.textContent=unique.length;
+  duplicateCount.textContent=removed;
+  characterCount.textContent=result.length;
+
+
+  if(showMessage){
+
+    if(removed>0){
+
+      showToast(
+        removed+" duplikat berhasil dihapus.",
+        "success"
+      );
+
+    }else{
+
+      showToast(
+        "Tidak ada duplikat ditemukan.",
+        "success"
+      );
+
+    }
+
+  }
+
+}
+
+
+inputText.addEventListener("input",()=>{
+
+  updateInputStats();
+
+});
+
+
+document.getElementById("removeBtn").addEventListener("click",()=>{
+
+  processText(true);
+
+});
+
+
+document.getElementById("copyBtn").addEventListener("click",async()=>{
+
+  const result=outputText.value;
+
+  if(!result){
+
+    showToast("Belum ada hasil untuk disalin.","error");
+    return;
+
+  }
+
+  try{
+
+    await navigator.clipboard.writeText(result);
+
+    showToast("Hasil berhasil disalin.");
+
+  }catch{
+
+    outputText.focus();
+    outputText.select();
+
+    document.execCommand("copy");
+
+    showToast("Hasil berhasil disalin.");
+
+  }
+
+});
+
+
+document.getElementById("downloadBtn").addEventListener("click",()=>{
+
+  const result=outputText.value;
+
+  if(!result){
+
+    showToast("Belum ada hasil untuk di-download.","error");
+    return;
+
+  }
+
+  const blob=new Blob(
+    [result],
+    {
+      type:"text/plain;charset=utf-8"
+    }
+  );
+
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+
+  a.href=url;
+  a.download="hasil-remove-duplicate-lines.txt";
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+  showToast("File TXT berhasil dibuat.");
+
+});
+
+
+document.getElementById("swapBtn").addEventListener("click",()=>{
+
+  const input=inputText.value;
+  const output=outputText.value;
+
+  inputText.value=output;
+  outputText.value=input;
+
+  updateInputStats();
+
+  const inputLines=inputText.value?
+    inputText.value.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n"):
+    [];
+
+  const outputLines=outputText.value?
+    outputText.value.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n"):
+    [];
+
+  inputCounter.textContent=inputLines.length+" baris";
+  outputCounter.textContent=outputLines.length+" baris";
+
+  startCount.textContent=inputLines.length;
+  endCount.textContent=outputLines.length;
+  duplicateCount.textContent=0;
+  characterCount.textContent=outputText.value.length;
+
+  showToast("Input dan hasil ditukar.");
+
+});
+
+
+document.getElementById("clearBtn").addEventListener("click",()=>{
+
+  inputText.value="";
+  outputText.value="";
+
+  inputCounter.textContent="0 baris";
+  outputCounter.textContent="0 baris";
+
+  startCount.textContent="0";
+  endCount.textContent="0";
+  duplicateCount.textContent="0";
+  characterCount.textContent="0";
+
+  showToast("Semua data dibersihkan.");
+
+});
+
+
+[
+  trimOption,
+  ignoreCase,
+  removeEmpty,
+  sortAZ
+].forEach(option=>{
+
+  option.addEventListener("change",()=>{
+
+    if(inputText.value){
+      processText(false);
+    }
+
+  });
+
+});
+
+
+updateInputStats();
+
+</script>
+
+</body>
+</html>

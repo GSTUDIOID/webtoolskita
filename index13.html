@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Credit - WebToolsKita</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(128, 0, 255, 0.18),
+                    transparent 35%
+                ),
+                #050505;
+
+            color: white;
+
+            padding: 30px 20px;
+
+        }
+
+        .container {
+
+            width: 100%;
+
+            max-width: 850px;
+
+            margin: auto;
+
+        }
+
+        /* ============================================
+           HEADER
+        ============================================ */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+
+        }
+
+        .header h1 {
+
+            font-size: 34px;
+
+            color: #c77dff;
+
+            text-shadow:
+                0 0 20px rgba(
+                    160,
+                    70,
+                    255,
+                    0.6
+                );
+
+            margin-bottom: 8px;
+
+        }
+
+        .header p {
+
+            color: #aaa;
+
+            font-size: 15px;
+
+        }
+
+        /* ============================================
+           USER CARD
+        ============================================ */
+
+        .user-card {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            background:
+                rgba(
+                    20,
+                    20,
+                    20,
+                    0.9
+                );
+
+            border:
+                1px solid #3b145c;
+
+            border-radius: 18px;
+
+            padding: 18px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 0 25px rgba(
+                    128,
+                    0,
+                    255,
+                    0.08
+                );
+
+        }
+
+        .user-card img {
+
+            width: 58px;
+
+            height: 58px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            border:
+                2px solid #a855f7;
+
+            flex-shrink: 0;
+
+        }
+
+        .user-info {
+
+            flex: 1;
+
+            min-width: 0;
+
+        }
+
+        .user-info h2 {
+
+            font-size: 18px;
+
+            margin-bottom: 5px;
+
+        }
+
+        .user-info p {
+
+            color: #999;
+
+            font-size: 14px;
+
+            word-break: break-word;
+
+        }
+
+        /* ============================================
+           SECTION
+        ============================================ */
+
+        .section {
+
+            background:
+                rgba(
+                    15,
+                    15,
+                    15,
+                    0.95
+                );
+
+            border:
+                1px solid #32134c;
+
+            border-radius: 20px;
+
+            padding: 28px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 0 30px rgba(
+                    128,
+                    0,
+                    255,
+                    0.07
+                );
+
+        }
+
+        .section h2 {
+
+            color: #c77dff;
+
+            font-size: 23px;
+
+            margin-bottom: 12px;
+
+        }
+
+        .section p {
+
+            color: #aaa;
+
+            line-height: 1.7;
+
+            font-size: 15px;
+
+        }
+
+        /* ============================================
+           PEMBUAT
+        ============================================ */
+
+        .creator-box {
+
+            text-align: center;
+
+            padding: 25px 10px;
+
+        }
+
+        .creator-title {
+
+            font-size: 17px;
+
+            color: #aaa;
+
+            margin-bottom: 8px;
+
+        }
+
+        .creator-name {
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+            color: #fff;
+
+        }
+
+        .creator-role {
+
+            margin-top: 6px;
+
+            color: #9b5de5;
+
+            font-size: 14px;
+
+        }
+
+        /* ============================================
+           MENU BUTTON
+        ============================================ */
+
+        .menu-button {
+
+            width: 100%;
+
+            border:
+                1px solid #4b1670;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(
+                        90,
+                        20,
+                        130,
+                        0.35
+                    ),
+                    rgba(
+                        20,
+                        10,
+                        30,
+                        0.95
+                    )
+                );
+
+            color: white;
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition:
+                0.25s ease;
+
+            margin-top: 15px;
+
+            font-family: inherit;
+
+        }
+
+        .menu-button:hover {
+
+            transform:
+                translateY(-3px);
+
+            border-color:
+                #a855f7;
+
+            box-shadow:
+                0 0 25px rgba(
+                    168,
+                    85,
+                    247,
+                    0.18
+                );
+
+        }
+
+        .menu-button:focus-visible {
+
+            outline:
+                2px solid #c77dff;
+
+            outline-offset:
+                3px;
+
+        }
+
+        .button-title {
+
+            display: block;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            color: #fff;
+
+            margin-bottom: 5px;
+
+        }
+
+        .button-description {
+
+            display: block;
+
+            color: #999;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+        .arrow {
+
+            float: right;
+
+            font-size: 24px;
+
+            color: #c77dff;
+
+            margin-top: 3px;
+
+        }
+
+        /* ============================================
+           CREDIT SUPPORT
+        ============================================ */
+
+        .support-list {
+
+            margin-top: 18px;
+
+            display: grid;
+
+            gap: 10px;
+
+        }
+
+        .support-item {
+
+            padding: 14px;
+
+            border:
+                1px solid #2c193d;
+
+            border-radius: 12px;
+
+            background:
+                rgba(
+                    25,
+                    15,
+                    32,
+                    0.65
+                );
+
+        }
+
+        .support-item strong {
+
+            display: block;
+
+            color: #c77dff;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+
+        }
+
+        .support-item span {
+
+            display: block;
+
+            color: #888;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+        /* ============================================
+           VERSION
+        ============================================ */
+
+        .version {
+
+            text-align: center;
+
+            color: #666;
+
+            font-size: 13px;
+
+            margin-top: 25px;
+
+            line-height: 1.8;
+
+        }
+
+        .version strong {
+
+            display: block;
+
+            color: #9b5de5;
+
+            font-size: 14px;
+
+        }
+
+        /* ============================================
+           BACK BUTTON
+        ============================================ */
+
+        .back-button {
+
+            display: block;
+
+            width: 100%;
+
+            margin-top: 25px;
+
+            padding: 14px;
+
+            border:
+                1px solid #333;
+
+            border-radius: 14px;
+
+            background: #111;
+
+            color: #aaa;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            transition:
+                0.2s;
+
+        }
+
+        .back-button:hover {
+
+            color: white;
+
+            border-color:
+                #a855f7;
+
+            background:
+                #181018;
+
+        }
+
+        /* ============================================
+           MOBILE
+        ============================================ */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding:
+                    20px 14px;
+
+            }
+
+            .header h1 {
+
+                font-size: 28px;
+
+            }
+
+            .section {
+
+                padding: 22px;
+
+            }
+
+            .user-card {
+
+                padding: 15px;
+
+            }
+
+            .creator-name {
+
+                font-size: 22px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            Credit
+        </h1>
+
+        <p>
+            Informasi pembuat dan tim WebToolsKita
+        </p>
+
+    </div>
+
+
+    <!-- USER -->
+
+    <div class="user-card">
+
+        <img
+            id="userPhoto"
+            src=""
+            alt="Foto Profil"
+        >
+
+        <div class="user-info">
+
+            <h2 id="userName">
+                Memuat...
+            </h2>
+
+            <p id="userEmail">
+                Memuat...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- PEMBUAT -->
+
+    <div class="section">
+
+        <div class="creator-box">
+
+            <div class="creator-title">
+                Pembuat
+            </div>
+
+            <div class="creator-name">
+                Ganreff A.f.k
+            </div>
+
+            <div class="creator-role">
+                Founder & Developer
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TEAM -->
+
+    <div class="section">
+
+        <h2>
+            Team
+        </h2>
+
+        <p>
+            Lihat informasi anggota dan tim yang
+            terlibat dalam pengembangan
+            WebToolsKita.
+        </p>
+
+        <button
+            class="menu-button"
+            type="button"
+            onclick="
+                window.location.href='index16.html'
+            "
+        >
+
+            <span class="arrow">
+                ›
+            </span>
+
+            <span class="button-title">
+                Team WebToolsKita
+            </span>
+
+            <span class="button-description">
+                Lihat nama, deskripsi, dan informasi
+                anggota team.
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <!-- UPDATE TERBARU -->
+
+    <div class="section">
+
+        <h2>
+            Update Terbaru
+        </h2>
+
+        <p>
+            Lihat informasi perubahan dan pembaruan
+            terbaru pada WebToolsKita.
+        </p>
+
+        <button
+            class="menu-button"
+            type="button"
+            onclick="
+                window.location.href='index17.html'
+            "
+        >
+
+            <span class="arrow">
+                ›
+            </span>
+
+            <span class="button-title">
+                Update Terbaru
+            </span>
+
+            <span class="button-description">
+                Baca changelog dan informasi
+                pembaruan WebToolsKita.
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <!-- CREDIT SUPPORT -->
+
+    <div class="section">
+
+        <h2>
+            Credit Support
+        </h2>
+
+        <p>
+            WebToolsKita dibuat dan dikembangkan
+            melalui proses desain, pemrograman,
+            pengujian, dan penyempurnaan secara
+            bertahap.
+        </p>
+
+
+        <div class="support-list">
+
+            <div class="support-item">
+
+                <strong>
+                    Development
+                </strong>
+
+                <span>
+                    Perancangan dan pengembangan
+                    fitur WebToolsKita.
+                </span>
+
+            </div>
+
+
+            <div class="support-item">
+
+                <strong>
+                    Testing
+                </strong>
+
+                <span>
+                    Pengujian fitur, tampilan,
+                    autentikasi, dan alur aplikasi.
+                </span>
+
+            </div>
+
+
+            <div class="support-item">
+
+                <strong>
+                    Infrastruktur
+                </strong>
+
+                <span>
+                    WebToolsKita menggunakan Firebase
+                    untuk autentikasi dan layanan
+                    pendukung aplikasi.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- VERSI -->
+
+    <div class="version">
+
+        <div>
+            Versi
+        </div>
+
+        <strong>
+            v1.0.0
+        </strong>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <a
+        href="index3.html"
+        class="back-button"
+    >
+        ← Kembali ke Menu
+    </a>
+
+
+</div>
+
+
+<script>
+
+    /* ============================================
+       FIREBASE CONFIG
+    ============================================ */
+
+    const firebaseConfig = {
+
+        apiKey:
+            "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+        authDomain:
+            "webtoolskita.firebaseapp.com",
+
+        projectId:
+            "webtoolskita",
+
+        storageBucket:
+            "webtoolskita.firebasestorage.app",
+
+        messagingSenderId:
+            "593680487717",
+
+        appId:
+            "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+        measurementId:
+            "G-YVEJ90678G"
+
+    };
+
+
+    /* ============================================
+       FIREBASE
+    ============================================ */
+
+    try {
+
+        firebase.initializeApp(
+            firebaseConfig
+        );
+
+        const auth =
+            firebase.auth();
+
+
+        /* ========================================
+           AUTH STATE
+        ======================================== */
+
+        auth.onAuthStateChanged(
+            user => {
+
+                if (!user) {
+
+                    window.location.href =
+                        "index2.html";
+
+                    return;
+
+                }
+
+
+                /* USER NAME */
+
+                document.getElementById(
+                    "userName"
+                ).textContent =
+                    user.displayName ||
+                    "Pengguna";
+
+
+                /* USER EMAIL */
+
+                document.getElementById(
+                    "userEmail"
+                ).textContent =
+                    user.email ||
+                    "-";
+
+
+                /* USER PHOTO */
+
+                const photo =
+                    document.getElementById(
+                        "userPhoto"
+                    );
+
+
+                if (user.photoURL) {
+
+                    photo.src =
+                        user.photoURL;
+
+                }
+
+                else {
+
+                    photo.src =
+                        "https://www.gravatar.com/avatar/?d=mp";
+
+                }
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Firebase error:",
+            error
+        );
+
+        document.getElementById(
+            "userName"
+        ).textContent =
+            "Gagal memuat akun";
+
+        document.getElementById(
+            "userEmail"
+        ).textContent =
+            "Firebase tidak dapat dimuat.";
+
+    }
+
+</script>
+
+</body>
+
+</html>

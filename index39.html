@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Offline Mode - WebToolsKita</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#06070b;
+  --card:rgba(18,20,28,.78);
+  --card2:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.09);
+  --text:#f5f5f7;
+  --muted:#9295a5;
+  --purple:#8b5cf6;
+  --purple2:#6366f1;
+  --green:#22c55e;
+  --gold:#f59e0b;
+}
+
+body{
+  min-height:100vh;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 5%,rgba(139,92,246,.18),transparent 30%),
+    radial-gradient(circle at 85% 90%,rgba(99,102,241,.14),transparent 30%),
+    var(--bg);
+  padding:28px 18px 45px;
+}
+
+.container{
+  width:min(1150px,100%);
+  margin:auto;
+}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#a7a8b5;
+  text-decoration:none;
+  font-size:14px;
+  margin-bottom:25px;
+  transition:.2s;
+}
+
+.back:hover{
+  color:white;
+  transform:translateX(-3px);
+}
+
+.header{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.icon{
+  width:76px;
+  height:76px;
+  margin:0 auto 17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:23px;
+  font-size:35px;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  box-shadow:
+    0 15px 50px rgba(99,102,241,.28),
+    inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+h1{
+  font-size:clamp(30px,5vw,45px);
+  letter-spacing:-1px;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.6;
+}
+
+.main-card{
+  position:relative;
+  overflow:hidden;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:26px;
+  padding:30px;
+  backdrop-filter:blur(24px);
+  box-shadow:0 25px 80px rgba(0,0,0,.35);
+}
+
+.main-card::before{
+  content:"";
+  position:absolute;
+  width:260px;
+  height:260px;
+  right:-130px;
+  top:-130px;
+  border-radius:50%;
+  background:rgba(139,92,246,.10);
+  filter:blur(20px);
+  pointer-events:none;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:18px 20px;
+  border-radius:17px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  margin-bottom:24px;
+}
+
+.status-left{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.status-dot{
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 16px rgba(34,197,94,.65);
+}
+
+.status-dot.offline{
+  background:var(--gold);
+  box-shadow:0 0 16px rgba(245,158,11,.55);
+}
+
+.status-title{
+  font-weight:700;
+  font-size:14px;
+}
+
+.status-text{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
+}
+
+.status-badge{
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.4px;
+  background:rgba(34,197,94,.1);
+  border:1px solid rgba(34,197,94,.22);
+  color:#6ee7a0;
+}
+
+.status-badge.offline{
+  background:rgba(245,158,11,.1);
+  border-color:rgba(245,158,11,.25);
+  color:#fbbf5a;
+}
+
+.hero{
+  text-align:center;
+  padding:18px 10px 30px;
+}
+
+.hero h2{
+  font-size:25px;
+  margin-bottom:10px;
+}
+
+.hero p{
+  max-width:650px;
+  margin:auto;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+}
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.feature{
+  padding:21px;
+  border-radius:18px;
+  background:var(--card2);
+  border:1px solid rgba(255,255,255,.065);
+  transition:.25s;
+}
+
+.feature:hover{
+  transform:translateY(-3px);
+  border-color:rgba(139,92,246,.28);
+  background:rgba(139,92,246,.055);
+}
+
+.feature-icon{
+  width:43px;
+  height:43px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:13px;
+  background:rgba(139,92,246,.11);
+  border:1px solid rgba(139,92,246,.18);
+  font-size:20px;
+  margin-bottom:14px;
+}
+
+.feature h3{
+  font-size:14px;
+  margin-bottom:7px;
+}
+
+.feature p{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.info{
+  margin-top:20px;
+  padding:19px;
+  border-radius:17px;
+  background:rgba(139,92,246,.055);
+  border:1px solid rgba(139,92,246,.16);
+}
+
+.info-title{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.info p{
+  color:#a9a9b7;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.actions{
+  display:flex;
+  justify-content:center;
+  gap:11px;
+  margin-top:25px;
+}
+
+button{
+  font-family:inherit;
+  cursor:pointer;
+}
+
+.primary{
+  border:0;
+  padding:13px 22px;
+  border-radius:12px;
+  color:white;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  box-shadow:0 10px 28px rgba(99,102,241,.22);
+  transition:.2s;
+}
+
+.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 35px rgba(99,102,241,.32);
+}
+
+.secondary{
+  padding:13px 22px;
+  border-radius:12px;
+  color:#c3c4cf;
+  background:rgba(255,255,255,.045);
+  border:1px solid var(--border);
+}
+
+.secondary:hover{
+  color:white;
+  background:rgba(255,255,255,.08);
+}
+
+.footer{
+  text-align:center;
+  margin-top:25px;
+  color:#646673;
+  font-size:11px;
+}
+
+@media(max-width:800px){
+  .features{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:560px){
+  body{
+    padding:20px 12px 35px;
+  }
+
+  .main-card{
+    padding:19px;
+    border-radius:20px;
+  }
+
+  .status{
+    align-items:flex-start;
+  }
+
+  .features{
+    grid-template-columns:1fr;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+
+  .primary,
+  .secondary{
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <a href="index3.html" class="back">
+    ← Kembali ke Menu
+  </a>
+
+  <header class="header">
+
+    <div class="icon">
+      📴
+    </div>
+
+    <h1>Offline Mode</h1>
+
+    <p class="subtitle">
+      Gunakan WebToolsKita dengan pengalaman offline untuk fitur yang
+      dapat berjalan langsung di browser.
+    </p>
+
+  </header>
+
+  <main class="main-card">
+
+    <div class="status">
+
+      <div class="status-left">
+
+        <div id="statusDot" class="status-dot"></div>
+
+        <div>
+          <div id="statusTitle" class="status-title">
+            Memeriksa koneksi...
+          </div>
+
+          <div id="statusText" class="status-text">
+            Mengecek status koneksi browser.
+          </div>
+        </div>
+
+      </div>
+
+      <div id="statusBadge" class="status-badge">
+        CHECKING
+      </div>
+
+    </div>
+
+
+    <section class="hero">
+
+      <h2>WebToolsKita Offline</h2>
+
+      <p>
+        Mode ini dirancang untuk fitur yang melakukan proses langsung
+        di perangkat melalui browser. Data yang diproses oleh fitur
+        tersebut tidak perlu dikirim ke server.
+      </p>
+
+    </section>
+
+
+    <section class="features">
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          ⚡
+        </div>
+
+        <h3>Proses Lokal</h3>
+
+        <p>
+          Pemrosesan dilakukan langsung menggunakan JavaScript di browser.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          🔒
+        </div>
+
+        <h3>Data Tetap Lokal</h3>
+
+        <p>
+          Fitur yang berjalan secara lokal tidak perlu mengirim data
+          input ke server WebToolsKita.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          📴
+        </div>
+
+        <h3>Tidak Bergantung Server</h3>
+
+        <p>
+          Tool yang sepenuhnya client-side dapat tetap bekerja ketika
+          koneksi internet tidak tersedia.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+>🧮
+        </div>
+
+        <h3>Perhitungan Browser</h3>
+
+        <p>
+          Perhitungan dan transformasi data dilakukan langsung
+          oleh perangkat pengguna.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          💻
+        </div>
+
+        <h3>Ringan</h3>
+
+        <p>
+          Tidak membutuhkan proses backend untuk tool yang memang
+          dirancang berjalan sepenuhnya di browser.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          🚀
+        </div>
+
+        <h3>Cepat</h3>
+
+        <p>
+          Tidak perlu menunggu request ke server untuk proses
+          yang dilakukan secara lokal.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <div class="info">
+
+      <div class="info-title">
+        <span>ℹ️</span>
+        <span>Catatan Offline Mode</span>
+      </div>
+
+      <p>
+        Offline Mode bukan berarti seluruh WebToolsKita otomatis
+        tersedia tanpa internet. Hanya fitur yang seluruh prosesnya
+        dilakukan di browser yang dapat berjalan secara offline.
+        Fitur yang membutuhkan Firebase, backend, database, atau
+        layanan online tetap membutuhkan koneksi.
+      </p>
+
+    </div>
+
+
+    <div class="actions">
+
+      <button class="primary" id="checkBtn">
+        🔄 Cek Status Koneksi
+      </button>
+
+      <button class="secondary" id="backBtn">
+        ← Kembali
+      </button>
+
+    </div>
+
+  </main>
+
+  <div class="footer">
+    WebToolsKita • Offline Mode
+  </div>
+
+</div>
+
+
+<script>
+
+const statusDot = document.getElementById("statusDot");
+const statusTitle = document.getElementById("statusTitle");
+const statusText = document.getElementById("statusText");
+const statusBadge = document.getElementById("statusBadge");
+
+
+function updateConnectionStatus(){
+
+  const online = navigator.onLine;
+
+  if(online){
+
+    statusDot.classList.remove("offline");
+
+    statusTitle.textContent = "Koneksi Internet Aktif";
+
+    statusText.textContent =
+      "Browser sedang terhubung ke internet.";
+
+    statusBadge.textContent = "ONLINE";
+
+    statusBadge.classList.remove("offline");
+
+  }else{
+
+    statusDot.classList.add("offline");
+
+    statusTitle.textContent = "Mode Offline Aktif";
+
+    statusText.textContent =
+      "Tidak ada koneksi internet terdeteksi.";
+
+    statusBadge.textContent = "OFFLINE";
+
+    statusBadge.classList.add("offline");
+
+  }
+
+}
+
+
+window.addEventListener("online", updateConnectionStatus);
+
+window.addEventListener("offline", updateConnectionStatus);
+
+
+document.getElementById("checkBtn").addEventListener("click",function(){
+
+  updateConnectionStatus();
+
+  const oldText = this.textContent;
+
+  this.textContent = "✓ Status Diperbarui";
+
+  setTimeout(()=>{
+
+    this.textContent = oldText;
+
+  },1200);
+
+});
+
+
+document.getElementById("backBtn").addEventListener("click",function(){
+
+  window.location.href = "index3.html";
+
+});
+
+
+updateConnectionStatus();
+
+</script>
+
+</body>
+</html>

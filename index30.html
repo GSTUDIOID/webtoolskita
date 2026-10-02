@@ -1,0 +1,675 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vault - WebToolsKita</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(234, 179, 8, 0.14),
+                    transparent 38%
+                ),
+                #050505;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .vault-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: rgba(234, 179, 8, 0.10);
+
+            border:
+                2px solid
+                rgba(234, 179, 8, 0.65);
+
+            font-size: 38px;
+
+            box-shadow:
+                0 0 30px
+                rgba(234, 179, 8, 0.15);
+        }
+
+        .header h1 {
+            font-size: 30px;
+            color: #facc15;
+
+            text-shadow:
+                0 0 20px
+                rgba(234, 179, 8, 0.25);
+
+            margin-bottom: 7px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .security-box {
+            margin-bottom: 20px;
+            padding: 16px 18px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(234, 179, 8, 0.06);
+
+            border:
+                1px solid
+                rgba(234, 179, 8, 0.20);
+        }
+
+        .security-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #fde68a;
+            font-size: 14px;
+            font-weight: bold;
+
+            margin-bottom: 6px;
+        }
+
+        .security-description {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .vault-wrapper {
+            background:
+                rgba(10, 10, 10, 0.94);
+
+            border:
+                1px solid
+                rgba(234, 179, 8, 0.22);
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 0 30px
+                rgba(234, 179, 8, 0.06);
+        }
+
+        .vault-header {
+            padding: 16px 18px;
+
+            border-bottom:
+                1px solid
+                rgba(255, 255, 255, 0.06);
+
+            background:
+                rgba(30, 25, 5, 0.75);
+        }
+
+        .vault-header h2 {
+            color: #fde68a;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .vault-header span {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .vault-scroll {
+            max-height: 520px;
+            overflow-y: auto;
+            padding: 22px;
+        }
+
+        .vault-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .vault-scroll::-webkit-scrollbar-track {
+            background: #080808;
+        }
+
+        .vault-scroll::-webkit-scrollbar-thumb {
+            background:
+                rgba(234, 179, 8, 0.40);
+
+            border-radius: 10px;
+        }
+
+        .vault-scroll::-webkit-scrollbar-thumb:hover {
+            background:
+                rgba(234, 179, 8, 0.65);
+        }
+
+        .vault-content {
+            color: #c7c7c7;
+            font-size: 13px;
+            line-height: 1.8;
+
+            user-select: text;
+        }
+
+        .vault-content h3 {
+            color: #facc15;
+            font-size: 17px;
+            margin-bottom: 12px;
+        }
+
+        .vault-content h4 {
+            color: #fde68a;
+            font-size: 14px;
+
+            margin-top: 22px;
+            margin-bottom: 8px;
+        }
+
+        .vault-content p {
+            margin-bottom: 12px;
+        }
+
+        .vault-content ul {
+            margin: 8px 0 14px 20px;
+        }
+
+        .vault-content li {
+            margin-bottom: 7px;
+        }
+
+        .vault-content strong {
+            color: #fef3c7;
+        }
+
+        .important {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .danger {
+            color: #fca5a5;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #86efac;
+        }
+
+        .muted {
+            color: #777;
+        }
+
+        .readonly-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            margin-top: 20px;
+
+            padding: 6px 10px;
+
+            border-radius: 8px;
+
+            background:
+                rgba(234, 179, 8, 0.08);
+
+            border:
+                1px solid
+                rgba(234, 179, 8, 0.18);
+
+            color: #facc15;
+
+            font-size: 10px;
+        }
+
+        .back-btn {
+            display: block;
+            width: 100%;
+
+            padding: 14px;
+            margin-top: 20px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                rgba(234, 179, 8, 0.25);
+
+            background:
+                rgba(35, 30, 5, 0.75);
+
+            color: #bbb;
+
+            text-align: center;
+            text-decoration: none;
+
+            font-size: 13px;
+
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: white;
+
+            background:
+                rgba(120, 90, 0, 0.30);
+
+            border-color:
+                rgba(234, 179, 8, 0.50);
+
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            color: #555;
+            font-size: 11px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 18px 12px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .vault-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+
+            .vault-scroll {
+                max-height: 480px;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="vault-icon">
+            🔐
+        </div>
+
+        <h1>
+            Vault
+        </h1>
+
+        <p>
+            Pusat informasi keamanan WebToolsKita
+        </p>
+
+    </div>
+
+
+    <div class="security-box">
+
+        <div class="security-title">
+            🔒 Area Read Only
+        </div>
+
+        <div class="security-description">
+            Halaman ini berisi deskripsi dan informasi
+            penting mengenai Vault WebToolsKita.
+            Informasi pada halaman ini hanya dapat dibaca.
+        </div>
+
+    </div>
+
+
+    <div class="vault-wrapper">
+
+        <div class="vault-header">
+
+            <h2>
+                WebToolsKita Vault
+            </h2>
+
+            <span>
+                Security & Information Storage
+            </span>
+
+        </div>
+
+
+        <div class="vault-scroll">
+
+            <div class="vault-content">
+
+                <!-- =====================================
+                     DESKRIPSI VAULT
+                ====================================== -->
+
+                <h3>
+                    Deskripsi Vault
+                </h3>
+
+                <p>
+                    Vault WebToolsKita merupakan bagian
+                    khusus yang disiapkan untuk membantu
+                    menjaga informasi penting yang berkaitan
+                    dengan sistem administrator dan keamanan
+                    aplikasi.
+                </p>
+
+                <p class="important">
+                    Vault bukan tempat untuk membagikan
+                    informasi rahasia kepada pengguna umum.
+                </p>
+
+
+                <h4>
+                    1. Fungsi Vault
+                </h4>
+
+                <p>
+                    Vault dirancang sebagai area informasi
+                    keamanan yang dapat digunakan untuk
+                    mencatat struktur, aturan, dan informasi
+                    penting mengenai pengelolaan sistem.
+                </p>
+
+                <ul>
+                    <li>
+                        Informasi keamanan sistem.
+                    </li>
+
+                    <li>
+                        Dokumentasi konfigurasi penting.
+                    </li>
+
+                    <li>
+                        Catatan pengelolaan administrator.
+                    </li>
+
+                    <li>
+                        Informasi mengenai credential
+                        dan secret management.
+                    </li>
+
+                    <li>
+                        Catatan prosedur keamanan.
+                    </li>
+                </ul>
+
+
+                <h4>
+                    2. Data Rahasia
+                </h4>
+
+                <p>
+                    Password administrator, Firebase private
+                    key, service account, API key, token,
+                    secret key, webhook secret, dan informasi
+                    autentikasi lainnya harus diperlakukan
+                    sebagai data rahasia.
+                </p>
+
+                <p class="danger">
+                    Jangan menuliskan credential asli,
+                    private key, password, atau secret
+                    production pada halaman publik.
+                </p>
+
+
+                <h4>
+                    3. Service Account
+                </h4>
+
+                <p>
+                    File service account yang digunakan oleh
+                    backend harus disimpan secara aman dan
+                    tidak boleh dimasukkan ke repository
+                    publik atau frontend website.
+                </p>
+
+                <p>
+                    Credential server harus tetap berada
+                    pada lingkungan backend yang terlindungi.
+                </p>
+
+
+                <h4>
+                    4. API Key dan Token
+                </h4>
+
+                <p>
+                    API key dan token yang digunakan untuk
+                    berkomunikasi dengan layanan eksternal
+                    harus dilindungi dari akses publik.
+                </p>
+
+                <p>
+                    Jika sebuah credential diketahui pihak
+                    lain, credential tersebut sebaiknya
+                    segera direvoke atau diganti sesuai
+                    prosedur layanan yang digunakan.
+                </p>
+
+
+                <h4>
+                    5. Database
+                </h4>
+
+                <p>
+                    Database WebToolsKita berisi data sistem
+                    yang harus diperlakukan sebagai informasi
+                    internal.
+                </p>
+
+                <ul>
+                    <li>
+                        Jangan membagikan database secara publik.
+                    </li>
+
+                    <li>
+                        Jangan menghapus database tanpa backup.
+                    </li>
+
+                    <li>
+                        Jangan menjalankan query yang tidak
+                        diketahui dampaknya.
+                    </li>
+
+                    <li>
+                        Periksa backup sebelum melakukan
+                        perubahan besar.
+                    </li>
+                </ul>
+
+
+                <h4>
+                    6. Backend
+                </h4>
+
+                <p>
+                    Proses yang membutuhkan hak istimewa
+                    harus dilakukan melalui backend.
+                </p>
+
+                <p class="success">
+                    Frontend tidak boleh menjadi sumber
+                    otorisasi utama untuk operasi sensitif.
+                </p>
+
+
+                <h4>
+                    7. Administrator
+                </h4>
+
+                <p>
+                    Akses administrator harus selalu
+                    diverifikasi oleh sistem backend.
+                </p>
+
+                <p>
+                    Informasi session pada browser tidak
+                    boleh dianggap sebagai bukti tunggal
+                    bahwa seseorang merupakan administrator.
+                </p>
+
+
+                <h4>
+                    8. Payment dan VIP
+                </h4>
+
+                <p>
+                    Data pembayaran, webhook, status transaksi,
+                    dan status VIP harus diverifikasi melalui
+                    sistem server.
+                </p>
+
+                <p class="important">
+                    Tombol pembayaran atau perubahan pada
+                    frontend tidak boleh digunakan untuk
+                    mengaktifkan VIP secara langsung.
+                </p>
+
+
+                <h4>
+                    9. CodeGuard
+                </h4>
+
+                <p>
+                    CodeGuard digunakan untuk membantu
+                    mendeteksi pola kode yang berpotensi
+                    membutuhkan perhatian keamanan.
+                </p>
+
+                <p>
+                    Hasil pemeriksaan CodeGuard tetap harus
+                    ditinjau secara manual sebelum mengambil
+                    tindakan terhadap sebuah file atau sistem.
+                </p>
+
+
+                <h4>
+                    10. Prinsip Keamanan
+                </h4>
+
+                <ul>
+                    <li>
+                        Jangan membagikan credential.
+                    </li>
+
+                    <li>
+                        Gunakan prinsip least privilege.
+                    </li>
+
+                    <li>
+                        Backup sebelum perubahan besar.
+                    </li>
+
+                    <li>
+                        Verifikasi akses melalui server.
+                    </li>
+
+                    <li>
+                        Jangan menyimpan secret production
+                        pada frontend.
+                    </li>
+
+                    <li>
+                        Periksa source code sebelum deployment.
+                    </li>
+                </ul>
+
+
+                <h4>
+                    11. Status Halaman
+                </h4>
+
+                <p>
+                    Halaman Vault ini merupakan halaman
+                    informasi read-only.
+                </p>
+
+                <p>
+                    Isi deskripsi dapat diperbarui oleh
+                    developer secara langsung melalui source
+                    halaman apabila struktur sistem berubah.
+                </p>
+
+                <p class="muted">
+                    Jangan menggunakan halaman ini sebagai
+                    tempat penyimpanan credential production
+                    secara langsung.
+                </p>
+
+
+                <div class="readonly-label">
+                    🔒 READ ONLY
+                </div>
+
+                <!-- =====================================
+                     SELESAI DESKRIPSI VAULT
+                ====================================== -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOMBOL KEMBALI PALING BAWAH -->
+
+    <a
+        href="index18.html"
+        class="back-btn"
+    >
+        ← Kembali ke Admin Dashboard
+    </a>
+
+
+    <div class="footer">
+        WebToolsKita Admin • Vault • v1.0.0
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID Generator - WebToolsKita</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, #32105f 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #16052b 0%, transparent 35%),
+                #08070d;
+            color: #fff;
+        }
+
+        .container {
+            width: min(900px, 92%);
+            margin: 0 auto;
+            padding: 30px 0 50px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            border: 1px solid #6d35a8;
+            background: #17111f;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #241433;
+        }
+
+        .vip-badge {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 36px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #aaa;
+        }
+
+        .card {
+            background: rgba(18, 15, 26, 0.95);
+            border: 1px solid #342044;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            margin: 0 0 18px;
+            font-size: 20px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            color: #cfcfcf;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            border: 1px solid #49305c;
+            background: #0d0a12;
+            color: #fff;
+            border-radius: 10px;
+            padding: 13px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #9b5de5;
+            box-shadow: 0 0 0 3px rgba(155, 93, 229, 0.12);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button.action {
+            border: 0;
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .generate {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+        }
+
+        .generate:hover {
+            filter: brightness(1.1);
+        }
+
+        .secondary {
+            background: #27212f;
+            border: 1px solid #4b3a59 !important;
+        }
+
+        .secondary:hover {
+            background: #33283e;
+        }
+
+        .output {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 280px;
+            resize: vertical;
+            border: 1px solid #49305c;
+            background: #09070d;
+            color: #e7d5ff;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #9b5de5;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .info {
+            background: #110d17;
+            border: 1px solid #342044;
+            border-radius: 12px;
+            padding: 15px;
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info strong {
+            color: #d8b4fe;
+        }
+
+        .status {
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: #08070d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            font-size: 18px;
+            color: #c084fc;
+        }
+
+        @media (max-width: 650px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="loading">Memeriksa akses VIP...</div>
+
+<div class="container">
+
+    <div class="topbar">
+        <button class="back-btn" onclick="window.location.href='index3.html'">
+            ← Kembali
+        </button>
+
+        <div class="vip-badge">
+            VIP TOOL 10
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>UUID Generator</h1>
+        <p>Generate UUID v4 secara cepat dan aman.</p>
+    </div>
+
+    <div class="card">
+
+        <h2 class="section-title">Pengaturan</h2>
+
+        <div class="controls">
+
+            <div class="field">
+                <label for="quantity">Jumlah UUID</label>
+                <select id="quantity">
+                    <option value="1">1 UUID</option>
+                    <option value="5">5 UUID</option>
+                    <option value="10">10 UUID</option>
+                    <option value="20">20 UUID</option>
+                    <option value="50">50 UUID</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="separator">Pemisah</label>
+                <select id="separator">
+                    <option value="newline">Baris baru</option>
+                    <option value="comma">Koma</option>
+                    <option value="space">Spasi</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button class="action generate" onclick="generateUUIDs()">
+                Generate UUID
+            </button>
+
+            <button class="action secondary" onclick="clearOutput()">
+                Clear
+            </button>
+        </div>
+
+        <div class="output">
+            <textarea id="output" readonly placeholder="UUID hasil generate akan muncul di sini..."></textarea>
+
+            <div class="output-actions">
+                <button class="action secondary" onclick="copyOutput()">
+                    Copy
+                </button>
+            </div>
+        </div>
+
+        <div class="status" id="status">
+            Siap digunakan.
+        </div>
+
+    </div>
+
+    <div class="info">
+        <strong>Tentang UUID v4</strong><br><br>
+
+        UUID adalah identifier 128-bit yang biasanya ditampilkan sebagai
+        string 36 karakter dengan tanda hubung.
+        Tool ini menggunakan UUID versi 4 berbasis random value.
+        <br><br>
+
+        Generator memprioritaskan <code>crypto.randomUUID()</code>.
+        Jika tidak tersedia, tool menggunakan
+        <code>crypto.getRandomValues()</code> sebagai fallback.
+    </div>
+
+</div>
+
+<script>
+    // ================================
+    // FIREBASE CONFIG
+    // ================================
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+        authDomain: "webtoolskita.firebaseapp.com",
+        projectId: "webtoolskita",
+        storageBucket: "webtoolskita.firebasestorage.app",
+        messagingSenderId: "593680487717",
+        appId: "1:593680487717:web:33ef7a4bc9be02f99276cc",
+        measurementId: "G-YVEJ90678G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
+    // ================================
+    // VIP ACCESS GUARD
+    // ================================
+
+    auth.onAuthStateChanged(async (user) => {
+
+        if (!user) {
+            window.location.href = "index2.html";
+            return;
+        }
+
+        try {
+
+            const tokenResult = await user.getIdTokenResult(true);
+            const claims = tokenResult.claims || {};
+
+            const isAdmin = claims.admin === true;
+            const isVip = claims.vip === true;
+
+            if (isAdmin || isVip) {
+                document.getElementById("loading").style.display = "none";
+                return;
+            }
+
+            // Fallback cek backend
+            const token = await user.getIdToken();
+
+            const response = await fetch("/api/auth/me", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Gagal memeriksa status VIP.");
+            }
+
+            const data = await response.json();
+
+            if (data.admin === true || data.vip === true) {
+                document.getElementById("loading").style.display = "none";
+                return;
+            }
+
+            alert("Tool ini khusus VIP. Silakan aktifkan VIP terlebih dahulu.");
+            window.location.href = "index12.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Gagal memeriksa akses VIP.");
+            window.location.href = "index3.html";
+        }
+
+    });
+
+    // ================================
+    // UUID V4 GENERATOR
+    // ================================
+
+    function generateUUIDv4() {
+
+        // Modern browser
+        if (
+            typeof crypto !== "undefined" &&
+            typeof crypto.randomUUID === "function"
+        ) {
+            return crypto.randomUUID();
+        }
+
+        // Fallback menggunakan cryptographically strong random values
+        if (
+            typeof crypto !== "undefined" &&
+            typeof crypto.getRandomValues === "function"
+        ) {
+
+            const bytes = new Uint8Array(16);
+
+            crypto.getRandomValues(bytes);
+
+            // UUID v4
+            bytes[6] = (bytes[6] & 0x0f) | 0x40;
+            bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+            const hex = Array.from(bytes, byte =>
+                byte.toString(16).padStart(2, "0")
+            ).join("");
+
+            return (
+                hex.substring(0, 8) + "-" +
+                hex.substring(8, 12) + "-" +
+                hex.substring(12, 16) + "-" +
+                hex.substring(16, 20) + "-" +
+                hex.substring(20, 32)
+            );
+        }
+
+        throw new Error(
+            "Browser tidak mendukung Web Crypto API."
+        );
+    }
+
+    // ================================
+    // GENERATE MULTIPLE UUID
+    // ================================
+
+    function generateUUIDs() {
+
+        try {
+
+            const quantity =
+                parseInt(document.getElementById("quantity").value, 10);
+
+            const separatorType =
+                document.getElementById("separator").value;
+
+            const uuids = [];
+
+            for (let i = 0; i < quantity; i++) {
+                uuids.push(generateUUIDv4());
+            }
+
+            let separator = "\n";
+
+            if (separatorType === "comma") {
+                separator = ", ";
+            }
+
+            if (separatorType === "space") {
+                separator = " ";
+            }
+
+            document.getElementById("output").value =
+                uuids.join(separator);
+
+            document.getElementById("status").textContent =
+                quantity + " UUID berhasil dibuat.";
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Gagal membuat UUID: " +
+                error.message
+            );
+
+        }
+    }
+
+    // ================================
+    // CLEAR
+    // ================================
+
+    function clearOutput() {
+
+        document.getElementById("output").value = "";
+
+        document.getElementById("status").textContent =
+            "Output telah dibersihkan.";
+    }
+
+    // ================================
+    // COPY
+    // ================================
+
+    async function copyOutput() {
+
+        const output =
+            document.getElementById("output").value;
+
+        if (!output.trim()) {
+            alert("Belum ada UUID untuk dicopy.");
+            return;
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(output);
+
+            document.getElementById("status").textContent =
+                "UUID berhasil dicopy.";
+
+        } catch (error) {
+
+            const textarea =
+                document.getElementById("output");
+
+            textarea.focus();
+            textarea.select();
+
+            document.execCommand("copy");
+
+            document.getElementById("status").textContent =
+                "UUID berhasil dicopy.";
+        }
+    }
+</script>
+
+</body>
+</html>

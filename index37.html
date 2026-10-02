@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit Converter - WebToolsKita</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#07070b;
+  --card:rgba(20,20,29,.78);
+  --border:rgba(255,255,255,.09);
+  --text:#f5f5f7;
+  --muted:#9696a5;
+  --accent:#8b5cf6;
+  --accent2:#6366f1;
+}
+
+body{
+  min-height:100vh;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(139,92,246,.16),transparent 30%),
+    radial-gradient(circle at 85% 85%,rgba(99,102,241,.12),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  padding:30px 18px 45px;
+}
+
+.container{
+  width:min(1100px,100%);
+  margin:auto;
+}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#aaaabb;
+  text-decoration:none;
+  font-size:14px;
+  margin-bottom:24px;
+  transition:.2s;
+}
+
+.back:hover{
+  color:white;
+  transform:translateX(-3px);
+}
+
+.header{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.logo{
+  width:64px;
+  height:64px;
+  margin:0 auto 15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 15px 45px rgba(99,102,241,.28);
+  font-size:30px;
+}
+
+h1{
+  font-size:clamp(28px,5vw,42px);
+  margin-bottom:8px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:15px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 20px 60px rgba(0,0,0,.28);
+}
+
+.top-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:15px;
+}
+
+.section-title h2{
+  font-size:17px;
+}
+
+.badge{
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(139,92,246,.12);
+  border:1px solid rgba(139,92,246,.25);
+  color:#bda7ff;
+  font-size:11px;
+  font-weight:700;
+}
+
+label{
+  display:block;
+  color:#aaaabb;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+select,
+input{
+  width:100%;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.045);
+  color:white;
+  border-radius:13px;
+  padding:14px;
+  outline:none;
+  font-size:15px;
+  transition:.2s;
+}
+
+select{
+  cursor:pointer;
+}
+
+select option{
+  background:#171720;
+  color:white;
+}
+
+input:focus,
+select:focus{
+  border-color:rgba(139,92,246,.65);
+  box-shadow:0 0 0 3px rgba(139,92,246,.1);
+}
+
+.field{
+  margin-bottom:17px;
+}
+
+.swap{
+  width:100%;
+  margin:3px 0 18px;
+  padding:11px;
+  border-radius:12px;
+  color:#cbbcff;
+  background:rgba(139,92,246,.09);
+  border:1px solid rgba(139,92,246,.22);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.swap:hover{
+  background:rgba(139,92,246,.17);
+  color:white;
+}
+
+.result-card{
+  margin-top:20px;
+}
+
+.result-box{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:14px;
+  align-items:center;
+  padding:18px;
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.result-label{
+  color:#aaaabb;
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.result-value{
+  font-family:"Courier New",monospace;
+  font-size:22px;
+  font-weight:700;
+  word-break:break-all;
+}
+
+.copy-btn{
+  border:1px solid rgba(139,92,246,.3);
+  background:rgba(139,92,246,.12);
+  color:#cbbcff;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.copy-btn:hover{
+  background:rgba(139,92,246,.22);
+  color:white;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
+
+button{
+  font-family:inherit;
+}
+
+.primary{
+  flex:1;
+  padding:13px 18px;
+  border:0;
+  border-radius:12px;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 10px 25px rgba(99,102,241,.2);
+  transition:.2s;
+}
+
+.primary:hover{
+  transform:translateY(-2px);
+}
+
+.secondary{
+  padding:13px 18px;
+  border-radius:12px;
+  color:#c6c6d1;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--border);
+  cursor:pointer;
+}
+
+.secondary:hover{
+  background:rgba(255,255,255,.09);
+  color:white;
+}
+
+.error{
+  display:none;
+  margin-top:15px;
+  padding:13px 15px;
+  border-radius:12px;
+  color:#ffb4b4;
+  background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.2);
+  font-size:13px;
+}
+
+.quick{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.quick-card{
+  padding:16px;
+  border-radius:15px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.quick-card strong{
+  display:block;
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+.quick-card span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.footer{
+  text-align:center;
+  color:#686875;
+  font-size:12px;
+  margin-top:28px;
+}
+
+@media(max-width:800px){
+  .top-grid{
+    grid-template-columns:1fr;
+  }
+
+  .quick{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:560px){
+  body{
+    padding:20px 12px 35px;
+  }
+
+  .card{
+    padding:17px;
+    border-radius:18px;
+  }
+
+  .quick{
+    grid-template-columns:1fr;
+  }
+
+  .result-box{
+    grid-template-columns:1fr;
+  }
+
+  .copy-btn{
+    width:100%;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <a class="back" href="index3.html">← Kembali ke Menu</a>
+
+  <header class="header">
+    <div class="logo">📏</div>
+    <h1>Unit Converter</h1>
+    <p class="subtitle">
+      Konversi berbagai satuan dengan cepat dan mudah.
+    </p>
+  </header>
+
+  <div class="top-grid">
+
+    <div class="card">
+
+      <div class="section-title">
+        <h2>Konversi</h2>
+        <span class="badge">CONVERTER</span>
+      </div>
+
+      <div class="field">
+        <label for="category">Kategori</label>
+        <select id="category">
+          <option value="length">Panjang</option>
+          <option value="weight">Berat</option>
+          <option value="temperature">Suhu</option>
+          <option value="area">Luas</option>
+          <option value="volume">Volume</option>
+          <option value="time">Waktu</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="fromUnit">Dari</label>
+        <select id="fromUnit"></select>
+      </div>
+
+      <div class="field">
+        <label for="amount">Nilai</label>
+        <input
+          id="amount"
+          type="number"
+          step="any"
+          placeholder="Masukkan nilai..."
+          autocomplete="off"
+        >
+      </div>
+
+      <button class="swap" id="swapBtn">⇅ Tukar Satuan</button>
+
+      <div class="field">
+        <label for="toUnit">Ke</label>
+        <select id="toUnit"></select>
+      </div>
+
+      <div id="error" class="error"></div>
+
+      <div class="actions">
+        <button class="primary" id="convertBtn">Convert</button>
+        <button class="secondary" id="clearBtn">Bersihkan</button>
+      </div>
+
+    </div>
+
+    <div class="card result-card">
+
+      <div class="section-title">
+        <h2>Hasil</h2>
+        <span class="badge">OUTPUT</span>
+      </div>
+
+      <div class="result-box">
+
+        <div>
+          <div class="result-label">HASIL KONVERSI</div>
+          <div class="result-value" id="result">—</div>
+        </div>
+
+        <button class="copy-btn" id="copyBtn">Copy</button>
+
+      </div>
+
+      <div style="margin-top:18px;color:#8f8f9d;font-size:13px;line-height:1.7;">
+        Hasil akan dihitung secara otomatis berdasarkan kategori dan satuan
+        yang dipilih.
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="quick">
+
+    <div class="quick-card">
+      <strong>📐 Panjang</strong>
+      <span>mm, cm, m, km, inch, feet, yard, mile</span>
+    </div>
+
+    <div class="quick-card">
+      <strong>⚖️ Berat</strong>
+      <span>mg, g, kg, ton, ounce, pound</span>
+    </div>
+
+    <div class="quick-card">
+      <strong>🌡️ Suhu</strong>
+      <span>Celsius, Fahrenheit, Kelvin</span>
+    </div>
+
+    <div class="quick-card">
+      <strong>🧊 Volume</strong>
+      <span>ml, liter, m³, gallon, cup</span>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    WebToolsKita • Unit Converter
+  </div>
+
+</div>
+
+<script>
+const units = {
+
+  length:{
+    mm:{
+      name:"Millimeter (mm)",
+      convert:v => v / 1000,
+      reverse:v => v * 1000
+    },
+    cm:{
+      name:"Centimeter (cm)",
+      convert:v => v / 100,
+      reverse:v => v * 100
+    },
+    m:{
+      name:"Meter (m)",
+      convert:v => v,
+      reverse:v => v
+    },
+    km:{
+      name:"Kilometer (km)",
+      convert:v => v * 1000,
+      reverse:v => v / 1000
+    },
+    inch:{
+      name:"Inch (in)",
+      convert:v => v * 0.0254,
+      reverse:v => v / 0.0254
+    },
+    ft:{
+      name:"Feet (ft)",
+      convert:v => v * 0.3048,
+      reverse:v => v / 0.3048
+    },
+    yard:{
+      name:"Yard (yd)",
+      convert:v => v * 0.9144,
+      reverse:v => v / 0.9144
+    },
+    mile:{
+      name:"Mile (mi)",
+      convert:v => v * 1609.344,
+      reverse:v => v / 1609.344
+    }
+  },
+
+  weight:{
+    mg:{
+      name:"Milligram (mg)",
+      convert:v => v / 1000000,
+      reverse:v => v * 1000000
+    },
+    g:{
+      name:"Gram (g)",
+      convert:v => v / 1000,
+      reverse:v => v * 1000
+    },
+    kg:{
+      name:"Kilogram (kg)",
+      convert:v => v,
+      reverse:v => v
+    },
+    ton:{
+      name:"Metric Ton (t)",
+      convert:v => v * 1000,
+      reverse:v => v / 1000
+    },
+    oz:{
+      name:"Ounce (oz)",
+      convert:v => v * 0.028349523125,
+      reverse:v => v / 0.028349523125
+    },
+    lb:{
+      name:"Pound (lb)",
+      convert:v => v * 0.45359237,
+      reverse:v => v / 0.45359237
+    }
+  },
+
+  temperature:{
+    c:{
+      name:"Celsius (°C)"
+    },
+    f:{
+      name:"Fahrenheit (°F)"
+    },
+    k:{
+      name:"Kelvin (K)"
+    }
+  },
+
+  area:{
+    mm2:{
+      name:"Square Millimeter (mm²)",
+      convert:v => v / 1000000,
+      reverse:v => v * 1000000
+    },
+    cm2:{
+      name:"Square Centimeter (cm²)",
+      convert:v => v / 10000,
+      reverse:v => v * 10000
+    },
+    m2:{
+      name:"Square Meter (m²)",
+      convert:v => v,
+      reverse:v => v
+    },
+    km2:{
+      name:"Square Kilometer (km²)",
+      convert:v => v * 1000000,
+      reverse:v => v / 1000000
+    },
+    acre:{
+      name:"Acre",
+      convert:v => v * 4046.8564224,
+      reverse:v => v / 4046.8564224
+    },
+    hectare:{
+      name:"Hectare",
+      convert:v => v * 10000,
+      reverse:v => v / 10000
+    }
+  },
+
+  volume:{
+    ml:{
+      name:"Milliliter (ml)",
+      convert:v => v / 1000000,
+      reverse:v => v * 1000000
+    },
+    liter:{
+      name:"Liter (L)",
+      convert:v => v / 1000,
+      reverse:v => v * 1000
+    },
+    m3:{
+      name:"Cubic Meter (m³)",
+      convert:v => v,
+      reverse:v => v
+    },
+    gallon:{
+      name:"US Gallon",
+      convert:v => v * 0.003785411784,
+      reverse:v => v / 0.003785411784
+    },
+    cup:{
+      name:"US Cup",
+      convert:v => v * 0.0002365882365,
+      reverse:v => v / 0.0002365882365
+    }
+  },
+
+  time:{
+    millisecond:{
+      name:"Millisecond (ms)",
+      convert:v => v / 1000,
+      reverse:v => v * 1000
+    },
+    second:{
+      name:"Second (s)",
+      convert:v => v,
+      reverse:v => v
+    },
+    minute:{
+      name:"Minute (min)",
+      convert:v => v * 60,
+      reverse:v => v / 60
+    },
+    hour:{
+      name:"Hour (h)",
+      convert:v => v * 3600,
+      reverse:v => v / 3600
+    },
+    day:{
+      name:"Day",
+      convert:v => v * 86400,
+      reverse:v => v / 86400
+    },
+    week:{
+      name:"Week",
+      convert:v => v * 604800,
+      reverse:v => v / 604800
+    }
+  }
+
+};
+
+const category = document.getElementById("category");
+const fromUnit = document.getElementById("fromUnit");
+const toUnit = document.getElementById("toUnit");
+const amount = document.getElementById("amount");
+const result = document.getElementById("result");
+const error = document.getElementById("error");
+
+function loadUnits(){
+
+  const selected = units[category.value];
+
+  fromUnit.innerHTML = "";
+  toUnit.innerHTML = "";
+
+  Object.entries(selected).forEach(([key,unit]) => {
+
+    const option1 = document.createElement("option");
+    option1.value = key;
+    option1.textContent = unit.name;
+
+    const option2 = document.createElement("option");
+    option2.value = key;
+    option2.textContent = unit.name;
+
+    fromUnit.appendChild(option1);
+    toUnit.appendChild(option2);
+
+  });
+
+  const keys = Object.keys(selected);
+
+  if(keys.length > 1){
+    toUnit.value = keys[1];
+  }
+
+  hideError();
+  result.textContent = "—";
+}
+
+function convertTemperature(value,from,to){
+
+  let celsius;
+
+  if(from === "c"){
+    celsius = value;
+  }else if(from === "f"){
+    celsius = (value - 32) * 5 / 9;
+  }else{
+    celsius = value - 273.15;
+  }
+
+  if(to === "c"){
+    return celsius;
+  }
+
+  if(to === "f"){
+    return (celsius * 9 / 5) + 32;
+  }
+
+  return celsius + 273.15;
+}
+
+function convert(){
+
+  hideError();
+
+  const value = Number(amount.value);
+
+  if(amount.value.trim() === "" || !Number.isFinite(value)){
+    showError("Masukkan nilai yang valid terlebih dahulu.");
+    return;
+  }
+
+  const categoryValue = category.value;
+  const from = fromUnit.value;
+  const to = toUnit.value;
+
+  let converted;
+
+  if(categoryValue === "temperature"){
+
+    converted = convertTemperature(value,from,to);
+
+  }else{
+
+    const selected = units[categoryValue];
+
+    const baseValue = selected[from].convert(value);
+
+    converted = selected[to].reverse(baseValue);
+
+  }
+
+  if(!Number.isFinite(converted)){
+    showError("Gagal melakukan konversi.");
+    return;
+  }
+
+  result.textContent = formatNumber(converted);
+}
+
+function formatNumber(value){
+
+  if(Object.is(value,-0)){
+    value = 0;
+  }
+
+  if(Math.abs(value) >= 1e12 || (Math.abs(value) > 0 && Math.abs(value) < 1e-9)){
+    return value.toExponential(10);
+  }
+
+  return Number(value.toPrecision(12)).toLocaleString("en-US",{
+    maximumFractionDigits:10
+  });
+}
+
+function showError(message){
+  error.textContent = message;
+  error.style.display = "block";
+}
+
+function hideError(){
+  error.style.display = "none";
+}
+
+category.addEventListener("change",loadUnits);
+
+document.getElementById("convertBtn").addEventListener("click",convert);
+
+amount.addEventListener("keydown",function(e){
+  if(e.key === "Enter"){
+    convert();
+  }
+});
+
+document.getElementById("swapBtn").addEventListener("click",function(){
+
+  const oldFrom = fromUnit.value;
+
+  fromUnit.value = toUnit.value;
+  toUnit.value = oldFrom;
+
+  if(amount.value.trim() !== ""){
+    convert();
+  }
+
+});
+
+document.getElementById("clearBtn").addEventListener("click",function(){
+
+  amount.value = "";
+  result.textContent = "—";
+  hideError();
+  amount.focus();
+
+});
+
+document.getElementById("copyBtn").addEventListener("click",async function(){
+
+  if(result.textContent === "—"){
+    return;
+  }
+
+  try{
+
+    await navigator.clipboard.writeText(result.textContent);
+
+    const old = this.textContent;
+    this.textContent = "Copied!";
+
+    setTimeout(()=>{
+      this.textContent = old;
+    },1200);
+
+  }catch(e){
+
+    showError("Gagal menyalin hasil.");
+
+  }
+
+});
+
+loadUnits();
+</script>
+
+</body>
+</html>

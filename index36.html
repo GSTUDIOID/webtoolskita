@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Base Converter - WebToolsKita</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#07070b;
+  --card:rgba(20,20,29,.78);
+  --border:rgba(255,255,255,.09);
+  --text:#f5f5f7;
+  --muted:#9696a5;
+  --accent:#8b5cf6;
+  --accent2:#6366f1;
+  --danger:#ef4444;
+}
+
+body{
+  min-height:100vh;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(139,92,246,.16),transparent 30%),
+    radial-gradient(circle at 85% 85%,rgba(99,102,241,.12),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  padding:30px 18px 45px;
+}
+
+.container{
+  width:min(1100px,100%);
+  margin:auto;
+}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#aaaabb;
+  text-decoration:none;
+  font-size:14px;
+  margin-bottom:24px;
+  transition:.2s;
+}
+
+.back:hover{
+  color:white;
+  transform:translateX(-3px);
+}
+
+.header{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.logo{
+  width:64px;
+  height:64px;
+  margin:0 auto 15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 15px 45px rgba(99,102,241,.28);
+  font-size:30px;
+}
+
+h1{
+  font-size:clamp(28px,5vw,42px);
+  margin-bottom:8px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:15px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 20px 60px rgba(0,0,0,.28);
+}
+
+.converter{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+
+.section-title h2{
+  font-size:17px;
+}
+
+.badge{
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(139,92,246,.12);
+  border:1px solid rgba(139,92,246,.25);
+  color:#bda7ff;
+  font-size:11px;
+  font-weight:700;
+}
+
+label{
+  display:block;
+  color:#aaaabb;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+select,
+input{
+  width:100%;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.045);
+  color:white;
+  border-radius:13px;
+  padding:14px;
+  outline:none;
+  font-size:15px;
+  transition:.2s;
+}
+
+select{
+  margin-bottom:15px;
+  cursor:pointer;
+}
+
+select option{
+  background:#171720;
+  color:white;
+}
+
+input:focus,
+select:focus{
+  border-color:rgba(139,92,246,.65);
+  box-shadow:0 0 0 3px rgba(139,92,246,.1);
+}
+
+.output{
+  min-height:190px;
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.result{
+  display:grid;
+  grid-template-columns:150px 1fr auto;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.result-name{
+  font-size:13px;
+  color:#aaaabb;
+}
+
+.result-value{
+  min-width:0;
+  overflow:auto;
+  white-space:nowrap;
+  font-family:"Courier New",monospace;
+  color:#fff;
+  font-size:15px;
+}
+
+.copy-btn{
+  border:1px solid rgba(139,92,246,.3);
+  background:rgba(139,92,246,.12);
+  color:#cbbcff;
+  border-radius:9px;
+  padding:8px 11px;
+  cursor:pointer;
+  font-size:12px;
+  transition:.2s;
+}
+
+.copy-btn:hover{
+  background:rgba(139,92,246,.22);
+  color:white;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:20px;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+  font-family:inherit;
+}
+
+.primary{
+  flex:1;
+  min-width:160px;
+  padding:13px 18px;
+  border-radius:12px;
+  color:white;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 10px 25px rgba(99,102,241,.2);
+  transition:.2s;
+}
+
+.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(99,102,241,.3);
+}
+
+.secondary{
+  padding:13px 18px;
+  border-radius:12px;
+  color:#c6c6d1;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--border);
+}
+
+.secondary:hover{
+  background:rgba(255,255,255,.09);
+  color:white;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:20px;
+}
+
+.info{
+  padding:16px;
+  border-radius:15px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.info strong{
+  display:block;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+.info span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.error{
+  display:none;
+  margin-top:15px;
+  padding:13px 15px;
+  border-radius:12px;
+  color:#ffb4b4;
+  background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.2);
+  font-size:13px;
+}
+
+.footer{
+  text-align:center;
+  color:#686875;
+  font-size:12px;
+  margin-top:28px;
+}
+
+@media(max-width:800px){
+  .converter{
+    grid-template-columns:1fr;
+  }
+
+  .info-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:560px){
+  body{
+    padding:20px 12px 35px;
+  }
+
+  .card{
+    padding:17px;
+    border-radius:18px;
+  }
+
+  .result{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .copy-btn{
+    width:100%;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <a class="back" href="index3.html">← Kembali ke Menu</a>
+
+  <header class="header">
+    <div class="logo">🔢</div>
+    <h1>Number Base Converter</h1>
+    <p class="subtitle">
+      Konversi angka dengan cepat antara Binary, Decimal, Hexadecimal, dan Octal.
+    </p>
+  </header>
+
+  <div class="converter">
+
+    <div class="card">
+
+      <div class="section-title">
+        <h2>Input Angka</h2>
+        <span class="badge">CONVERTER</span>
+      </div>
+
+      <label for="base">Basis Input</label>
+      <select id="base">
+        <option value="10">Decimal (10)</option>
+        <option value="2">Binary (2)</option>
+        <option value="8">Octal (8)</option>
+        <option value="16">Hexadecimal (16)</option>
+      </select>
+
+      <label for="number">Angka</label>
+      <input
+        id="number"
+        type="text"
+        placeholder="Masukkan angka..."
+        autocomplete="off"
+        spellcheck="false"
+      >
+
+      <div id="error" class="error"></div>
+
+      <div class="actions">
+        <button class="primary" id="convertBtn">Convert</button>
+        <button class="secondary" id="clearBtn">Bersihkan</button>
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="section-title">
+        <h2>Hasil Konversi</h2>
+        <span class="badge">OUTPUT</span>
+      </div>
+
+      <div class="output">
+
+        <div class="result">
+          <div class="result-name">Binary</div>
+          <div class="result-value" id="binary">—</div>
+          <button class="copy-btn" data-target="binary">Copy</button>
+        </div>
+
+        <div class="result">
+          <div class="result-name">Decimal</div>
+          <div class="result-value" id="decimal">—</div>
+          <button class="copy-btn" data-target="decimal">Copy</button>
+        </div>
+
+        <div class="result">
+          <div class="result-name">Octal</div>
+          <div class="result-value" id="octal">—</div>
+          <button class="copy-btn" data-target="octal">Copy</button>
+        </div>
+
+        <div class="result">
+          <div class="result-name">Hexadecimal</div>
+          <div class="result-value" id="hexadecimal">—</div>
+          <button class="copy-btn" data-target="hexadecimal">Copy</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="info-grid">
+
+    <div class="info">
+      <strong>Binary</strong>
+      <span>Basis 2 — hanya menggunakan angka 0 dan 1.</span>
+    </div>
+
+    <div class="info">
+      <strong>Decimal</strong>
+      <span>Basis 10 — sistem angka yang paling umum digunakan.</span>
+    </div>
+
+    <div class="info">
+      <strong>Octal</strong>
+      <span>Basis 8 — menggunakan angka 0 sampai 7.</span>
+    </div>
+
+    <div class="info">
+      <strong>Hexadecimal</strong>
+      <span>Basis 16 — menggunakan 0–9 dan A–F.</span>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    WebToolsKita • Number Base Converter
+  </div>
+
+</div>
+
+<script>
+const baseInput = document.getElementById("base");
+const numberInput = document.getElementById("number");
+const errorBox = document.getElementById("error");
+
+const binaryOutput = document.getElementById("binary");
+const decimalOutput = document.getElementById("decimal");
+const octalOutput = document.getElementById("octal");
+const hexOutput = document.getElementById("hexadecimal");
+
+function showError(message){
+  errorBox.textContent = message;
+  errorBox.style.display = "block";
+}
+
+function hideError(){
+  errorBox.style.display = "none";
+}
+
+function convert(){
+
+  hideError();
+
+  let value = numberInput.value.trim();
+  const base = Number(baseInput.value);
+
+  if(!value){
+    showError("Masukkan angka terlebih dahulu.");
+    return;
+  }
+
+  if(base === 16){
+    value = value.replace(/^0x/i, "");
+  }
+
+  if(base === 2 && !/^[01]+$/.test(value)){
+    showError("Binary hanya boleh berisi angka 0 dan 1.");
+    return;
+  }
+
+  if(base === 8 && !/^[0-7]+$/.test(value)){
+    showError("Octal hanya boleh berisi angka 0 sampai 7.");
+    return;
+  }
+
+  if(base === 10 && !/^[0-9]+$/.test(value)){
+    showError("Decimal hanya boleh berisi angka 0 sampai 9.");
+    return;
+  }
+
+  if(base === 16 && !/^[0-9a-fA-F]+$/.test(value)){
+    showError("Hexadecimal hanya boleh berisi 0-9 dan A-F.");
+    return;
+  }
+
+  try{
+
+    const decimal = BigInt("0x" + BigInt(parseInt(value, base)).toString(16));
+
+    binaryOutput.textContent = decimal.toString(2);
+    decimalOutput.textContent = decimal.toString(10);
+    octalOutput.textContent = decimal.toString(8);
+    hexOutput.textContent = decimal.toString(16).toUpperCase();
+
+  }catch(error){
+    showError("Angka tidak valid atau terlalu besar.");
+  }
+}
+
+document.getElementById("convertBtn").addEventListener("click", convert);
+
+numberInput.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    convert();
+  }
+});
+
+document.getElementById("clearBtn").addEventListener("click", function(){
+
+  numberInput.value = "";
+
+  binaryOutput.textContent = "—";
+  decimalOutput.textContent = "—";
+  octalOutput.textContent = "—";
+  hexOutput.textContent = "—";
+
+  hideError();
+
+  numberInput.focus();
+});
+
+document.querySelectorAll(".copy-btn").forEach(button => {
+
+  button.addEventListener("click", async function(){
+
+    const target = document.getElementById(this.dataset.target);
+    const value = target.textContent;
+
+    if(!value || value === "—") return;
+
+    try{
+
+      await navigator.clipboard.writeText(value);
+
+      const oldText = this.textContent;
+      this.textContent = "Copied!";
+
+      setTimeout(() => {
+        this.textContent = oldText;
+      }, 1200);
+
+    }catch(error){
+      showError("Gagal menyalin hasil.");
+    }
+
+  });
+
+});
+</script>
+
+</body>
+</html>

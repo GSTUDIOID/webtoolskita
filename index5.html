@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>WebToolsKita - Password Generator</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    color: white;
+    background:
+        radial-gradient(
+            circle at top left,
+            #24104f 0%,
+            #0b0714 35%,
+            #050509 100%
+        );
+}
+
+header {
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(5,5,9,0.80);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #a855f7;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-mini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+}
+
+.user-mini img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a855f7;
+}
+
+.user-mini-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-mini-name {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-mini-email {
+    font-size: 11px;
+    color: #aaa;
+}
+
+.logout-btn {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: #7c3aed;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #9333ea;
+}
+
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 50px 25px 80px;
+}
+
+.back-button {
+    display: inline-flex;
+    text-decoration: none;
+    color: #bbb;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.back-button:hover {
+    color: white;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title .icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.page-title h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.page-title h1 span {
+    color: #a855f7;
+}
+
+.page-title p {
+    color: #999;
+    font-size: 15px;
+}
+
+.tool-card {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 30px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.02)
+        );
+}
+
+.password-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+#password {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    background: #08070d;
+    color: white;
+    font-size: 18px;
+    outline: none;
+}
+
+#password:focus {
+    border-color: #a855f7;
+}
+
+.copy-btn {
+    border: none;
+    padding: 0 22px;
+    border-radius: 12px;
+    background: #a855f7;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.copy-btn:hover {
+    background: #c084fc;
+}
+
+.strength {
+    height: 8px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+#strengthBar {
+    height: 100%;
+    width: 0%;
+    transition: 0.3s;
+    background: #a855f7;
+}
+
+#strengthText {
+    color: #aaa;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.option {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.option label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #ddd;
+    font-size: 14px;
+}
+
+.option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #a855f7;
+}
+
+.length-box {
+    margin-bottom: 25px;
+}
+
+.length-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.length-top span:first-child {
+    color: #ddd;
+}
+
+#lengthValue {
+    color: #c084fc;
+    font-weight: 800;
+}
+
+#length {
+    width: 100%;
+    accent-color: #a855f7;
+}
+
+.generate-btn {
+    width: 100%;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    background: #7c3aed;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.generate-btn:hover {
+    background: #9333ea;
+    transform: translateY(-1px);
+}
+
+.info {
+    margin-top: 25px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(168,85,247,0.15);
+    color: #999;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050509;
+    z-index: 999;
+}
+
+.loading-box {
+    text-align: center;
+}
+
+.spinner {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.12);
+    border-top-color: #a855f7;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 15px;
+}
+
+.loading-box p {
+    color: #aaa;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 15px 18px;
+    }
+
+    .user-mini-info {
+        display: none;
+    }
+
+    main {
+        padding: 35px 18px 60px;
+    }
+
+    .page-title h1 {
+        font-size: 30px;
+    }
+
+    .options {
+        grid-template-columns: 1fr;
+    }
+
+    .password-box {
+        flex-direction: column;
+    }
+
+    .copy-btn {
+        padding: 13px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="loading">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <p>Memeriksa status login...</p>
+
+    </div>
+
+</div>
+
+
+<header>
+
+    <div class="logo">
+        WebTools<span>Kita</span>
+    </div>
+
+    <div class="header-right">
+
+        <div class="user-mini">
+
+            <img id="miniPhoto" src="" alt="Foto profil">
+
+            <div class="user-mini-info">
+
+                <div class="user-mini-name" id="miniName">
+                    Memuat...
+                </div>
+
+                <div class="user-mini-email" id="miniEmail">
+                    Memuat...
+                </div>
+
+            </div>
+
+        </div>
+
+        <button class="logout-btn" id="logoutBtn">
+            Keluar
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <a href="index3.html" class="back-button">
+        ← Kembali ke Tools
+    </a>
+
+
+    <section class="page-title">
+
+        <div class="icon">
+            🔐
+        </div>
+
+        <h1>
+            Password
+            <span>Generator</span>
+        </h1>
+
+        <p>
+            Buat password acak yang kuat dan aman.
+        </p>
+
+    </section>
+
+
+    <div class="tool-card">
+
+
+        <div class="password-box">
+
+            <input
+                type="text"
+                id="password"
+                readonly
+                placeholder="Password akan muncul di sini"
+            >
+
+            <button
+                class="copy-btn"
+                id="copyBtn"
+            >
+                Copy
+            </button>
+
+        </div>
+
+
+        <div class="strength">
+
+            <div id="strengthBar"></div>
+
+        </div>
+
+        <div id="strengthText">
+            Belum ada password
+        </div>
+
+
+        <div class="length-box">
+
+            <div class="length-top">
+
+                <span>
+                    Panjang Password
+                </span>
+
+                <span id="lengthValue">
+                    16
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="length"
+                min="6"
+                max="50"
+                value="16"
+            >
+
+        </div>
+
+
+        <div class="options">
+
+            <div class="option">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="uppercase"
+                        checked
+                    >
+
+                    Huruf Besar
+
+                </label>
+
+            </div>
+
+
+            <div class="option">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="lowercase"
+                        checked
+                    >
+
+                    Huruf Kecil
+
+                </label>
+
+            </div>
+
+
+            <div class="option">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="numbers"
+                        checked
+                    >
+
+                    Angka
+
+                </label>
+
+            </div>
+
+
+            <div class="option">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="symbols"
+                        checked
+                    >
+
+                    Simbol
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="generate-btn"
+            id="generateBtn"
+        >
+            🔄 Generate Password
+        </button>
+
+
+        <div class="info">
+
+            <strong>Tips:</strong>
+            Gunakan password yang berbeda untuk setiap akun.
+            Semakin panjang password, semakin sulit ditebak.
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+
+// ========================================
+// FIREBASE
+// ========================================
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
+
+};
+
+
+if (!firebase.apps.length) {
+
+    firebase.initializeApp(firebaseConfig);
+
+}
+
+
+const auth = firebase.auth();
+
+
+// ========================================
+// ELEMENTS
+// ========================================
+
+const loading =
+    document.getElementById("loading");
+
+const miniPhoto =
+    document.getElementById("miniPhoto");
+
+const miniName =
+    document.getElementById("miniName");
+
+const miniEmail =
+    document.getElementById("miniEmail");
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+const password =
+    document.getElementById("password");
+
+const length =
+    document.getElementById("length");
+
+const lengthValue =
+    document.getElementById("lengthValue");
+
+const uppercase =
+    document.getElementById("uppercase");
+
+const lowercase =
+    document.getElementById("lowercase");
+
+const numbers =
+    document.getElementById("numbers");
+
+const symbols =
+    document.getElementById("symbols");
+
+const generateBtn =
+    document.getElementById("generateBtn");
+
+const copyBtn =
+    document.getElementById("copyBtn");
+
+const strengthBar =
+    document.getElementById("strengthBar");
+
+const strengthText =
+    document.getElementById("strengthText");
+
+
+// ========================================
+// CEK LOGIN
+// ========================================
+
+auth.onAuthStateChanged((user) => {
+
+    if (!user) {
+
+        window.location.href =
+            "index2.html";
+
+        return;
+
+    }
+
+    miniName.textContent =
+        user.displayName || "User";
+
+    miniEmail.textContent =
+        user.email || "";
+
+    if (user.photoURL) {
+
+        miniPhoto.src =
+            user.photoURL;
+
+    }
+
+    loading.style.display =
+        "none";
+
+});
+
+
+// ========================================
+// LENGTH
+// ========================================
+
+length.addEventListener("input", () => {
+
+    lengthValue.textContent =
+        length.value;
+
+});
+
+
+// ========================================
+// GENERATE PASSWORD
+// ========================================
+
+function generatePassword() {
+
+    let characters = "";
+
+    if (uppercase.checked) {
+        characters +=
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+
+    if (lowercase.checked) {
+        characters +=
+            "abcdefghijklmnopqrstuvwxyz";
+    }
+
+    if (numbers.checked) {
+        characters +=
+            "0123456789";
+    }
+
+    if (symbols.checked) {
+        characters +=
+            "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    }
+
+
+    if (!characters) {
+
+        alert(
+            "Pilih minimal satu jenis karakter."
+        );
+
+        return;
+
+    }
+
+
+    const passwordLength =
+        Number(length.value);
+
+
+    let result = "";
+
+
+    const randomArray =
+        new Uint32Array(passwordLength);
+
+    crypto.getRandomValues(
+        randomArray
+    );
+
+
+    for (
+        let i = 0;
+        i < passwordLength;
+        i++
+    ) {
+
+        result +=
+            characters[
+                randomArray[i] %
+                characters.length
+            ];
+
+    }
+
+
+    password.value =
+        result;
+
+
+    updateStrength(result);
+
+}
+
+
+// ========================================
+// STRENGTH
+// ========================================
+
+function updateStrength(value) {
+
+    let score = 0;
+
+
+    if (value.length >= 8) {
+        score++;
+    }
+
+    if (value.length >= 12) {
+        score++;
+    }
+
+    if (/[A-Z]/.test(value)) {
+        score++;
+    }
+
+    if (/[a-z]/.test(value)) {
+        score++;
+    }
+
+    if (/[0-9]/.test(value)) {
+        score++;
+    }
+
+    if (/[^A-Za-z0-9]/.test(value)) {
+        score++;
+    }
+
+
+    const percent =
+        Math.min(
+            score * 16.67,
+            100
+        );
+
+
+    strengthBar.style.width =
+        percent + "%";
+
+
+    if (score <= 2) {
+
+        strengthText.textContent =
+            "Kekuatan: Lemah";
+
+    } else if (score <= 4) {
+
+        strengthText.textContent =
+            "Kekuatan: Sedang";
+
+    } else {
+
+        strengthText.textContent =
+            "Kekuatan: Sangat kuat";
+
+    }
+
+}
+
+
+// ========================================
+// GENERATE BUTTON
+// ========================================
+
+generateBtn.addEventListener(
+    "click",
+    generatePassword
+);
+
+
+// ========================================
+// COPY
+// ========================================
+
+copyBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!password.value) {
+
+            alert(
+                "Generate password terlebih dahulu."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                password.value
+            );
+
+            copyBtn.textContent =
+                "✓ Copied!";
+
+            setTimeout(() => {
+
+                copyBtn.textContent =
+                    "Copy";
+
+            }, 1500);
+
+        } catch (error) {
+
+            alert(
+                "Gagal menyalin password."
+            );
+
+        }
+
+    }
+);
+
+
+// ========================================
+// LOGOUT
+// ========================================
+
+logoutBtn.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            logoutBtn.disabled =
+                true;
+
+            logoutBtn.textContent =
+                "Keluar...";
+
+            await auth.signOut();
+
+            window.location.href =
+                "index2.html";
+
+        } catch (error) {
+
+            console.error(error);
+
+            logoutBtn.disabled =
+                false;
+
+            logoutBtn.textContent =
+                "Keluar";
+
+        }
+
+    }
+);
+
+
+// ========================================
+// AUTO GENERATE
+// ========================================
+
+generatePassword();
+
+
+</script>
+
+</body>
+
+</html>

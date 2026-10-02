@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>APEX CROWN - Agency Operation</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Segoe UI,Arial,sans-serif;
+}
+
+body{
+margin:0;
+background:
+radial-gradient(circle at top,#32105b,#050505 75%);
+color:white;
+}
+
+.layout{
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+width:280px;
+height:100vh;
+overflow-y:auto;
+background:#070711;
+border-right:1px solid #35205a;
+padding:20px;
+}
+
+.sidebar::-webkit-scrollbar{
+width:6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+background:#8b35ff;
+border-radius:20px;
+}
+
+.logo{
+text-align:center;
+margin-bottom:30px;
+}
+
+.logo h1{
+color:#d58cff;
+}
+
+.logo span{
+color:#ffd34d;
+}
+
+.menu button{
+width:100%;
+padding:14px;
+margin-bottom:10px;
+border:0;
+border-radius:14px;
+background:rgba(255,255,255,.08);
+color:white;
+cursor:pointer;
+text-align:left;
+transition:.3s;
+}
+
+.menu button:hover,
+.menu button.active{
+background:
+linear-gradient(90deg,#7b2cff,#00c8ff);
+}
+
+.status{
+margin-top:25px;
+background:rgba(255,255,255,.08);
+padding:15px;
+border-radius:15px;
+font-size:13px;
+}
+
+/* MAIN */
+
+.main{
+margin-left:280px;
+padding:25px;
+width:100%;
+}
+
+.back{
+display:inline-block;
+background:#111;
+color:white;
+padding:12px 20px;
+border-radius:12px;
+text-decoration:none;
+}
+
+.hero{
+margin-top:20px;
+padding:30px;
+border-radius:25px;
+background:
+linear-gradient(
+120deg,
+rgba(120,40,255,.35),
+rgba(0,200,255,.15)
+);
+border:1px solid #542b82;
+}
+
+.hero h1{
+font-size:38px;
+}
+
+.gold{
+color:#ffd34d;
+}
+
+.badge{
+background:#064;
+color:#8cffbb;
+padding:8px 15px;
+border-radius:20px;
+display:inline-block;
+}
+
+.page{
+display:none;
+margin-top:25px;
+}
+
+.page.active{
+display:block;
+}
+
+.cards{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(230px,1fr));
+gap:20px;
+}
+
+.card{
+background:
+rgba(255,255,255,.08);
+border:1px solid #33205a;
+border-radius:20px;
+padding:20px;
+}
+
+.card h2{
+color:#d58cff;
+}
+
+input,select,textarea{
+width:100%;
+padding:12px;
+margin:8px 0;
+background:#080808;
+color:white;
+border:1px solid #333;
+border-radius:10px;
+}
+
+.btn{
+padding:12px 20px;
+border:0;
+border-radius:12px;
+background:
+linear-gradient(90deg,#792cff,#00c8ff);
+color:white;
+cursor:pointer;
+}
+
+.btn:hover{
+opacity:.85;
+}
+
+.btn-danger{
+background:linear-gradient(90deg,#8b1e1e,#ff4d4d);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #333;
+text-align:left;
+}
+
+.green{
+color:#00ff99;
+}
+
+.yellow{
+color:#ffd34d;
+}
+
+.red{
+color:#ff6666;
+}
+
+.blue{
+color:#00c8ff;
+}
+
+.small{
+font-size:13px;
+opacity:.7;
+}
+
+.stat-number{
+font-size:28px;
+font-weight:bold;
+margin-top:8px;
+}
+
+.badge-small{
+display:inline-block;
+padding:5px 10px;
+border-radius:15px;
+font-size:11px;
+background:rgba(0,200,255,.15);
+color:#00c8ff;
+}
+
+.divider{
+height:1px;
+background:#33205a;
+margin:20px 0;
+}
+
+.empty{
+text-align:center;
+padding:25px;
+opacity:.6;
+}
+
+.activity{
+padding:12px 0;
+border-bottom:1px solid #292929;
+}
+
+.activity:last-child{
+border-bottom:0;
+}
+
+.actions{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-top:12px;
+}
+
+.actions .btn{
+padding:9px 14px;
+font-size:12px;
+}
+
+@media(max-width:800px){
+
+.sidebar{
+width:220px;
+}
+
+.main{
+margin-left:220px;
+}
+
+}
+
+@media(max-width:600px){
+
+.sidebar{
+position:relative;
+width:100%;
+height:auto;
+}
+
+.main{
+margin-left:0;
+}
+
+.layout{
+display:block;
+}
+
+}
+
+/* TOAST */
+
+#toast{
+position:fixed;
+right:25px;
+bottom:25px;
+background:#111;
+border:1px solid #542b82;
+padding:15px 20px;
+border-radius:14px;
+display:none;
+z-index:9999;
+box-shadow:0 0 25px rgba(123,44,255,.25);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<div class="logo">
+
+<h1>
+🏢 APEX <span>AGENCY</span>
+</h1>
+
+<p>
+OPERATION CENTER
+</p>
+
+</div>
+
+<div class="menu">
+
+<button class="active"
+onclick="openPage('dashboard',this)">
+🏠 Agency Dashboard
+</button>
+
+<button
+onclick="openPage('company',this)">
+🏢 Company Profile
+</button>
+
+<button
+onclick="openPage('employee',this)">
+👥 Employee Management
+</button>
+
+<button
+onclick="openPage('sales',this)">
+📦 Sales Report
+</button>
+
+<button
+onclick="openPage('bank',this)">
+🏦 Payout Directory
+</button>
+
+<button
+onclick="openPage('connection',this)">
+🔗 CEO Connection
+</button>
+
+<button
+onclick="openPage('security',this)">
+🔐 Agency Security
+</button>
+
+</div>
+
+<div class="status">
+
+<b>
+AGENCY STATUS
+</b>
+
+<br><br>
+
+🟢 <span class="green">Connected</span>
+
+<br><br>
+
+CEO Link:
+<span id="sideCEO" class="yellow">
+Waiting
+</span>
+
+<br><br>
+
+System:
+<span class="green">
+Secure
+</span>
+
+</div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<a class="back" href="index3.html">
+⬅ Kembali Tools
+</a>
+
+
+<div class="hero">
+
+<h1>
+
+WELCOME
+
+<br>
+
+<span class="gold">
+AGENCY OPERATION
+</span>
+
+</h1>
+
+<p>
+
+APEX CROWN ENTERPRISE
+
+<br>
+
+Branch Business Management System
+
+</p>
+
+<span class="badge">
+SECURED AGENCY ENVIRONMENT
+</span>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="page active">
+
+<div class="cards">
+
+<div class="card">
+
+<h2>Company</h2>
+
+<div
+id="dashboardCompany"
+class="stat-number">
+Not Registered
+</div>
+
+<p class="small">
+Agency profile status
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>Employee</h2>
+
+<div
+id="dashboardEmployee"
+class="stat-number">
+0
+</div>
+
+<p class="small">
+Registered employees
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>Daily Sales</h2>
+
+<div
+id="dashboardSales"
+class="stat-number">
+Rp 0
+</div>
+
+<p class="small">
+Current recorded sales
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>CEO Connection</h2>
+
+<div
+id="dashboardCEO"
+class="stat-number yellow">
+Waiting
+</div>
+
+<p class="small">
+Authorization status
+</p>
+
+</div>
+
+</div>
+
+
+<br>
+
+
+<div class="cards">
+
+<div class="card">
+
+<h2>📊 Agency Overview</h2>
+
+<p>
+Total Transactions:
+<strong id="totalTransactions">
+0
+</strong>
+</p>
+
+<p>
+Approved:
+<strong
+id="approvedTransactions"
+class="green">
+0
+</strong>
+</p>
+
+<p>
+Pending:
+<strong
+id="pendingTransactions"
+class="yellow">
+0
+</strong>
+</p>
+
+<p>
+Rejected:
+<strong
+id="rejectedTransactions"
+class="red">
+0
+</strong>
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>⚡ Quick Actions</h2>
+
+<div class="actions">
+
+<button class="btn"
+onclick="openPageById('company')">
+Company Profile
+</button>
+
+<button class="btn"
+onclick="openPageById('employee')">
+Add Employee
+</button>
+
+<button class="btn"
+onclick="openPageById('sales')">
+Record Sale
+</button>
+
+<button class="btn"
+onclick="openPageById('connection')">
+CEO Connection
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<br>
+
+
+<div class="card">
+
+<h2>🕒 Recent Agency Activity</h2>
+
+<div id="activityList">
+
+<div class="empty">
+Belum ada aktivitas agency.
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- COMPANY -->
+
+<section id="company" class="page">
+
+<div class="card">
+
+<h2>
+🏢 Company Profile
+</h2>
+
+<p class="small">
+Kelola identitas resmi agency dan informasi cabang.
+</p>
+
+<div class="divider"></div>
+
+<input
+id="companyName"
+placeholder="Nama Perusahaan">
+
+<input
+id="branchName"
+placeholder="Nama Cabang">
+
+<input
+id="city"
+placeholder="Kabupaten / Kota">
+
+<input
+id="province"
+placeholder="Provinsi">
+
+<input
+id="address"
+placeholder="Alamat Operasional">
+
+<input
+id="agencyCode"
+placeholder="Agency Code">
+
+<select id="companyStatus">
+
+<option value="active">
+ACTIVE
+</option>
+
+<option value="inactive">
+INACTIVE
+</option>
+
+</select>
+
+<br>
+
+<button
+class="btn"
+onclick="saveCompany()">
+Save Company
+</button>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>
+📋 Current Company Data
+</h2>
+
+<div id="companyPreview">
+Belum ada data perusahaan.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- EMPLOYEE -->
+
+<section id="employee" class="page">
+
+<div class="card">
+
+<h2>
+👥 Employee Management
+</h2>
+
+<p class="small">
+Tambahkan dan kelola anggota agency.
+</p>
+
+<input
+id="employeeName"
+placeholder="Nama Pegawai">
+
+<input
+id="employeeId"
+placeholder="ID Pegawai">
+
+<input
+id="employeeRole"
+placeholder="Jabatan">
+
+<input
+id="employeeWhatsapp"
+placeholder="WhatsApp">
+
+<select id="employeeStatus">
+
+<option value="Active">
+Active
+</option>
+
+<option value="Inactive">
+Inactive
+</option>
+
+</select>
+
+<br>
+
+<button
+class="btn"
+onclick="addEmployee()">
+Add Employee
+</button>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>
+📋 Employee Directory
+</h2>
+
+<div style="overflow-x:auto;">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Nama</th>
+
+<th>Jabatan</th>
+
+<th>WhatsApp</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="employeeTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SALES -->
+
+<section id="sales" class="page">
+
+<div class="card">
+
+<h2>
+📦 Daily Sales Report
+</h2>
+
+<p class="small">
+Catat transaksi penjualan agency.
+</p>
+
+<select id="saleType">
+
+<option>
+Digital Product
+</option>
+
+<option>
+Physical Product
+</option>
+
+<option>
+Service
+</option>
+
+</select>
+
+<input
+id="saleProduct"
+placeholder="Nama Produk">
+
+<input
+id="saleCustomer"
+placeholder="Nama Customer">
+
+<input
+id="saleAmount"
+type="number"
+placeholder="Nominal Penjualan">
+
+<input
+id="saleProof"
+placeholder="Link Bukti / Nomor Resi">
+
+<button
+class="btn"
+onclick="submitSale()">
+Submit Sales
+</button>
+
+</div>
+
+
+<br>
+
+
+<div class="card">
+
+<h2>
+📊 Sales History
+</h2>
+
+<div style="overflow-x:auto;">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Product</th>
+
+<th>Customer</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="salesTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- BANK -->
+
+<section id="bank" class="page">
+
+<div class="card">
+
+<h2>
+🏦 Payout Directory
+</h2>
+
+<p class="small">
+Data rekening tujuan payout agency.
+</p>
+
+<input
+id="bankOwner"
+placeholder="Nama Pemilik Rekening">
+
+<input
+id="bankName"
+placeholder="Nama Bank">
+
+<input
+id="bankNumber"
+placeholder="Nomor Rekening">
+
+<input
+id="bankBranch"
+placeholder="Cabang Bank">
+
+<input
+id="bankWhatsapp"
+placeholder="Nomor WhatsApp">
+
+<button
+class="btn"
+onclick="saveBank()">
+Save Bank Data
+</button>
+
+</div>
+
+
+<br>
+
+
+<div class="card">
+
+<h2>
+💰 Payout Status
+</h2>
+
+<div id="bankPreview">
+
+Belum ada data payout.
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CEO CONNECTION -->
+
+<section id="connection" class="page">
+
+<div class="card">
+
+<h2>
+🔗 CEO Connection
+</h2>
+
+<p class="small">
+
+Hubungkan agency dengan CEO Command Center.
+
+</p>
+
+<input
+id="ceoCode"
+placeholder="CEO Connection Code">
+
+<button
+class="btn"
+onclick="connectCEO()">
+Connect CEO
+</button>
+
+<br><br>
+
+<p>
+Status:
+
+<span
+id="ceoStatus"
+class="yellow">
+WAITING APPROVAL
+</span>
+</p>
+
+<div class="divider"></div>
+
+<p>
+CEO Command Center:
+</p>
+
+<a
+href="index48.html"
+class="btn"
+style="display:inline-block;text-decoration:none;">
+Open CEO Command Center
+</a>
+
+</div>
+
+</section>
+
+
+<!-- SECURITY -->
+
+<section id="security" class="page">
+
+<div class="cards">
+
+<div class="card">
+
+<h2>
+🔐 Access Control
+</h2>
+
+<p>
+Status:
+<span class="green">
+ACTIVE
+</span>
+</p>
+
+<p class="small">
+Agency dashboard access is enabled.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+🛡 Authorization</h2>
+
+<p>
+CEO Authorization:
+<span
+id="securityCEO"
+class="yellow">
+REQUIRED
+</span>
+</p>
+
+<p class="small">
+Sensitive agency operations may require CEO approval.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+🔒 Session</h2>
+
+<p>
+Session:
+<span class="green">
+ACTIVE
+</span>
+</p>
+
+<p>
+Environment:
+<span class="green">
+SECURED
+</span>
+</p>
+
+</div>
+
+</div>
+
+
+<br>
+
+
+<div class="card">
+
+<h2>
+📜 Security Information
+</h2>
+
+<p>
+Agency Code:
+<span id="securityAgencyCode">
+Not Registered
+</span>
+</p>
+
+<p>
+CEO Connection:
+<span id="securityConnection">
+Waiting
+</span>
+</p>
+
+<p>
+System Status:
+<span class="green">
+SECURE
+</span>
+</p>
+
+</div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<script>
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+const STORAGE = {
+
+company:
+"apex_agency_company",
+
+employees:
+"apex_agency_employees",
+
+sales:
+"apex_agency_sales",
+
+bank:
+"apex_agency_bank",
+
+ceo:
+"apex_agency_ceo",
+
+activity:
+"apex_agency_activity"
+
+};
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function getData(key, fallback){
+
+try{
+
+const data =
+localStorage.getItem(key);
+
+return data
+? JSON.parse(data)
+: fallback;
+
+}catch{
+
+return fallback;
+
+}
+
+}
+
+
+function saveData(key,data){
+
+localStorage.setItem(
+key,
+JSON.stringify(data)
+);
+
+}
+
+
+function showToast(message){
+
+const toast =
+document.getElementById("toast");
+
+toast.textContent =
+message;
+
+toast.style.display =
+"block";
+
+setTimeout(()=>{
+
+toast.style.display =
+"none";
+
+},2500);
+
+}
+
+
+function formatRupiah(value){
+
+return new Intl.NumberFormat(
+"id-ID",
+{
+style:"currency",
+currency:"IDR",
+maximumFractionDigits:0
+}
+).format(
+Number(value)||0
+);
+
+}
+
+
+function addActivity(message){
+
+const activity =
+getData(
+STORAGE.activity,
+[]
+);
+
+activity.unshift({
+
+message,
+
+time:
+new Date().toLocaleString(
+"id-ID"
+)
+
+});
+
+saveData(
+STORAGE.activity,
+activity.slice(0,20)
+);
+
+renderActivity();
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function openPage(id,button){
+
+document
+.querySelectorAll(".page")
+.forEach(page=>{
+
+page.classList.remove(
+"active"
+);
+
+});
+
+
+const page =
+document.getElementById(id);
+
+if(page){
+
+page.classList.add(
+"active"
+);
+
+}
+
+
+document
+.querySelectorAll(".menu button")
+.forEach(btn=>{
+
+btn.classList.remove(
+"active"
+);
+
+});
+
+
+if(button){
+
+button.classList.add(
+"active"
+);
+
+}
+
+}
+
+
+function openPageById(id){
+
+const button =
+[...document.querySelectorAll(
+".menu button"
+)]
+.find(btn =>
+btn.getAttribute(
+"onclick"
+)?.includes(
+"'" + id + "'"
+)
+);
+
+openPage(id,button);
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* =====================================================
+   COMPANY
+===================================================== */
+
+function saveCompany(){
+
+const company = {
+
+name:
+document.getElementById(
+"companyName"
+).value.trim(),
+
+branch:
+document.getElementById(
+"branchName"
+).value.trim(),
+
+city:
+document.getElementById(
+"city"
+).value.trim(),
+
+province:
+document.getElementById(
+"province"
+).value.trim(),
+
+address:
+document.getElementById(
+"address"
+).value.trim(),
+
+agencyCode:
+document.getElementById(
+"agencyCode"
+).value.trim(),
+
+status:
+document.getElementById(
+"companyStatus"
+).value
+
+};
+
+
+if(!company.name){
+
+showToast(
+"Nama perusahaan wajib diisi."
+);
+
+return;
+
+}
+
+
+saveData(
+STORAGE.company,
+company
+);
+
+addActivity(
+"Company profile diperbarui."
+);
+
+renderAll();
+
+showToast(
+"Company profile berhasil disimpan."
+);
+
+}
+
+
+/* =====================================================
+   EMPLOYEE
+===================================================== */
+
+function addEmployee(){
+
+const name =
+document.getElementById(
+"employeeName"
+).value.trim();
+
+const id =
+document.getElementById(
+"employeeId"
+).value.trim();
+
+const role =
+document.getElementById(
+"employeeRole"
+).value.trim();
+
+const whatsapp =
+document.getElementById(
+"employeeWhatsapp"
+).value.trim();
+
+const status =
+document.getElementById(
+"employeeStatus"
+).value;
+
+
+if(!name || !id){
+
+showToast(
+"Nama dan ID pegawai wajib diisi."
+);
+
+return;
+
+}
+
+
+const employees =
+getData(
+STORAGE.employees,
+[]
+);
+
+
+employees.push({
+
+id,
+
+name,
+
+role,
+
+whatsapp,
+
+status,
+
+createdAt:
+new Date().toISOString()
+
+});
+
+
+saveData(
+STORAGE.employees,
+employees
+);
+
+
+document.getElementById(
+"employeeName"
+).value="";
+
+document.getElementById(
+"employeeId"
+).value="";
+
+document.getElementById(
+"employeeRole"
+).value="";
+
+document.getElementById(
+"employeeWhatsapp"
+).value="";
+
+
+addActivity(
+"Employee baru ditambahkan: "
++ name
+);
+
+renderAll();
+
+showToast(
+"Employee berhasil ditambahkan."
+);
+
+}
+
+
+function deleteEmployee(index){
+
+const employees =
+getData(
+STORAGE.employees,
+[]
+);
+
+if(!employees[index])
+return;
+
+const name =
+employees[index].name;
+
+employees.splice(
+index,
+1
+);
+
+saveData(
+STORAGE.employees,
+employees
+);
+
+addActivity(
+"Employee dihapus: "
++ name
+);
+
+renderAll();
+
+showToast(
+"Employee berhasil dihapus."
+);
+
+}
+
+
+/* =====================================================
+   SALES
+===================================================== */
+
+function submitSale(){
+
+const type =
+document.getElementById(
+"saleType"
+).value;
+
+const product =
+document.getElementById(
+"saleProduct"
+).value.trim();
+
+const customer =
+document.getElementById(
+"saleCustomer"
+).value.trim();
+
+const amount =
+Number(
+document.getElementById(
+"saleAmount"
+).value
+);
+
+const proof =
+document.getElementById(
+"saleProof"
+).value.trim();
+
+
+if(
+!product ||
+!customer ||
+!amount ||
+amount<=0
+){
+
+showToast(
+"Lengkapi data penjualan."
+);
+
+return;
+
+}
+
+
+const sales =
+getData(
+STORAGE.sales,
+[]
+);
+
+
+sales.push({
+
+id:
+"SALE-" +
+Date.now(),
+
+type,
+
+product,
+
+customer,
+
+amount,
+
+proof,
+
+status:
+"PENDING",
+
+createdAt:
+new Date().toISOString()
+
+});
+
+
+saveData(
+STORAGE.sales,
+sales
+);
+
+
+document.getElementById(
+"saleProduct"
+).value="";
+
+document.getElementById(
+"saleCustomer"
+).value="";
+
+document.getElementById(
+"saleAmount"
+).value="";
+
+document.getElementById(
+"saleProof"
+).value="";
+
+
+addActivity(
+"Sales baru dicatat: "
++ product
+);
+
+renderAll();
+
+showToast(
+"Sales berhasil dicatat."
+);
+
+}
+
+
+function deleteSale(index){
+
+const sales =
+getData(
+STORAGE.sales,
+[]
+);
+
+if(!sales[index])
+return;
+
+sales.splice(
+index,
+1
+);
+
+saveData(
+STORAGE.sales,
+sales
+);
+
+addActivity(
+"Data sales dihapus."
+);
+
+renderAll();
+
+showToast(
+"Sales berhasil dihapus."
+);
+
+}
+
+
+/* =====================================================
+   BANK
+===================================================== */
+
+function saveBank(){
+
+const bank={
+
+owner:
+document.getElementById(
+"bankOwner"
+).value.trim(),
+
+bank:
+document.getElementById(
+"bankName"
+).value.trim(),
+
+number:
+document.getElementById(
+"bankNumber"
+).value.trim(),
+
+branch:
+document.getElementById(
+"bankBranch"
+).value.trim(),
+
+whatsapp:
+document.getElementById(
+"bankWhatsapp"
+).value.trim()
+
+};
+
+
+if(
+!bank.owner ||
+!bank.bank ||
+!bank.number
+){
+
+showToast(
+"Lengkapi data rekening."
+);
+
+return;
+
+}
+
+
+saveData(
+STORAGE.bank,
+bank
+);
+
+addActivity(
+"Data payout directory diperbarui."
+);
+
+renderAll();
+
+showToast(
+"Data rekening berhasil disimpan."
+);
+
+}
+
+
+/* =====================================================
+   CEO
+===================================================== */
+
+function connectCEO(){
+
+const code =
+document.getElementById(
+"ceoCode"
+).value.trim();
+
+
+if(!code){
+
+showToast(
+"Masukkan CEO Connection Code."
+);
+
+return;
+
+}
+
+
+const ceo={
+
+code,
+
+status:
+"CONNECTED",
+
+connectedAt:
+new Date().toISOString()
+
+};
+
+
+saveData(
+STORAGE.ceo,
+ceo
+);
+
+addActivity(
+"Agency terhubung dengan CEO Command Center."
+);
+
+renderAll();
+
+showToast(
+"CEO connection berhasil dibuat."
+);
+
+}
+
+
+/* =====================================================
+   RENDER COMPANY
+===================================================== */
+
+function renderCompany(){
+
+const company =
+getData(
+STORAGE.company,
+null
+);
+
+
+if(!company){
+
+document.getElementById(
+"companyPreview"
+).innerHTML=
+`<div class="empty">
+Belum ada data perusahaan.
+</div>`;
+
+return;
+
+}
+
+
+document.getElementById(
+"companyName"
+).value =
+company.name || "";
+
+document.getElementById(
+"branchName"
+).value =
+company.branch || "";
+
+document.getElementById(
+"city"
+).value =
+company.city || "";
+
+document.getElementById(
+"province"
+).value =
+company.province || "";
+
+document.getElementById(
+"address"
+).value =
+company.address || "";
+
+document.getElementById(
+"agencyCode"
+).value =
+company.agencyCode || "";
+
+document.getElementById(
+"companyStatus"
+).value =
+company.status || "active";
+
+
+document.getElementById(
+"companyPreview"
+).innerHTML =
+
+`
+<p>
+<strong>Company:</strong>
+${escapeHTML(company.name)}
+</p>
+
+<p>
+<strong>Branch:</strong>
+${escapeHTML(company.branch || "-")}
+</p>
+
+<p>
+<strong>Location:</strong>
+${escapeHTML(company.city || "-")},
+${escapeHTML(company.province || "-")}
+</p>
+
+<p>
+<strong>Agency Code:</strong>
+<span class="blue">
+${escapeHTML(company.agencyCode || "-")}
+</span>
+</p>
+
+<p>
+<strong>Status:</strong>
+<span class="green">
+${escapeHTML(company.status)}
+</span>
+</p>
+`;
+
+}
+
+
+/* =====================================================
+   RENDER EMPLOYEES
+===================================================== */
+
+function renderEmployees(){
+
+const employees =
+getData(
+STORAGE.employees,
+[]
+);
+
+const table =
+document.getElementById(
+"employeeTable"
+);
+
+
+if(!employees.length){
+
+table.innerHTML=
+`
+<tr>
+<td colspan="6"
+class="empty">
+Belum ada employee.
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+
+table.innerHTML =
+employees.map(
+(employee,index)=>`
+
+<tr>
+
+<td>
+${escapeHTML(employee.id)}
+</td>
+
+<td>
+${escapeHTML(employee.name)}
+</td>
+
+<td>
+${escapeHTML(employee.role || "-")}
+</td>
+
+<td>
+${escapeHTML(employee.whatsapp || "-")}
+</td>
+
+<td>
+
+<span class="${
+employee.status==="Active"
+? "green"
+: "red"
+}">
+
+${escapeHTML(employee.status)}
+
+</span>
+
+</td>
+
+<td>
+
+<button
+class="btn btn-danger"
+onclick="deleteEmployee(${index})">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`
+).join("");
+
+}
+
+
+/* =====================================================
+   RENDER SALES
+===================================================== */
+
+function renderSales(){
+
+const sales =
+getData(
+STORAGE.sales,
+[]
+);
+
+const table =
+document.getElementById(
+"salesTable"
+);
+
+
+if(!sales.length){
+
+table.innerHTML=
+`
+<tr>
+<td colspan="5"
+class="empty">
+Belum ada transaksi.
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+
+table.innerHTML =
+sales.map(
+(sale,index)=>`
+
+<tr>
+
+<td>
+${escapeHTML(sale.product)}
+</td>
+
+<td>
+${escapeHTML(sale.customer)}
+</td>
+
+<td>
+${formatRupiah(sale.amount)}
+</td>
+
+<td>
+
+<span class="${
+sale.status==="APPROVED"
+? "green"
+: sale.status==="REJECTED"
+? "red"
+: "yellow"
+}">
+
+${escapeHTML(sale.status)}
+
+</span>
+
+</td>
+
+<td>
+
+<button
+class="btn btn-danger"
+onclick="deleteSale(${index})">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`
+).join("");
+
+}
+
+
+/* =====================================================
+   RENDER BANK
+===================================================== */
+
+function renderBank(){
+
+const bank =
+getData(
+STORAGE.bank,
+null
+);
+
+
+if(!bank){
+
+document.getElementById(
+"bankPreview"
+).innerHTML=
+`
+<div class="empty">
+Belum ada data payout.
+</div>
+`;
+
+return;
+
+}
+
+
+document.getElementById(
+"bankOwner"
+).value =
+bank.owner || "";
+
+document.getElementById(
+"bankName"
+).value =
+bank.bank || "";
+
+document.getElementById(
+"bankNumber"
+).value =
+bank.number || "";
+
+document.getElementById(
+"bankBranch"
+).value =
+bank.branch || "";
+
+document.getElementById(
+"bankWhatsapp"
+).value =
+bank.whatsapp || "";
+
+
+document.getElementById(
+"bankPreview"
+).innerHTML=
+
+`
+<p>
+<strong>Owner:</strong>
+${escapeHTML(bank.owner)}
+</p>
+
+<p>
+<strong>Bank:</strong>
+${escapeHTML(bank.bank)}
+</p>
+
+<p>
+<strong>Account:</strong>
+${escapeHTML(bank.number)}
+</p>
+
+<p>
+<strong>Branch:</strong>
+${escapeHTML(bank.branch || "-")}
+</p>
+
+<p>
+<strong>Status:</strong>
+<span class="green">
+READY FOR PAYOUT
+</span>
+</p>
+`;
+
+}
+
+
+/* =====================================================
+   RENDER CEO
+===================================================== */
+
+function renderCEO(){
+
+const ceo =
+getData(
+STORAGE.ceo,
+null
+);
+
+
+const status =
+document.getElementById(
+"ceoStatus"
+);
+
+const dashboard =
+document.getElementById(
+"dashboardCEO"
+);
+
+const side =
+document.getElementById(
+"sideCEO"
+);
+
+const security =
+document.getElementById(
+"securityConnection"
+);
+
+const securityCEO =
+document.getElementById(
+"securityCEO"
+);
+
+
+if(!ceo){
+
+status.textContent =
+"WAITING APPROVAL";
+
+status.className =
+"yellow";
+
+dashboard.textContent =
+"Waiting";
+
+dashboard.className =
+"stat-number yellow";
+
+side.textContent =
+"Waiting";
+
+side.className =
+"yellow";
+
+security.textContent =
+"Waiting";
+
+securityCEO.textContent =
+"REQUIRED";
+
+securityCEO.className =
+"yellow";
+
+return;
+
+}
+
+
+status.textContent =
+"CONNECTED";
+
+status.className =
+"green";
+
+dashboard.textContent =
+"Connected";
+
+dashboard.className =
+"stat-number green";
+
+side.textContent =
+"Connected";
+
+side.className =
+"green";
+
+security.textContent =
+"Connected";
+
+securityCEO.textContent =
+"AUTHORIZED";
+
+securityCEO.className =
+"green";
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function renderDashboard(){
+
+const company =
+getData(
+STORAGE.company,
+null
+);
+
+const employees =
+getData(
+STORAGE.employees,
+[]
+);
+
+const sales =
+getData(
+STORAGE.sales,
+[]
+);
+
+
+const total =
+sales.reduce(
+(sum,sale)=>
+sum + Number(sale.amount||0),
+0
+);
+
+
+document.getElementById(
+"dashboardCompany"
+).textContent =
+company
+? company.name
+: "Not Registered";
+
+
+document.getElementById(
+"dashboardEmployee"
+).textContent =
+employees.length;
+
+
+document.getElementById(
+"dashboardSales"
+).textContent =
+formatRupiah(total);
+
+
+document.getElementById(
+"totalTransactions"
+).textContent =
+sales.length;
+
+
+document.getElementById(
+"approvedTransactions"
+).textContent =
+sales.filter(
+s=>s.status==="APPROVED"
+).length;
+
+
+document.getElementById(
+"pendingTransactions"
+).textContent =
+sales.filter(
+s=>s.status==="PENDING"
+).length;
+
+
+document.getElementById(
+"rejectedTransactions"
+).textContent =
+sales.filter(
+s=>s.status==="REJECTED"
+).length;
+
+
+const companyCode =
+document.getElementById(
+"securityAgencyCode"
+);
+
+companyCode.textContent =
+company?.agencyCode ||
+"Not Registered";
+
+}
+
+
+/* =====================================================
+   ACTIVITY
+===================================================== */
+
+function renderActivity(){
+
+const activity =
+getData(
+STORAGE.activity,
+[]
+);
+
+const container =
+document.getElementById(
+"activityList"
+);
+
+
+if(!activity.length){
+
+container.innerHTML=
+`
+<div class="empty">
+Belum ada aktivitas agency.
+</div>
+`;
+
+return;
+
+}
+
+
+container.innerHTML =
+activity.slice(0,8)
+.map(item=>`
+
+<div class="activity">
+
+<strong>
+${escapeHTML(item.message)}
+</strong>
+
+<br>
+
+<span class="small">
+${escapeHTML(item.time)}
+</span>
+
+</div>
+
+`)
+.join("");
+
+}
+
+
+/* =====================================================
+   SECURITY
+===================================================== */
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   MASTER RENDER
+===================================================== */
+
+function renderAll(){
+
+renderCompany();
+
+renderEmployees();
+
+renderSales();
+
+renderBank();
+
+renderCEO();
+
+renderDashboard();
+
+renderActivity();
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+renderAll();
+
+</script>
+
+</body>
+</html>

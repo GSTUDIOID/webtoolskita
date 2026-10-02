@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The Vault - WebToolsKita</title>
+
+<style>
+:root{
+    --bg:#06050a;
+    --panel:#0e0b16;
+    --panel2:#151020;
+    --panel3:#1b1428;
+    --line:#302144;
+    --text:#f8f2ff;
+    --muted:#a99bb8;
+    --purple:#9b5cff;
+    --purple2:#6d35d9;
+    --green:#35d39a;
+    --blue:#55a8ff;
+    --yellow:#ffc857;
+    --red:#ff5f7a;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:
+        radial-gradient(circle at 10% 5%,rgba(155,92,255,.18),transparent 28%),
+        radial-gradient(circle at 90% 10%,rgba(85,168,255,.10),transparent 25%),
+        linear-gradient(135deg,#050409,#0b0712 55%,#07050d);
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.18;
+    background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:42px 42px;
+}
+
+.wrap{
+    width:min(1180px,calc(100% - 32px));
+    margin:auto;
+    padding:25px 0 55px;
+    position:relative;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.back{
+    color:#ddd3ea;
+    text-decoration:none;
+    border:1px solid var(--line);
+    background:#100b1bd9;
+    padding:11px 16px;
+    border-radius:12px;
+    font-weight:800;
+    transition:.25s;
+}
+
+.back:hover{
+    transform:translateY(-2px);
+    border-color:var(--purple);
+    color:#fff;
+}
+
+.admin{
+    font-size:12px;
+    color:#cfc2dc;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 13px var(--green);
+}
+
+.hero{
+    position:relative;
+    overflow:hidden;
+    padding:32px;
+    border:1px solid var(--line);
+    border-radius:28px;
+    background:
+        linear-gradient(145deg,#1a1029f5,#0b0813f5);
+    box-shadow:0 20px 60px #00000060;
+}
+
+.hero:after{
+    content:"";
+    position:absolute;
+    width:300px;
+    height:300px;
+    right:-120px;
+    top:-140px;
+    border-radius:50%;
+    background:#9b5cff1c;
+    filter:blur(5px);
+}
+
+.kicker{
+    color:#bd92ff;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.hero h1{
+    margin:9px 0 10px;
+    font-size:clamp(34px,6vw,54px);
+    line-height:1;
+}
+
+.hero p{
+    max-width:760px;
+    margin:0;
+    color:var(--muted);
+    line-height:1.7;
+    font-size:14px;
+}
+
+.security-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:19px;
+    padding:8px 13px;
+    border-radius:999px;
+    color:#cdb8ff;
+    background:#9b5cff12;
+    border:1px solid #9b5cff45;
+    font-size:11px;
+    font-weight:900;
+}
+
+.lock-screen{
+    margin-top:20px;
+    padding:34px;
+    text-align:center;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:linear-gradient(145deg,#120d1df2,#0c0813f2);
+    box-shadow:0 15px 45px #00000045;
+}
+
+.lock-icon{
+    width:82px;
+    height:82px;
+    margin:0 auto 15px;
+    display:grid;
+    place-items:center;
+    border-radius:24px;
+    font-size:38px;
+    background:linear-gradient(145deg,#9b5cff,#5423ae);
+    box-shadow:0 12px 35px #6d35d955;
+}
+
+.lock-screen h2{
+    margin:0 0 7px;
+}
+
+.lock-screen p{
+    color:var(--muted);
+    font-size:13px;
+    margin:0 auto 20px;
+    max-width:500px;
+    line-height:1.6;
+}
+
+.unlock-row{
+    display:flex;
+    max-width:470px;
+    margin:auto;
+    gap:9px;
+}
+
+.input{
+    flex:1;
+    min-width:0;
+    padding:13px 14px;
+    color:#fff;
+    background:#08060d;
+    border:1px solid var(--line);
+    border-radius:12px;
+    outline:none;
+    font-size:14px;
+}
+
+.input:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 3px #9b5cff12;
+}
+
+.btn{
+    border:0;
+    cursor:pointer;
+    color:#fff;
+    padding:12px 17px;
+    border-radius:12px;
+    font-weight:900;
+    transition:.22s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#9b5cff,#6d35d9);
+    box-shadow:0 8px 25px #6d35d944;
+}
+
+.btn-secondary{
+    background:#171021;
+    border:1px solid var(--line);
+}
+
+.btn-danger{
+    background:#ff5f7a16;
+    border:1px solid #ff5f7a45;
+    color:#ff8ba0;
+}
+
+.vault{
+    display:none;
+}
+
+.vault-toolbar{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.stats{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.stat{
+    padding:10px 13px;
+    border:1px solid var(--line);
+    background:#100b1be8;
+    border-radius:12px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.stat b{
+    color:#fff;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.search{
+    margin-top:16px;
+    width:100%;
+}
+
+.items{
+    margin-top:17px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.item{
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:20px;
+    background:linear-gradient(145deg,#120c1df2,#0b0813f2);
+    transition:.25s;
+}
+
+.item:hover{
+    transform:translateY(-3px);
+    border-color:#58388e;
+}
+
+.item-head{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+}
+
+.item-title{
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+
+.item-icon{
+    width:43px;
+    height:43px;
+    display:grid;
+    place-items:center;
+    border-radius:13px;
+    background:#9b5cff16;
+    border:1px solid #9b5cff35;
+    font-size:21px;
+}
+
+.item h3{
+    margin:0 0 4px;
+    font-size:15px;
+}
+
+.type{
+    color:#8f819e;
+    font-size:10px;
+    text-transform:uppercase;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.secret{
+    margin-top:17px;
+    padding:12px;
+    border-radius:12px;
+    background:#08060d;
+    border:1px solid #241a32;
+    color:#bcb0c8;
+    font-family:Consolas,monospace;
+    font-size:12px;
+    word-break:break-all;
+}
+
+.item-actions{
+    display:flex;
+    gap:7px;
+    margin-top:13px;
+}
+
+.small-btn{
+    border:1px solid var(--line);
+    background:#171021;
+    color:#d9cde3;
+    border-radius:9px;
+    padding:7px 10px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:800;
+}
+
+.small-btn:hover{
+    border-color:var(--purple);
+    color:#fff;
+}
+
+.empty{
+    margin-top:17px;
+    padding:45px 20px;
+    text-align:center;
+    border:1px dashed #35264a;
+    border-radius:20px;
+    color:var(--muted);
+}
+
+.empty .big{
+    font-size:36px;
+    margin-bottom:10px;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:#000000b8;
+    backdrop-filter:blur(8px);
+}
+
+.modal-box{
+    width:min(560px,100%);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:23px;
+    background:linear-gradient(145deg,#181021,#0b0812);
+    box-shadow:0 25px 80px #000;
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.modal-head h2{
+    margin:0;
+    font-size:20px;
+}
+
+.close{
+    border:0;
+    background:#ffffff08;
+    color:#aaa;
+    cursor:pointer;
+    border-radius:9px;
+    padding:7px 10px;
+}
+
+.form-group{
+    margin-bottom:13px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:6px;
+    color:#b9acC5;
+    font-size:11px;
+    font-weight:800;
+}
+
+.form-group textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.form-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:17px;
+}
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:50;
+    padding:13px 16px;
+    border-radius:12px;
+    background:#171021;
+    border:1px solid var(--line);
+    color:#fff;
+    box-shadow:0 15px 40px #0008;
+    transform:translateY(80px);
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    font-size:12px;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+.footer{
+    margin-top:30px;
+    text-align:center;
+    color:#746a80;
+    font-size:11px;
+}
+
+@media(max-width:800px){
+    .items{
+        grid-template-columns:1fr;
+    }
+
+    .top{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+
+@media(max-width:560px){
+    .wrap{
+        width:calc(100% - 20px);
+        padding-top:15px;
+    }
+
+    .hero{
+        padding:24px;
+    }
+
+    .unlock-row{
+        flex-direction:column;
+    }
+
+    .lock-screen{
+        padding:25px 17px;
+    }
+
+    .vault-toolbar{
+        align-items:stretch;
+        flex-direction:column;
+    }
+
+    .actions{
+        width:100%;
+    }
+
+    .actions .btn{
+        flex:1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+    <div class="top">
+        <a class="back" href="index18.html">← Kembali ke Admin Web</a>
+
+        <div class="admin">
+            <span class="dot"></span>
+            Administrator • The Vault
+        </div>
+    </div>
+
+    <section class="hero">
+
+        <div class="kicker">WebToolsKita • Secure Storage</div>
+
+        <h1>🔐 The Vault</h1>
+
+        <p>
+            Ruang penyimpanan privat untuk menyimpan catatan,
+            credential, konfigurasi, token, dan informasi pengembangan
+            yang ingin dipisahkan dari halaman administrasi biasa.
+        </p>
+
+        <div class="security-badge">
+            🔒 VAULT TERKUNCI • LOCAL STORAGE
+        </div>
+
+    </section>
+
+
+    <!-- LOCK SCREEN -->
+
+    <section class="lock-screen" id="lockScreen">
+
+        <div class="lock-icon">🔐</div>
+
+        <h2>Vault Terkunci</h2>
+
+        <p>
+            Masukkan PIN Vault untuk membuka penyimpanan.
+            Pada versi ini data disimpan secara lokal pada browser.
+        </p>
+
+        <div class="unlock-row">
+
+            <input
+                id="pinInput"
+                class="input"
+                type="password"
+                placeholder="Masukkan PIN..."
+                autocomplete="off"
+            >
+
+            <button
+                class="btn btn-primary"
+                onclick="unlockVault()"
+            >
+                🔓 Buka Vault
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- VAULT -->
+
+    <section class="vault" id="vault">
+
+        <div class="vault-toolbar">
+
+            <div class="stats">
+
+                <div class="stat">
+                    Item:
+                    <b id="itemCount">0</b>
+                </div>
+
+                <div class="stat">
+                    Status:
+                    <b style="color:#70e8be">TERBUKA</b>
+                </div>
+
+            </div>
+
+            <div class="actions">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openModal()"
+                >
+                    ＋ Tambah Item
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="lockVault()"
+                >
+                    🔒 Kunci
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <input
+            id="searchInput"
+            class="input search"
+            type="text"
+            placeholder="🔎 Cari item Vault..."
+            oninput="renderItems()"
+        >
+
+
+        <div id="items"></div>
+
+    </section>
+
+
+    <div class="footer">
+        WebToolsKita • The Vault • 2026
+    </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2 id="modalTitle">＋ Tambah Item Vault</h2>
+
+            <button
+                class="close"
+                onclick="closeModal()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Nama Item</label>
+
+            <input
+                id="itemName"
+                class="input"
+                placeholder="Contoh: Firebase Admin"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Tipe</label>
+
+            <input
+                id="itemType"
+                class="input"
+                placeholder="Contoh: Credential / API Key / Catatan"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Secret / Isi</label>
+
+            <textarea
+                id="itemSecret"
+                class="input"
+                placeholder="Masukkan informasi..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn btn-secondary"
+                onclick="closeModal()"
+            >
+                Batal
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="saveItem()"
+            >
+                💾 Simpan
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+const STORAGE_KEY = "webtoolskita_vault_items";
+
+let vaultItems = [];
+let editingId = null;
+
+
+/* =========================
+   PIN
+========================= */
+
+const DEFAULT_PIN = "2468";
+
+
+/* =========================
+   LOAD DATA
+========================= */
+
+function loadItems(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(STORAGE_KEY);
+
+        vaultItems =
+            saved ? JSON.parse(saved) : [];
+
+        if(!Array.isArray(vaultItems)){
+            vaultItems = [];
+        }
+
+    }catch(error){
+
+        vaultItems = [];
+
+    }
+
+}
+
+
+/* =========================
+   SAVE DATA
+========================= */
+
+function persist(){
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(vaultItems)
+    );
+
+}
+
+
+/* =========================
+   UNLOCK
+========================= */
+
+function unlockVault(){
+
+    const pin =
+        document.getElementById("pinInput").value.trim();
+
+    if(pin !== DEFAULT_PIN){
+
+        showToast("❌ PIN Vault salah");
+
+        document
+            .getElementById("pinInput")
+            .value = "";
+
+        return;
+
+    }
+
+    document
+        .getElementById("lockScreen")
+        .style.display = "none";
+
+    document
+        .getElementById("vault")
+        .style.display = "block";
+
+    document
+        .getElementById("pinInput")
+        .value = "";
+
+    renderItems();
+
+    showToast("🔓 Vault berhasil dibuka");
+
+}
+
+
+/* =========================
+   LOCK
+========================= */
+
+function lockVault(){
+
+    document
+        .getElementById("vault")
+        .style.display = "none";
+
+    document
+        .getElementById("lockScreen")
+        .style.display = "block";
+
+    document
+        .getElementById("searchInput")
+        .value = "";
+
+    showToast("🔒 Vault dikunci");
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+function openModal(id = null){
+
+    editingId = id;
+
+    document
+        .getElementById("modal")
+        .style.display = "flex";
+
+    if(id){
+
+        const item =
+            vaultItems.find(x => x.id === id);
+
+        if(!item) return;
+
+        document
+            .getElementById("modalTitle")
+            .textContent = "✏️ Edit Item Vault";
+
+        document
+            .getElementById("itemName")
+            .value = item.name;
+
+        document
+            .getElementById("itemType")
+            .value = item.type;
+
+        document
+            .getElementById("itemSecret")
+            .value = item.secret;
+
+    }else{
+
+        document
+            .getElementById("modalTitle")
+            .textContent = "＋ Tambah Item Vault";
+
+        document
+            .getElementById("itemName")
+            .value = "";
+
+        document
+            .getElementById("itemType")
+            .value = "";
+
+        document
+            .getElementById("itemSecret")
+            .value = "";
+
+    }
+
+    setTimeout(() => {
+
+        document
+            .getElementById("itemName")
+            .focus();
+
+    },100);
+
+}
+
+
+function closeModal(){
+
+    document
+        .getElementById("modal")
+        .style.display = "none";
+
+    editingId = null;
+
+}
+
+
+/* =========================
+   SAVE ITEM
+========================= */
+
+function saveItem(){
+
+    const name =
+        document.getElementById("itemName")
+        .value.trim();
+
+    const type =
+        document.getElementById("itemType")
+        .value.trim();
+
+    const secret =
+        document.getElementById("itemSecret")
+        .value.trim();
+
+
+    if(!name || !secret){
+
+        showToast("⚠️ Nama dan isi wajib diisi");
+
+        return;
+
+    }
+
+
+    if(editingId){
+
+        const item =
+            vaultItems.find(x => x.id === editingId);
+
+        if(item){
+
+            item.name = name;
+            item.type = type || "Catatan";
+            item.secret = secret;
+            item.updated =
+                new Date().toISOString();
+
+        }
+
+        showToast("✅ Item berhasil diperbarui");
+
+    }else{
+
+        vaultItems.unshift({
+
+            id:
+                Date.now().toString(),
+
+            name,
+
+            type:
+                type || "Catatan",
+
+            secret,
+
+            created:
+                new Date().toISOString()
+
+        });
+
+        showToast("✅ Item berhasil disimpan");
+
+    }
+
+
+    persist();
+
+    closeModal();
+
+    renderItems();
+
+}
+
+
+/* =========================
+   DELETE
+========================= */
+
+function deleteItem(id){
+
+    const item =
+        vaultItems.find(x => x.id === id);
+
+    if(!item) return;
+
+
+    if(!confirm(
+        `Hapus item "${item.name}" dari Vault?`
+    )){
+        return;
+    }
+
+
+    vaultItems =
+        vaultItems.filter(x => x.id !== id);
+
+    persist();
+
+    renderItems();
+
+    showToast("🗑️ Item dihapus");
+
+}
+
+
+/* =========================
+   SHOW / HIDE
+========================= */
+
+function toggleSecret(id){
+
+    const element =
+        document.getElementById("secret-" + id);
+
+    const button =
+        document.getElementById("show-" + id);
+
+    if(!element) return;
+
+
+    if(element.dataset.visible === "true"){
+
+        element.textContent =
+            "••••••••••••••••••••";
+
+        element.dataset.visible = "false";
+
+        button.textContent =
+            "👁 Tampilkan";
+
+    }else{
+
+        const item =
+            vaultItems.find(x => x.id === id);
+
+        if(!item) return;
+
+        element.textContent =
+            item.secret;
+
+        element.dataset.visible = "true";
+
+        button.textContent =
+            "🙈 Sembunyikan";
+
+    }
+
+}
+
+
+/* =========================
+   COPY
+========================= */
+
+async function copySecret(id){
+
+    const item =
+        vaultItems.find(x => x.id === id);
+
+    if(!item) return;
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            item.secret
+        );
+
+        showToast("📋 Secret berhasil disalin");
+
+    }catch(error){
+
+        showToast(
+            "⚠️ Browser tidak mengizinkan clipboard"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   ICON
+========================= */
+
+function getIcon(type){
+
+    const t =
+        type.toLowerCase();
+
+    if(t.includes("api"))
+        return "🔑";
+
+    if(t.includes("password"))
+        return "🔒";
+
+    if(t.includes("firebase"))
+        return "🔥";
+
+    if(t.includes("database"))
+        return "🗄️";
+
+    if(t.includes("token"))
+        return "🎟️";
+
+    if(t.includes("credential"))
+        return "🪪";
+
+    if(t.includes("server"))
+        return "🖥️";
+
+    return "📦";
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderItems(){
+
+    const container =
+        document.getElementById("items");
+
+    const query =
+        document
+            .getElementById("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const filtered =
+        vaultItems.filter(item =>
+            item.name.toLowerCase().includes(query) ||
+            item.type.toLowerCase().includes(query)
+        );
+
+
+    document
+        .getElementById("itemCount")
+        .textContent =
+            vaultItems.length;
+
+
+    if(!filtered.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <div class="big">🗄️</div>
+
+                <b>
+                    ${
+                        query
+                        ? "Item tidak ditemukan"
+                        : "Vault masih kosong"
+                    }
+                </b>
+
+                <p>
+                    ${
+                        query
+                        ? "Coba gunakan kata pencarian lain."
+                        : "Tambahkan item pertama ke penyimpanan Vault."
+                    }
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+
+        <div class="items">
+
+            ${filtered.map(item => `
+
+                <article class="item">
+
+                    <div class="item-head">
+
+                        <div class="item-title">
+
+                            <div class="item-icon">
+                                ${getIcon(item.type)}
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    ${escapeHtml(item.name)}
+                                </h3>
+
+                                <div class="type">
+                                    ${escapeHtml(item.type || "Catatan")}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="secret"
+                        id="secret-${item.id}"
+                        data-visible="false"
+                    >
+                        ••••••••••••••••••••
+                    </div>
+
+
+                    <div class="item-actions">
+
+                        <button
+                            class="small-btn"
+                            id="show-${item.id}"
+                            onclick="toggleSecret('${item.id}')"
+                        >
+                            👁 Tampilkan
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="copySecret('${item.id}')"
+                        >
+                            📋 Salin
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="openModal('${item.id}')"
+                        >
+                            ✏️ Edit
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="deleteItem('${item.id}')"
+                        >
+                            🗑️ Hapus
+                        </button>
+
+                    </div>
+
+                </article>
+
+            `).join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer;
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        },2500);
+
+}
+
+
+/* =========================
+   ENTER PIN
+========================= */
+
+document
+    .getElementById("pinInput")
+    .addEventListener("keydown",event => {
+
+        if(event.key === "Enter"){
+            unlockVault();
+        }
+
+    });
+
+
+/* =========================
+   CLOSE MODAL OUTSIDE
+========================= */
+
+document
+    .getElementById("modal")
+    .addEventListener("click",event => {
+
+        if(event.target.id === "modal"){
+            closeModal();
+        }
+
+    });
+
+
+/* =========================
+   INIT
+========================= */
+
+loadItems();
+
+</script>
+
+</body>
+</html>

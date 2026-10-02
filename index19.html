@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kelola Pengguna — WebToolsKita</title>
+
+<style>
+:root{
+  --bg:#07070b;--panel:#101018;--panel2:#151522;--line:#29283a;
+  --text:#f6f4ff;--muted:#9e9bad;--purple:#8b5cf6;--purple2:#a78bfa;
+  --green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--blue:#38bdf8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% 0%,rgba(139,92,246,.18),transparent 28%),
+ radial-gradient(circle at 90% 10%,rgba(56,189,248,.10),transparent 25%),
+ var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}
+.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:rgba(7,7,11,.78);border-bottom:1px solid var(--line)}
+.nav{max-width:1400px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.back{border:1px solid var(--line);background:#11111a;color:#ddd8ef;border-radius:12px;padding:10px 14px;cursor:pointer}
+.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--purple2)}
+.admin{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+.avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#272334}
+.wrap{max-width:1400px;margin:auto;padding:30px 20px 60px}
+.hero{padding:28px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(255,255,255,.025));box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.hero h1{margin:0 0 8px;font-size:clamp(28px,4vw,46px)}
+.hero p{margin:0;color:var(--muted);max-width:760px;line-height:1.65}
+.status{margin-top:18px;display:inline-flex;align-items:center;gap:8px;border:1px solid #25452f;background:#0c1710;color:#86efac;border-radius:999px;padding:8px 12px;font-size:13px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.stat small{color:var(--muted);display:block;margin-bottom:7px}.stat strong{font-size:28px}.stat .accent{color:var(--purple2)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.search{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:13px 15px;outline:none}
+.search:focus{border-color:var(--purple)}
+.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:12px 15px;border-radius:13px;cursor:pointer;transition:.2s}
+.btn:hover{transform:translateY(-1px);border-color:#5d4a91}
+.primary{background:linear-gradient(135deg,#7c3aed,#8b5cf6);border-color:#8b5cf6}
+.tablebox{overflow:auto;border:1px solid var(--line);border-radius:20px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;min-width:950px}
+th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:#aaa4bb;font-size:12px;text-transform:uppercase;letter-spacing:.08em;background:#12121b;position:sticky;top:0}
+tr:hover td{background:rgba(139,92,246,.035)}
+.user{display:flex;align-items:center;gap:11px}.uavatar{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#292433}
+.uname{font-weight:700}.email{color:var(--muted);font-size:12px;margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:700}
+.free{background:#1b1b24;color:#c4bfce}
+.vip{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+.online{background:rgba(34,197,94,.12);color:#86efac}
+.offline{background:#1b1b24;color:#8f8a98}
+.detail{background:#191923;color:#ddd6fe;border:1px solid #312d46;border-radius:10px;padding:8px 10px;cursor:pointer}
+.empty,.loading{padding:50px;text-align:center;color:var(--muted)}
+.toast{position:fixed;right:20px;bottom:20px;background:#171720;border:1px solid var(--line);padding:13px 16px;border-radius:14px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;z-index:50}
+.toast.show{opacity:1;transform:none}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}
+.overlay.show{display:flex}
+.modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:#101018;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 30px 90px #000}
+.modal h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.item{background:#151520;border:1px solid var(--line);border-radius:13px;padding:12px}
+.item small{display:block;color:var(--muted);margin-bottom:4px}
+.close{float:right}
+.footer{text-align:center;color:#777383;margin-top:30px;font-size:12px}
+
+@media(max-width:800px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .admin .adminName{display:none}
+  .hero{padding:22px}
+  .wrap{padding:20px 12px 45px}
+}
+
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat strong{font-size:22px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header class="top">
+  <nav class="nav">
+    <button class="back" onclick="location.href='index18.html'">
+      ← Admin Web
+    </button>
+
+    <div class="brand">
+      WebTools<span>Kita</span> / Kelola Pengguna
+    </div>
+
+    <div class="admin">
+      <span class="adminName" id="adminName">Administrator</span>
+      <img id="adminAvatar" class="avatar" alt="Admin">
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h1>Kelola Pengguna</h1>
+
+    <p>
+      Panel administrator untuk melihat, mencari, memantau status,
+      dan memeriksa data akun pengguna WebToolsKita secara langsung
+      dari database.
+    </p>
+
+    <div class="status">
+      <span class="dot"></span>
+      <span id="connectionText">Memeriksa akses admin...</span>
+    </div>
+  </section>
+
+  <section class="stats">
+
+    <div class="stat">
+      <small>Total Pengguna</small>
+      <strong id="total">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>VIP / Active</small>
+      <strong class="accent" id="vip">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>Online</small>
+      <strong id="online">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>Free</small>
+      <strong id="free">—</strong>
+    </div>
+
+  </section>
+
+  <section class="toolbar">
+
+    <input
+      id="search"
+      class="search"
+      placeholder="Cari nama, email, UID, atau status..."
+      autocomplete="off"
+    >
+
+    <button class="btn" id="refresh">
+      ↻ Refresh
+    </button>
+
+    <button class="btn" id="export">
+      ⇩ Export CSV
+    </button>
+
+  </section>
+
+  <section class="tablebox">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Pengguna</th>
+          <th>Status</th>
+          <th>Membership</th>
+          <th>Terakhir Aktif</th>
+          <th>Bergabung</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+
+      <tbody id="users">
+        <tr>
+          <td colspan="6" class="loading">
+            Memuat data pengguna...
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+  </section>
+
+  <div class="footer">
+    WebToolsKita • Admin User Management • © 2026
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay">
+
+  <div class="modal">
+
+    <button class="btn close" onclick="closeModal()">
+      Tutup
+    </button>
+
+    <h2>Detail Pengguna</h2>
+
+    <div id="detail" class="grid"></div>
+
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+  authDomain:"webtoolskita.firebaseapp.com",
+  projectId:"webtoolskita",
+  storageBucket:"webtoolskita.firebasestorage.app",
+  messagingSenderId:"593680487717",
+  appId:"1:593680487717:web:33ef7a4bc9be02f99276cc",
+  measurementId:"G-YVEJ90678G"
+};
+
+
+/*
+=====================================================
+WEBTOOLSKITA API
+=====================================================
+
+Jika frontend dan backend berada pada domain yang sama:
+
+    const API_BASE = "";
+
+Jika backend berada di domain berbeda,
+bisa diberikan dari luar:
+
+    window.WEBTOOLSKITA_API_BASE = "https://domain-backend..."
+
+Tidak mengubah tampilan halaman.
+=====================================================
+*/
+
+const API_BASE = String(
+  window.WEBTOOLSKITA_API_BASE || ""
+).replace(/\/+$/,"");
+
+
+const ADMIN_EMAIL = "ganreffafk@gmail.com";
+
+const ONLINE_MS = 60000;
+
+let allUsers = [];
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+
+/* ==========================================
+   API HELPER
+========================================== */
+
+async function apiFetch(path, options = {}) {
+
+  const url = API_BASE + path;
+
+  const response = await fetch(url, {
+    ...options,
+    cache:"no-store",
+    headers:{
+      Accept:"application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  const contentType =
+    response.headers.get("content-type") || "";
+
+  let data = null;
+
+  if(contentType.includes("application/json")){
+
+    try{
+      data = await response.json();
+    }catch(error){
+      data = null;
+    }
+
+  }else{
+
+    try{
+      const text = await response.text();
+
+      data = {
+        success:false,
+        message:text || "Server tidak mengembalikan JSON."
+      };
+
+    }catch(error){
+
+      data = {
+        success:false,
+        message:"Server tidak dapat dibaca."
+      };
+
+    }
+
+  }
+
+  if(!response.ok){
+
+    let message =
+      data?.message ||
+      `API gagal (${response.status})`;
+
+    if(response.status === 404){
+
+      message =
+        `Endpoint API tidak ditemukan: ${url}`;
+
+    }
+
+    if(response.status === 401){
+
+      message =
+        data?.message ||
+        "Token login tidak valid atau sesi telah berakhir.";
+
+    }
+
+    if(response.status === 403){
+
+      message =
+        data?.message ||
+        "Akses administrator ditolak.";
+
+    }
+
+    throw new Error(message);
+
+  }
+
+  return data;
+
+}
+
+
+/* ==========================================
+   TOAST
+========================================== */
+
+function toast(msg){
+
+  const el =
+    document.getElementById("toast");
+
+  el.textContent = msg;
+
+  el.classList.add("show");
+
+  clearTimeout(window.__toast);
+
+  window.__toast =
+    setTimeout(
+      () => el.classList.remove("show"),
+      3000
+    );
+
+}
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
+
+function esc(v){
+
+  return String(v ?? "").replace(
+    /[&<>"']/g,
+    m => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[m])
+  );
+
+}
+
+
+/* ==========================================
+   DATE
+========================================== */
+
+function date(v){
+
+  if(!v) return "—";
+
+  const d = new Date(v);
+
+  if(Number.isNaN(d.getTime()))
+    return "—";
+
+  return d.toLocaleString(
+    "id-ID",
+    {
+      dateStyle:"medium",
+      timeStyle:"short"
+    }
+  );
+
+}
+
+
+/* ==========================================
+   ONLINE
+========================================== */
+
+function isOnline(v){
+
+  if(!v) return false;
+
+  const t =
+    new Date(v).getTime();
+
+  return (
+    !Number.isNaN(t) &&
+    Date.now() - t <= ONLINE_MS
+  );
+
+}
+
+
+/* ==========================================
+   MEMBERSHIP
+========================================== */
+
+function membership(u){
+
+  const s =
+    String(
+      u.vip_status || ""
+    ).toLowerCase();
+
+  return [
+    "active",
+    "vip",
+    "premium"
+  ].includes(s)
+    ? "VIP"
+    : "FREE";
+
+}
+
+
+/* ==========================================
+   RENDER
+========================================== */
+
+function render(){
+
+  const q =
+    document
+      .getElementById("search")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const list =
+    allUsers.filter(u => {
+
+      const hay = [
+        u.name,
+        u.email,
+        u.google_uid,
+        u.vip_status,
+        u.payment_status
+      ]
+      .join(" ")
+      .toLowerCase();
+
+      return hay.includes(q);
+
+    });
+
+
+  const tbody =
+    document.getElementById("users");
+
+
+  if(!list.length){
+
+    tbody.innerHTML =
+      '<tr>' +
+      '<td colspan="6" class="empty">' +
+      'Tidak ada pengguna yang cocok.' +
+      '</td>' +
+      '</tr>';
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    list.map(u => {
+
+      const online =
+        isOnline(u.last_seen);
+
+      const vip =
+        membership(u);
+
+      const avatar =
+        u.photo_url
+          ? `<img class="uavatar" src="${esc(u.photo_url)}" alt="">`
+          : `<div class="uavatar"></div>`;
+
+
+      return `
+        <tr>
+
+          <td>
+            <div class="user">
+
+              ${avatar}
+
+              <div>
+
+                <div class="uname">
+                  ${esc(u.name || "Pengguna")}
+                </div>
+
+                <div class="email">
+                  ${esc(u.email || "—")}
+                </div>
+
+              </div>
+
+            </div>
+          </td>
+
+          <td>
+
+            <span class="badge ${online ? "online" : "offline"}">
+              ${online ? "● Online" : "○ Offline"}
+            </span>
+
+          </td>
+
+          <td>
+
+            <span class="badge ${vip === "VIP" ? "vip" : "free"}">
+              ${vip === "VIP" ? "◆ VIP" : "FREE"}
+            </span>
+
+          </td>
+
+          <td>
+            ${esc(date(u.last_seen))}
+          </td>
+
+          <td>
+            ${esc(date(u.created_at))}
+          </td>
+
+          <td>
+
+            <button
+              class="detail"
+              onclick="showDetail(${allUsers.indexOf(u)})"
+            >
+              Detail →
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    })
+    .join("");
+
+}
+
+
+/* ==========================================
+   STATS
+========================================== */
+
+function updateStats(){
+
+  const total =
+    allUsers.length;
+
+  const vip =
+    allUsers.filter(
+      u => membership(u) === "VIP"
+    ).length;
+
+  const online =
+    allUsers.filter(
+      u => isOnline(u.last_seen)
+    ).length;
+
+
+  document.getElementById("total")
+    .textContent = total;
+
+  document.getElementById("vip")
+    .textContent = vip;
+
+  document.getElementById("online")
+    .textContent = online;
+
+  document.getElementById("free")
+    .textContent =
+      Math.max(0,total-vip);
+
+}
+
+
+/* ==========================================
+   DETAIL
+========================================== */
+
+function showDetail(i){
+
+  const u =
+    allUsers[i];
+
+  if(!u) return;
+
+
+  const data = [
+
+    ["ID",u.id],
+
+    ["Google UID",u.google_uid],
+
+    ["Nama",u.name],
+
+    ["Email",u.email],
+
+    ["Membership",membership(u)],
+
+    ["VIP Mulai",date(u.vip_start)],
+
+    ["VIP Berakhir",date(u.vip_expired)],
+
+    ["Payment Status",u.payment_status],
+
+    ["Payment ID",u.payment_id],
+
+    ["Last Seen",date(u.last_seen)],
+
+    ["Dibuat",date(u.created_at)],
+
+    [
+      "Status Online",
+      isOnline(u.last_seen)
+        ? "Online"
+        : "Offline"
+    ]
+
+  ];
+
+
+  document.getElementById("detail")
+    .innerHTML =
+      data.map(x => `
+
+        <div class="item">
+
+          <small>
+            ${esc(x[0])}
+          </small>
+
+          <strong>
+            ${esc(x[1] || "—")}
+          </strong>
+
+        </div>
+
+      `)
+      .join("");
+
+
+  document
+    .getElementById("overlay")
+    .classList.add("show");
+
+}
+
+
+/* ==========================================
+   CLOSE MODAL
+========================================== */
+
+function closeModal(){
+
+  document
+    .getElementById("overlay")
+    .classList.remove("show");
+
+}
+
+
+/* ==========================================
+   LOAD USERS
+========================================== */
+
+async function loadUsers(){
+
+  const tbody =
+    document.getElementById("users");
+
+
+  tbody.innerHTML =
+    '<tr>' +
+    '<td colspan="6" class="loading">' +
+    'Memuat data pengguna...' +
+    '</td>' +
+    '</tr>';
+
+
+  try{
+
+    const user =
+      auth.currentUser;
+
+
+    if(!user){
+
+      throw new Error(
+        "Sesi login tidak ditemukan."
+      );
+
+    }
+
+
+    /*
+    Paksa Firebase memberikan
+    ID token terbaru.
+    */
+
+    const token =
+      await user.getIdToken(true);
+
+
+    const data =
+      await apiFetch(
+        "/api/users",
+        {
+          method:"GET",
+          headers:{
+            Authorization:
+              "Bearer " + token
+          }
+        }
+      );
+
+
+    if(!data || !data.success){
+
+      throw new Error(
+        data?.message ||
+        "Gagal mengambil data pengguna."
+      );
+
+    }
+
+
+    allUsers =
+      Array.isArray(data.users)
+        ? data.users
+        : [];
+
+
+    updateStats();
+
+    render();
+
+
+    document
+      .getElementById("connectionText")
+      .textContent =
+        "Database pengguna terhubung";
+
+
+  }catch(e){
+
+    console.error(
+      "LOAD USERS ERROR:",
+      e
+    );
+
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty">
+
+          ⚠ ${esc(e.message)}
+
+          <br><br>
+
+          <button
+            class="btn primary"
+            onclick="loadUsers()"
+          >
+            Coba Lagi
+          </button>
+
+        </td>
+      </tr>
+    `;
+
+
+    document
+      .getElementById("connectionText")
+      .textContent =
+        "Gagal mengambil data";
+
+
+    toast(
+      e.message ||
+      "Gagal mengambil data pengguna."
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   EXPORT CSV
+========================================== */
+
+function exportCSV(){
+
+  if(!allUsers.length){
+
+    toast(
+      "Belum ada data untuk diekspor."
+    );
+
+    return;
+
+  }
+
+
+  const cols = [
+
+    "id",
+    "google_uid",
+    "name",
+    "email",
+    "vip_status",
+    "vip_start",
+    "vip_expired",
+    "payment_status",
+    "payment_id",
+    "last_seen",
+    "created_at"
+
+  ];
+
+
+  const q =
+    v =>
+      `"${String(v ?? "").replace(/"/g,'""')}"`;
+
+
+  const csv = [
+
+    cols.join(","),
+
+    ...allUsers.map(
+      u =>
+        cols
+          .map(c => q(u[c]))
+          .join(",")
+    )
+
+  ]
+  .join("\r\n");
+
+
+  const blob =
+    new Blob(
+      ["\ufeff" + csv],
+      {
+        type:
+          "text/csv;charset=utf-8"
+      }
+    );
+
+
+  const a =
+    document.createElement("a");
+
+
+  const url =
+    URL.createObjectURL(blob);
+
+
+  a.href = url;
+
+  a.download =
+    "webtoolskita-users.csv";
+
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    () => URL.revokeObjectURL(url),
+    1000
+  );
+
+
+  toast(
+    "CSV berhasil dibuat."
+  );
+
+}
+
+
+/* ==========================================
+   AUTH
+========================================== */
+
+auth.onAuthStateChanged(
+  async user => {
+
+    if(!user){
+
+      location.replace(
+        "index2.html"
+      );
+
+      return;
+
+    }
+
+
+    const email =
+      String(
+        user.email || ""
+      )
+      .toLowerCase()
+      .trim();
+
+
+    if(
+      email !==
+      ADMIN_EMAIL
+        .toLowerCase()
+        .trim()
+    ){
+
+      alert(
+        "Akses administrator ditolak."
+      );
+
+      location.replace(
+        "index3.html"
+      );
+
+      return;
+
+    }
+
+
+    document
+      .getElementById("adminName")
+      .textContent =
+        user.displayName ||
+        "Administrator";
+
+
+    if(user.photoURL){
+
+      document
+        .getElementById("adminAvatar")
+        .src =
+          user.photoURL;
+
+    }
+
+
+    try{
+
+      /*
+      Verifikasi endpoint admin
+      sebelum mengambil database.
+      */
+
+      const token =
+        await user.getIdToken(true);
+
+
+      const check =
+        await apiFetch(
+          "/api/admin/test",
+          {
+            method:"GET",
+            headers:{
+              Authorization:
+                "Bearer " + token
+            }
+          }
+        );
+
+
+      if(
+        !check ||
+        check.success !== true
+      ){
+
+        throw new Error(
+          check?.message ||
+          "Verifikasi admin gagal."
+        );
+
+      }
+
+
+      document
+        .getElementById(
+          "connectionText"
+        )
+        .textContent =
+          "Admin terverifikasi";
+
+
+      await loadUsers();
+
+
+    }catch(e){
+
+      console.error(
+        "ADMIN VERIFY ERROR:",
+        e
+      );
+
+
+      document
+        .getElementById(
+          "connectionText"
+        )
+        .textContent =
+          "Verifikasi admin gagal";
+
+
+      toast(
+        e.message ||
+        "Verifikasi admin gagal."
+      );
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   EVENTS
+========================================== */
+
+document
+  .getElementById("search")
+  .addEventListener(
+    "input",
+    render
+  );
+
+
+document
+  .getElementById("refresh")
+  .addEventListener(
+    "click",
+    loadUsers
+  );
+
+
+document
+  .getElementById("export")
+  .addEventListener(
+    "click",
+    exportCSV
+  );
+
+
+document
+  .getElementById("overlay")
+  .addEventListener(
+    "click",
+    e => {
+
+      if(
+        e.target.id ===
+        "overlay"
+      ){
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+/* ==========================================
+   AUTO REFRESH
+========================================== */
+
+setInterval(
+  () => {
+
+    if(allUsers.length){
+
+      updateStats();
+
+      render();
+
+    }
+
+  },
+  30000
+);
+
+</script>
+
+</body>
+</html>

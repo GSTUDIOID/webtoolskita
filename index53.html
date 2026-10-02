@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JSON YAML Converter — WebToolsKita</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    padding:30px 16px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:520px;
+    height:520px;
+    top:-280px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:#7b2cff;
+    filter:blur(180px);
+    opacity:.13;
+    pointer-events:none;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    position:relative;
+    z-index:1;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    font-size:36px;
+    font-weight:900;
+    letter-spacing:-1.5px;
+
+    background:linear-gradient(
+        90deg,
+        #fff,
+        #b66cff,
+        #7b2cff
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#888;
+    font-size:13px;
+}
+
+
+/* =====================================================
+   PANEL
+===================================================== */
+
+.panel{
+    border:1px solid #292035;
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d0d0d,
+            #100b16
+        );
+
+    padding:18px;
+    margin-bottom:18px;
+
+    box-shadow:
+        inset 0 0 30px
+        rgba(123,44,255,.035);
+}
+
+
+/* =====================================================
+   MODE
+===================================================== */
+
+.mode-title{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.mode-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+}
+
+.mode-button{
+    padding:10px 15px;
+
+    border-radius:9px;
+
+    border:1px solid #30263c;
+
+    background:#111;
+
+    color:#aaa;
+
+    font-size:11px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+}
+
+.mode-button:hover{
+    color:#fff;
+    border-color:#7b2cff;
+}
+
+.mode-button.active{
+    background:#7b2cff;
+    border-color:#9b5cff;
+    color:#fff;
+}
+
+
+/* =====================================================
+   EDITORS
+===================================================== */
+
+.editor-grid{
+    display:grid;
+    grid-template-columns:
+        minmax(0,1fr)
+        minmax(0,1fr);
+
+    gap:14px;
+}
+
+.editor-card{
+    min-width:0;
+}
+
+.editor-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:8px;
+}
+
+.editor-title span{
+    color:#b66cff;
+    font-size:12px;
+    font-weight:800;
+}
+
+.editor-label{
+    color:#555;
+    font-size:9px;
+    font-weight:700;
+}
+
+.editor{
+    width:100%;
+    min-height:420px;
+
+    resize:vertical;
+
+    padding:14px;
+
+    border-radius:11px;
+
+    border:1px solid #30263c;
+
+    background:#080808;
+
+    color:#ddd;
+
+    outline:none;
+
+    font-family:
+        Consolas,
+        Monaco,
+        "Courier New",
+        monospace;
+
+    font-size:12px;
+
+    line-height:1.6;
+
+    tab-size:2;
+}
+
+.editor:focus{
+    border-color:#7b2cff;
+
+    box-shadow:
+        0 0 0 1px
+        rgba(123,44,255,.12);
+}
+
+.editor::placeholder{
+    color:#444;
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.actions{
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:9px;
+
+    margin-top:14px;
+}
+
+.button{
+    padding:11px 16px;
+
+    border-radius:9px;
+
+    border:1px solid #30263c;
+
+    background:#111;
+
+    color:#ccc;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+}
+
+.button:hover{
+    color:#fff;
+
+    border-color:#7b2cff;
+
+    background:#17111e;
+
+    transform:translateY(-1px);
+}
+
+.button.primary{
+    background:#7b2cff;
+
+    border-color:#9b5cff;
+
+    color:#fff;
+}
+
+.button.primary:hover{
+    background:#8d45ff;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status{
+    margin-top:13px;
+
+    padding:10px 12px;
+
+    border-radius:9px;
+
+    border:1px solid #292035;
+
+    background:#090909;
+
+    color:#777;
+
+    font-size:10px;
+
+    line-height:1.5;
+
+    text-align:center;
+}
+
+.status.success{
+    color:#b66cff;
+
+    border-color:#4a315f;
+
+    background:#120b18;
+}
+
+.status.error{
+    color:#ff9d9d;
+
+    border-color:#5a3030;
+
+    background:#180b0b;
+}
+
+
+/* =====================================================
+   INFO
+===================================================== */
+
+.info-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:10px;
+
+    margin-top:14px;
+}
+
+.info-card{
+    padding:13px;
+
+    border:1px solid #292035;
+
+    border-radius:11px;
+
+    background:#090909;
+}
+
+.info-title{
+    color:#b66cff;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    margin-bottom:5px;
+}
+
+.info-text{
+    color:#666;
+
+    font-size:9px;
+
+    line-height:1.5;
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+.back{
+    display:block;
+
+    text-align:center;
+
+    margin-top:24px;
+
+    color:#777;
+
+    text-decoration:none;
+
+    font-size:12px;
+}
+
+.back:hover{
+    color:#b66cff;
+}
+
+.footer{
+    text-align:center;
+
+    color:#444;
+
+    font-size:11px;
+
+    margin-top:10px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:750px){
+
+    body{
+        padding:22px 12px;
+    }
+
+    .logo{
+        font-size:30px;
+    }
+
+    .editor-grid{
+        grid-template-columns:1fr;
+    }
+
+    .editor{
+        min-height:300px;
+    }
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <h1 class="logo">
+        JSON ↔ YAML
+    </h1>
+
+    <p class="subtitle">
+        Converter JSON dan YAML dengan cepat langsung di browser.
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     MODE PANEL
+===================================================== -->
+
+<section class="panel">
+
+    <div class="mode-title">
+        MODE CONVERSION
+    </div>
+
+    <div class="mode-buttons">
+
+        <button
+            id="jsonToYamlButton"
+            class="mode-button active"
+        >
+            JSON → YAML
+        </button>
+
+        <button
+            id="yamlToJsonButton"
+            class="mode-button"
+        >
+            YAML → JSON
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     EDITOR PANEL
+===================================================== -->
+
+<section class="panel">
+
+    <div class="editor-grid">
+
+
+        <!-- INPUT -->
+
+        <div class="editor-card">
+
+            <div class="editor-title">
+
+                <span id="inputTitle">
+                    JSON INPUT
+                </span>
+
+                <span class="editor-label">
+                    INPUT
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="inputText"
+                class="editor"
+                spellcheck="false"
+                placeholder='Contoh:
+{
+  "nama": "WebToolsKita",
+  "version": 1,
+  "active": true
+}'
+            ></textarea>
+
+        </div>
+
+
+        <!-- OUTPUT -->
+
+        <div class="editor-card">
+
+            <div class="editor-title">
+
+                <span id="outputTitle">
+                    YAML OUTPUT
+                </span>
+
+                <span class="editor-label">
+                    OUTPUT
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="outputText"
+                class="editor"
+                spellcheck="false"
+                readonly
+                placeholder="Hasil conversion akan muncul di sini..."
+            ></textarea>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="actions">
+
+        <button
+            id="convertButton"
+            class="button primary"
+        >
+            ⚡ Convert
+        </button>
+
+        <button
+            id="formatButton"
+            class="button"
+        >
+            ✦ Format JSON
+        </button>
+
+        <button
+            id="swapButton"
+            class="button"
+        >
+            ⇄ Swap
+        </button>
+
+        <button
+            id="copyButton"
+            class="button"
+        >
+            ⧉ Copy
+        </button>
+
+        <button
+            id="downloadButton"
+            class="button"
+        >
+            ↓ Download
+        </button>
+
+        <button
+            id="clearButton"
+            class="button"
+        >
+            × Clear
+        </button>
+
+    </div>
+
+
+    <div
+        id="status"
+        class="status"
+    >
+        Siap melakukan conversion.
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     INFO
+===================================================== -->
+
+<section class="panel">
+
+    <div class="info-grid">
+
+        <div class="info-card">
+
+            <div class="info-title">
+                JSON → YAML
+            </div>
+
+            <div class="info-text">
+                Mengubah struktur JSON menjadi format YAML yang lebih mudah dibaca manusia.
+            </div>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="info-title">
+                YAML → JSON
+            </div>
+
+            <div class="info-text">
+                Mengubah konfigurasi YAML menjadi JSON yang dapat digunakan aplikasi.
+            </div>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="info-title">
+                LOCAL PROCESSING
+            </div>
+
+            <div class="info-text">
+                Data diproses langsung di browser dan tidak dikirim ke server WebToolsKita.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<a
+    href="index3.html"
+    class="back"
+>
+    ← Kembali ke Advance Tools
+</a>
+
+
+<div class="footer">
+    © 2026 WebToolsKita
+</div>
+
+
+</div>
+
+
+<script>
+
+/*
+ * =====================================================
+ * JSON ↔ YAML CONVERTER
+ * =====================================================
+ *
+ * Converter YAML ringan tanpa CDN.
+ *
+ * Mendukung struktur YAML umum:
+ *
+ * key: value
+ * key:
+ *   child: value
+ *
+ * array:
+ * - item
+ * - item
+ *
+ * nested object:
+ * user:
+ *   name: WebToolsKita
+ *
+ */
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const jsonToYamlButton =
+    document.getElementById(
+        "jsonToYamlButton"
+    );
+
+const yamlToJsonButton =
+    document.getElementById(
+        "yamlToJsonButton"
+    );
+
+const inputTitle =
+    document.getElementById(
+        "inputTitle"
+    );
+
+const outputTitle =
+    document.getElementById(
+        "outputTitle"
+    );
+
+const inputText =
+    document.getElementById(
+        "inputText"
+    );
+
+const outputText =
+    document.getElementById(
+        "outputText"
+    );
+
+const convertButton =
+    document.getElementById(
+        "convertButton"
+    );
+
+const formatButton =
+    document.getElementById(
+        "formatButton"
+    );
+
+const swapButton =
+    document.getElementById(
+        "swapButton"
+    );
+
+const copyButton =
+    document.getElementById(
+        "copyButton"
+    );
+
+const downloadButton =
+    document.getElementById(
+        "downloadButton"
+    );
+
+const clearButton =
+    document.getElementById(
+        "clearButton"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+
+let mode =
+    "json-to-yaml";
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(
+    message,
+    type=""
+){
+
+    status.textContent =
+        message;
+
+    status.className =
+        "status";
+
+    if(type){
+
+        status.classList.add(
+            type
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   YAML HELPERS
+===================================================== */
+
+function yamlScalar(
+    value
+){
+
+    value =
+        value.trim();
+
+
+    if(
+        value === "" ||
+        value === "~" ||
+        value.toLowerCase() === "null"
+    ){
+
+        return null;
+
+    }
+
+
+    if(
+        value.toLowerCase() === "true"
+    ){
+
+        return true;
+
+    }
+
+
+    if(
+        value.toLowerCase() === "false"
+    ){
+
+        return false;
+
+    }
+
+
+    /*
+     * Quoted string
+     */
+
+    if(
+        (
+            value.startsWith('"') &&
+            value.endsWith('"')
+        ) ||
+        (
+            value.startsWith("'") &&
+            value.endsWith("'")
+        )
+    ){
+
+        if(
+            value.startsWith('"')
+        ){
+
+            try{
+
+                return JSON.parse(
+                    value
+                );
+
+            }catch{
+
+                return value.slice(
+                    1,
+                    -1
+                );
+
+            }
+
+        }
+
+        return value.slice(
+            1,
+            -1
+        );
+
+    }
+
+
+    /*
+     * Inline JSON array/object
+     */
+
+    if(
+        value.startsWith("[") ||
+        value.startsWith("{")
+    ){
+
+        try{
+
+            return JSON.parse(
+                value
+            );
+
+        }catch{
+
+            /*
+             * Lanjut sebagai string.
+             */
+
+        }
+
+    }
+
+
+    /*
+     * Number
+     */
+
+    if(
+        /^[-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?$/i.test(
+            value
+        )
+    ){
+
+        return Number(
+            value
+        );
+
+    }
+
+
+    return value;
+
+}
+
+
+/* =====================================================
+   REMOVE YAML COMMENT
+===================================================== */
+
+function removeYamlComment(
+    line
+){
+
+    let quote =
+        null;
+
+
+    for(
+        let i=0;
+        i<line.length;
+        i++
+    ){
+
+        const char =
+            line[i];
+
+
+        if(
+            (
+                char === '"' ||
+                char === "'"
+            )
+        ){
+
+            if(
+                quote === null
+            ){
+
+                quote =
+                    char;
+
+            }else if(
+                quote === char &&
+                line[i-1] !== "\\"
+            ){
+
+                quote =
+                    null;
+
+            }
+
+            continue;
+
+        }
+
+
+        if(
+            char === "#" &&
+            quote === null &&
+            (
+                i === 0 ||
+                /\s/.test(
+                    line[i-1]
+                )
+            )
+        ){
+
+            return line
+                .slice(
+                    0,
+                    i
+                )
+                .trimEnd();
+
+        }
+
+    }
+
+
+    return line;
+
+}
+
+
+/* =====================================================
+   FIND COLON
+===================================================== */
+
+function findColon(
+    text
+){
+
+    let quote =
+        null;
+
+
+    for(
+        let i=0;
+        i<text.length;
+        i++
+    ){
+
+        const char =
+            text[i];
+
+
+        if(
+            (
+                char === '"' ||
+                char === "'"
+            )
+        ){
+
+            if(
+                quote === null
+            ){
+
+                quote =
+                    char;
+
+            }else if(
+                quote === char &&
+                text[i-1] !== "\\"
+            ){
+
+                quote =
+                    null;
+
+            }
+
+            continue;
+
+        }
+
+
+        if(
+            char === ":" &&
+            quote === null
+        ){
+
+            return i;
+
+        }
+
+    }
+
+
+    return -1;
+
+}
+
+
+/* =====================================================
+   INDENT
+===================================================== */
+
+function indentation(
+    line
+){
+
+    return (
+        line.match(
+            /^ */
+        ) || [""]
+    )[0].length;
+
+}
+
+
+/* =====================================================
+   YAML PARSER
+===================================================== */
+
+function parseYAML(
+    source
+){
+
+    const rawLines =
+        source.split(/\r?\n/);
+
+
+    const lines = [];
+
+
+    for(
+        let raw of rawLines
+    ){
+
+        raw =
+            removeYamlComment(
+                raw
+            );
+
+
+        if(
+            raw.trim() === ""
+        ){
+
+            continue;
+
+        }
+
+
+        if(
+            raw.includes("\t")
+        ){
+
+            throw new Error(
+                "YAML tidak boleh menggunakan TAB sebagai indentasi."
+            );
+
+        }
+
+
+        lines.push({
+            text:raw,
+            indent:indentation(raw),
+            value:raw.trim()
+        });
+
+    }
+
+
+    if(
+        lines.length === 0
+    ){
+
+        return null;
+
+    }
+
+
+    function parseBlock(
+        start,
+        indent
+    ){
+
+        if(
+            start >= lines.length
+        ){
+
+            return {
+                value:null,
+                index:start
+            };
+
+        }
+
+
+        const isArray =
+            lines[start].indent === indent &&
+            lines[start].value.startsWith("-");
+
+
+        const result =
+            isArray
+                ? []
+                : {};
+
+
+        let index =
+            start;
+
+
+        while(
+            index < lines.length
+        ){
+
+            const line =
+                lines[index];
+
+
+            if(
+                line.indent < indent
+            ){
+
+                break;
+
+            }
+
+
+            if(
+                line.indent > indent
+            ){
+
+                throw new Error(
+                    "Indentasi YAML tidak valid pada baris " +
+                    (index + 1)
+                );
+
+            }
+
+
+            /*
+             * ARRAY
+             */
+
+            if(
+                isArray
+            ){
+
+                if(
+                    !line.value.startsWith("-")
+                ){
+
+                    break;
+
+                }
+
+
+                let content =
+                    line.value
+                        .slice(1)
+                        .trim();
+
+
+                if(
+                    content === ""
+                ){
+
+                    if(
+                        index + 1 < lines.length &&
+                        lines[index+1].indent > indent
+                    ){
+
+                        const child =
+                            parseBlock(
+                                index + 1,
+                                lines[index+1].indent
+                            );
+
+
+                        result.push(
+                            child.value
+                        );
+
+
+                        index =
+                            child.index;
+
+                    }else{
+
+                        result.push(
+                            null
+                        );
+
+                        index++;
+
+                    }
+
+
+                    continue;
+
+                }
+
+
+                /*
+                 * Array object:
+                 *
+                 * - name: test
+                 *   value: 1
+                 */
+
+                const colon =
+                    findColon(
+                        content
+                    );
+
+
+                if(
+                    colon > 0
+                ){
+
+                    const key =
+                        content
+                            .slice(
+                                0,
+                                colon
+                            )
+                            .trim();
+
+
+                    const value =
+                        content
+                            .slice(
+                                colon + 1
+                            )
+                            .trim();
+
+
+                    const object = {};
+
+
+                    if(
+                        value !== ""
+                    ){
+
+                        object[key] =
+                            yamlScalar(
+                                value
+                            );
+
+                        index++;
+
+                    }else{
+
+                        if(
+                            index + 1 < lines.length &&
+                            lines[index+1].indent > indent
+                        ){
+
+                            const child =
+                                parseBlock(
+                                    index + 1,
+                                    lines[index+1].indent
+                                );
+
+
+                            object[key] =
+                                child.value;
+
+
+                            index =
+                                child.index;
+
+                        }else{
+
+                            object[key] =
+                                null;
+
+                            index++;
+
+                        }
+
+                    }
+
+
+                    /*
+                     * Ambil properti lanjutan
+                     * dari object array.
+                     */
+
+                    if(
+                        index < lines.length &&
+                        lines[index].indent > indent
+                    ){
+
+                        const extra =
+                            parseBlock(
+                                index,
+                                lines[index].indent
+                            );
+
+
+                        if(
+                            extra.value &&
+                            typeof extra.value ===
+                                "object" &&
+                            !Array.isArray(
+                                extra.value
+                            )
+                        ){
+
+                            Object.assign(
+                                object,
+                                extra.value
+                            );
+
+                        }
+
+
+                        index =
+                            extra.index;
+
+                    }
+
+
+                    result.push(
+                        object
+                    );
+
+
+                    continue;
+
+                }
+
+
+                result.push(
+                    yamlScalar(
+                        content
+                    )
+                );
+
+
+                index++;
+
+
+                continue;
+
+            }
+
+
+            /*
+             * OBJECT
+             */
+
+            const colon =
+                findColon(
+                    line.value
+                );
+
+
+            if(
+                colon <= 0
+            ){
+
+                throw new Error(
+                    "Format YAML tidak valid pada baris " +
+                    (index + 1) +
+                    ": " +
+                    line.value
+                );
+
+            }
+
+
+            const key =
+                line.value
+                    .slice(
+                        0,
+                        colon
+                    )
+                    .trim();
+
+
+            const value =
+                line.value
+                    .slice(
+                        colon + 1
+                    )
+                    .trim();
+
+
+            if(
+                !key
+            ){
+
+                throw new Error(
+                    "Key YAML kosong pada baris " +
+                    (index + 1)
+                );
+
+            }
+
+
+            if(
+                value !== ""
+            ){
+
+                result[key] =
+                    yamlScalar(
+                        value
+                    );
+
+                index++;
+
+                continue;
+
+            }
+
+
+            /*
+             * Nested object/array
+             */
+
+            if(
+                index + 1 < lines.length &&
+                lines[index+1].indent > indent
+            ){
+
+                const child =
+                    parseBlock(
+                        index + 1,
+                        lines[index+1].indent
+                    );
+
+
+                result[key] =
+                    child.value;
+
+
+                index =
+                    child.index;
+
+            }else{
+
+                result[key] =
+                    null;
+
+                index++;
+
+            }
+
+        }
+
+
+        return {
+            value:result,
+            index:index
+        };
+
+    }
+
+
+    return parseBlock(
+        0,
+        lines[0].indent
+    ).value;
+
+}
+
+
+/* =====================================================
+   YAML STRINGIFY
+===================================================== */
+
+function yamlString(
+    value,
+    indent=0
+){
+
+    const spaces =
+        " ".repeat(
+            indent
+        );
+
+
+    /*
+     * NULL
+     */
+
+    if(
+        value === null
+    ){
+
+        return "null";
+
+    }
+
+
+    /*
+     * BOOLEAN / NUMBER
+     */
+
+    if(
+        typeof value ===
+            "boolean" ||
+        typeof value ===
+            "number"
+    ){
+
+        return String(
+            value
+        );
+
+    }
+
+
+    /*
+     * STRING
+     */
+
+    if(
+        typeof value ===
+            "string"
+    ){
+
+        if(
+            value === ""
+        ){
+
+            return '""';
+
+        }
+
+
+        /*
+         * Quote strings yang
+         * berpotensi dianggap
+         * sebagai tipe lain oleh YAML.
+         */
+
+        if(
+            /^(true|false|null|yes|no|on|off|~)$/i.test(
+                value
+            ) ||
+            /^[-+]?(?:\d+\.?\d*|\.\d+)$/.test(
+                value
+            ) ||
+            /[:#{}\[\],&*!|>'"%@`]/.test(
+                value
+            ) ||
+            value.includes("\n") ||
+            /^\s|\s$/.test(
+                value
+            )
+        ){
+
+            return JSON.stringify(
+                value
+            );
+
+        }
+
+
+        return value;
+
+    }
+
+
+    /*
+     * ARRAY
+     */
+
+    if(
+        Array.isArray(value)
+    ){
+
+        if(
+            value.length === 0
+        ){
+
+            return "[]";
+
+        }
+
+
+        const result = [];
+
+
+        for(
+            const item of value
+        ){
+
+            if(
+                item !== null &&
+                typeof item ===
+                    "object"
+            ){
+
+                if(
+                    Array.isArray(
+                        item
+                    )
+                ){
+
+                    result.push(
+                        spaces +
+                        "- " +
+                        JSON.stringify(
+                            item
+                        )
+                    );
+
+                }else{
+
+                    const entries =
+                        Object.entries(
+                            item
+                        );
+
+
+                    if(
+                        entries.length === 0
+                    ){
+
+                        result.push(
+                            spaces +
+                            "- {}"
+                        );
+
+                        continue;
+
+                    }
+
+
+                    const [
+                        firstKey,
+                        firstValue
+                    ] =
+                        entries[0];
+
+
+                    if(
+                        firstValue !== null &&
+                        typeof firstValue ===
+                            "object"
+                    ){
+
+                        result.push(
+                            spaces +
+                            "- " +
+                            firstKey +
+                            ":"
+                        );
+
+
+                        result.push(
+                            yamlString(
+                                firstValue,
+                                indent + 4
+                            )
+                        );
+
+                    }else{
+
+                        result.push(
+                            spaces +
+                            "- " +
+                            firstKey +
+                            ": " +
+                            yamlString(
+                                firstValue
+                            )
+                        );
+
+                    }
+
+
+                    for(
+                        let i=1;
+                        i<entries.length;
+                        i++
+                    ){
+
+                        const [
+                            key,
+                            val
+                        ] =
+                            entries[i];
+
+
+                        if(
+                            val !== null &&
+                            typeof val ===
+                                "object"
+                        ){
+
+                            result.push(
+                                spaces +
+                                "  " +
+                                key +
+                                ":"
+                            );
+
+
+                            result.push(
+                                yamlString(
+                                    val,
+                                    indent + 4
+                                )
+                            );
+
+                        }else{
+
+                            result.push(
+                                spaces +
+                                "  " +
+                                key +
+                                ": " +
+                                yamlString(
+                                    val
+                                )
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            }else{
+
+                result.push(
+                    spaces +
+                    "- " +
+                    yamlString(
+                        item
+                    )
+                );
+
+            }
+
+        }
+
+
+        return result.join(
+            "\n"
+        );
+
+    }
+
+
+    /*
+     * OBJECT
+     */
+
+    if(
+        typeof value ===
+            "object"
+    ){
+
+        const entries =
+            Object.entries(
+                value
+            );
+
+
+        if(
+            entries.length === 0
+        ){
+
+            return "{}";
+
+        }
+
+
+        const result = [];
+
+
+        for(
+            const [
+                key,
+                val
+            ] of entries
+        ){
+
+            const safeKey =
+                /^[A-Za-z0-9_.\/-]+$/.test(
+                    key
+                )
+                    ? key
+                    : JSON.stringify(
+                        key
+                    );
+
+
+            if(
+                val !== null &&
+                typeof val ===
+                    "object"
+            ){
+
+                if(
+                    Array.isArray(
+                        val
+                    ) &&
+                    val.length === 0
+                ){
+
+                    result.push(
+                        spaces +
+                        safeKey +
+                        ": []"
+                    );
+
+                }else if(
+                    !Array.isArray(
+                        val
+                    ) &&
+                    Object.keys(
+                        val
+                    ).length === 0
+                ){
+
+                    result.push(
+                        spaces +
+                        safeKey +
+                        ": {}"
+                    );
+
+                }else{
+
+                    result.push(
+                        spaces +
+                        safeKey +
+                        ":"
+                    );
+
+
+                    result.push(
+                        yamlString(
+                            val,
+                            indent + 2
+                        )
+                    );
+
+                }
+
+            }else{
+
+                result.push(
+                    spaces +
+                    safeKey +
+                    ": " +
+                    yamlString(
+                        val
+                    )
+                );
+
+            }
+
+        }
+
+
+        return result.join(
+            "\n"
+        );
+
+    }
+
+
+    return String(
+        value
+    );
+
+}
+
+
+/* =====================================================
+   JSON TO YAML
+===================================================== */
+
+function convertJsonToYaml(){
+
+    const source =
+        inputText.value.trim();
+
+
+    if(
+        !source
+    ){
+
+        throw new Error(
+            "JSON input masih kosong."
+        );
+
+    }
+
+
+    let parsed;
+
+
+    try{
+
+        parsed =
+            JSON.parse(
+                source
+            );
+
+    }catch(error){
+
+        throw new Error(
+            "JSON tidak valid: " +
+            error.message
+        );
+
+    }
+
+
+    return yamlString(
+        parsed
+    );
+
+}
+
+
+/* =====================================================
+   YAML TO JSON
+===================================================== */
+
+function convertYamlToJson(){
+
+    const source =
+        inputText.value.trim();
+
+
+    if(
+        !source
+    ){
+
+        throw new Error(
+            "YAML input masih kosong."
+        );
+
+    }
+
+
+    const parsed =
+        parseYAML(
+            source
+        );
+
+
+    return JSON.stringify(
+        parsed,
+        null,
+        2
+    );
+
+}
+
+
+/* =====================================================
+   CONVERT
+===================================================== */
+
+function convert(){
+
+    try{
+
+        let result;
+
+
+        if(
+            mode ===
+            "json-to-yaml"
+        ){
+
+            result =
+                convertJsonToYaml();
+
+        }else{
+
+            result =
+                convertYamlToJson();
+
+        }
+
+
+        outputText.value =
+            result;
+
+
+        setStatus(
+            "Conversion berhasil.",
+            "success"
+        );
+
+    }catch(error){
+
+        outputText.value =
+            "";
+
+
+        setStatus(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   FORMAT JSON
+===================================================== */
+
+formatButton.addEventListener(
+    "click",
+    () => {
+
+        const source =
+            inputText.value.trim();
+
+
+        if(
+            !source
+        ){
+
+            setStatus(
+                "JSON input masih kosong.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            const parsed =
+                JSON.parse(
+                    source
+                );
+
+
+            inputText.value =
+                JSON.stringify(
+                    parsed,
+                    null,
+                    2
+                );
+
+
+            setStatus(
+                "JSON berhasil diformat.",
+                "success"
+            );
+
+        }catch(error){
+
+            setStatus(
+                "JSON tidak valid: " +
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MODE JSON → YAML
+===================================================== */
+
+jsonToYamlButton.addEventListener(
+    "click",
+    () => {
+
+        mode =
+            "json-to-yaml";
+
+
+        jsonToYamlButton.classList.add(
+            "active"
+        );
+
+        yamlToJsonButton.classList.remove(
+            "active"
+        );
+
+
+        inputTitle.textContent =
+            "JSON INPUT";
+
+        outputTitle.textContent =
+            "YAML OUTPUT";
+
+
+        formatButton.style.display =
+            "inline-block";
+
+
+        inputText.placeholder =
+`Contoh:
+{
+  "nama": "WebToolsKita",
+  "version": 1,
+  "active": true
+}`;
+
+
+        outputText.placeholder =
+            "Hasil YAML akan muncul di sini...";
+
+
+        setStatus(
+            "Mode JSON → YAML aktif."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   MODE YAML → JSON
+===================================================== */
+
+yamlToJsonButton.addEventListener(
+    "click",
+    () => {
+
+        mode =
+            "yaml-to-json";
+
+
+        yamlToJsonButton.classList.add(
+            "active"
+        );
+
+        jsonToYamlButton.classList.remove(
+            "active"
+        );
+
+
+        inputTitle.textContent =
+            "YAML INPUT";
+
+        outputTitle.textContent =
+            "JSON OUTPUT";
+
+
+        formatButton.style.display =
+            "none";
+
+
+        inputText.placeholder =
+`Contoh:
+nama: WebToolsKita
+version: 1
+active: true`;
+
+
+        outputText.placeholder =
+            "Hasil JSON akan muncul di sini...";
+
+
+        setStatus(
+            "Mode YAML → JSON aktif."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   SWAP
+===================================================== */
+
+swapButton.addEventListener(
+    "click",
+    () => {
+
+        const input =
+            inputText.value;
+
+        const output =
+            outputText.value;
+
+
+        inputText.value =
+            output;
+
+        outputText.value =
+            input;
+
+
+        if(
+            mode ===
+            "json-to-yaml"
+        ){
+
+            yamlToJsonButton.click();
+
+        }else{
+
+            jsonToYamlButton.click();
+
+        }
+
+
+        setStatus(
+            "Input dan output berhasil ditukar."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   COPY
+===================================================== */
+
+copyButton.addEventListener(
+    "click",
+    async () => {
+
+        const value =
+            outputText.value;
+
+
+        if(
+            !value
+        ){
+
+            setStatus(
+                "Belum ada hasil untuk disalin.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            await navigator
+                .clipboard
+                .writeText(
+                    value
+                );
+
+
+            copyButton.textContent =
+                "✓ Tersalin";
+
+
+            setStatus(
+                "Hasil berhasil disalin.",
+                "success"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    copyButton.textContent =
+                        "⧉ Copy";
+
+                },
+                1500
+            );
+
+        }catch{
+
+            outputText.select();
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            copyButton.textContent =
+                "✓ Tersalin";
+
+
+            setTimeout(
+                () => {
+
+                    copyButton.textContent =
+                        "⧉ Copy";
+
+                },
+                1500
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   DOWNLOAD
+===================================================== */
+
+downloadButton.addEventListener(
+    "click",
+    () => {
+
+        const value =
+            outputText.value;
+
+
+        if(
+            !value
+        ){
+
+            setStatus(
+                "Belum ada hasil untuk didownload.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const extension =
+            mode ===
+            "json-to-yaml"
+                ? "yaml"
+                : "json";
+
+
+        const mime =
+            mode ===
+            "json-to-yaml"
+                ? "text/yaml;charset=utf-8"
+                : "application/json;charset=utf-8";
+
+
+        const blob =
+            new Blob(
+                [
+                    value
+                ],
+                {
+                    type:mime
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            url;
+
+
+        link.download =
+            "webtoolskita-converted." +
+            extension;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        setStatus(
+            "File berhasil disiapkan untuk download.",
+            "success"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    () => {
+
+        inputText.value =
+            "";
+
+        outputText.value =
+            "";
+
+
+        setStatus(
+            "Editor berhasil dibersihkan."
+        );
+
+
+        inputText.focus();
+
+    }
+);
+
+
+/* =====================================================
+   TAB SUPPORT
+===================================================== */
+
+inputText.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key ===
+            "Tab"
+        ){
+
+            event.preventDefault();
+
+
+            const start =
+                inputText.selectionStart;
+
+            const end =
+                inputText.selectionEnd;
+
+
+            inputText.value =
+                inputText.value.substring(
+                    0,
+                    start
+                ) +
+                "  " +
+                inputText.value.substring(
+                    end
+                );
+
+
+            inputText.selectionStart =
+                inputText.selectionEnd =
+                    start + 2;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUTO CONVERT
+===================================================== */
+
+inputText.addEventListener(
+    "input",
+    () => {
+
+        /*
+         * Tidak langsung menampilkan
+         * error ketika user sedang
+         * mengetik.
+         *
+         * Conversion dilakukan
+         * ketika tombol Convert
+         * ditekan.
+         */
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+setStatus(
+    "Mode JSON → YAML aktif. Masukkan data lalu tekan Convert."
+);
+
+</script>
+
+</body>
+</html>

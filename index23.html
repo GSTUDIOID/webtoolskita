@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Update Center - WebToolsKita</title>
+
+<style>
+:root{
+    --bg:#06050a;
+    --panel:#0e0b16;
+    --panel2:#151020;
+    --panel3:#1b1428;
+    --line:#302144;
+    --text:#f8f2ff;
+    --muted:#a99bb8;
+    --purple:#9b5cff;
+    --purple2:#6d35d9;
+    --green:#35d39a;
+    --blue:#55a8ff;
+    --yellow:#ffc857;
+    --red:#ff5f7a;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:
+        radial-gradient(circle at 10% 5%,rgba(155,92,255,.18),transparent 28%),
+        radial-gradient(circle at 90% 10%,rgba(85,168,255,.10),transparent 25%),
+        linear-gradient(135deg,#050409,#0b0712 55%,#07050d);
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.18;
+    background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:42px 42px;
+}
+
+.wrap{
+    width:min(1180px,calc(100% - 32px));
+    margin:auto;
+    padding:25px 0 55px;
+    position:relative;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.back{
+    color:#ddd3ea;
+    text-decoration:none;
+    border:1px solid var(--line);
+    background:#100b1bd9;
+    padding:11px 16px;
+    border-radius:12px;
+    font-weight:800;
+    transition:.25s;
+}
+
+.back:hover{
+    transform:translateY(-2px);
+    border-color:var(--purple);
+    color:#fff;
+}
+
+.admin{
+    font-size:12px;
+    color:#cfc2dc;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 13px var(--green);
+}
+
+.hero{
+    position:relative;
+    overflow:hidden;
+    padding:32px;
+    border:1px solid var(--line);
+    border-radius:28px;
+    background:linear-gradient(145deg,#1a1029f5,#0b0813f5);
+    box-shadow:0 20px 60px #00000060;
+}
+
+.hero:after{
+    content:"";
+    position:absolute;
+    width:300px;
+    height:300px;
+    right:-120px;
+    top:-140px;
+    border-radius:50%;
+    background:#9b5cff1c;
+    filter:blur(5px);
+}
+
+.kicker{
+    color:#bd92ff;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.hero h1{
+    margin:9px 0 10px;
+    font-size:clamp(34px,6vw,54px);
+    line-height:1;
+}
+
+.hero p{
+    max-width:780px;
+    margin:0;
+    color:var(--muted);
+    line-height:1.7;
+    font-size:14px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    margin-top:18px;
+    padding:8px 13px;
+    border-radius:999px;
+    color:#d8c5ff;
+    background:#9b5cff12;
+    border:1px solid #9b5cff42;
+    font-size:11px;
+    font-weight:900;
+}
+
+.section{
+    margin-top:22px;
+}
+
+.section-title{
+    margin-bottom:12px;
+}
+
+.section-title h2{
+    margin:0;
+    font-size:21px;
+}
+
+.section-title p{
+    margin:5px 0 0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.panel{
+    border:1px solid var(--line);
+    border-radius:21px;
+    padding:20px;
+    background:linear-gradient(145deg,#120c1df2,#0b0813f2);
+    box-shadow:0 12px 35px #00000038;
+}
+
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.stats{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.stat{
+    border:1px solid var(--line);
+    background:#100b1b;
+    border-radius:11px;
+    padding:9px 12px;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.stat b{
+    color:#fff;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:0;
+    cursor:pointer;
+    color:#fff;
+    padding:11px 15px;
+    border-radius:11px;
+    font-weight:900;
+    font-size:12px;
+    transition:.22s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.primary{
+    background:linear-gradient(135deg,var(--purple),var(--purple2));
+    box-shadow:0 8px 25px #6d35d944;
+}
+
+.secondary{
+    background:#171021;
+    border:1px solid var(--line);
+}
+
+.danger{
+    background:#ff5f7a15;
+    border:1px solid #ff5f7a4a;
+    color:#ff8ba0;
+}
+
+.success{
+    background:#35d39a15;
+    border:1px solid #35d39a40;
+    color:#71e8bf;
+}
+
+.filters{
+    display:flex;
+    gap:7px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+.filter{
+    border:1px solid var(--line);
+    background:#100b1b;
+    color:#a99bb8;
+    border-radius:9px;
+    padding:8px 12px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:900;
+}
+
+.filter.active{
+    color:#fff;
+    border-color:var(--purple);
+    background:#9b5cff16;
+}
+
+.updates{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    margin-top:15px;
+}
+
+.update{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:19px;
+    background:#100b1be8;
+    transition:.25s;
+}
+
+.update:hover{
+    transform:translateY(-3px);
+    border-color:#58388e;
+}
+
+.update.done{
+    border-color:#35d39a35;
+}
+
+.update-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.update-title{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+}
+
+.update-icon{
+    width:40px;
+    height:40px;
+    flex:none;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    background:#9b5cff14;
+    border:1px solid #9b5cff30;
+    font-size:20px;
+}
+
+.update h3{
+    margin:0 0 5px;
+    font-size:15px;
+}
+
+.date{
+    color:#84768f;
+    font-size:10px;
+}
+
+.status{
+    flex:none;
+    border-radius:8px;
+    padding:5px 8px;
+    font-size:9px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.status.done{
+    color:#70e8be;
+    background:#35d39a12;
+    border:1px solid #35d39a35;
+}
+
+.status.pending{
+    color:#ffd878;
+    background:#ffc85712;
+    border:1px solid #ffc85735;
+}
+
+.update-description{
+    margin:14px 0 0;
+    color:#a99bb8;
+    font-size:12px;
+    line-height:1.65;
+}
+
+.update-actions{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:15px;
+}
+
+.small{
+    border:1px solid var(--line);
+    background:#171021;
+    color:#d9cde3;
+    border-radius:8px;
+    padding:7px 9px;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:800;
+}
+
+.small:hover{
+    border-color:var(--purple);
+    color:#fff;
+}
+
+.empty{
+    margin-top:15px;
+    padding:40px 20px;
+    text-align:center;
+    border:1px dashed #35264a;
+    border-radius:18px;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:35px;
+    margin-bottom:8px;
+}
+
+.maintenance{
+    border-color:#ff5f7a40;
+    background:
+        radial-gradient(circle at 90% 0%,#ff5f7a10,transparent 35%),
+        linear-gradient(145deg,#180d15,#0d0810);
+}
+
+.server-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.server-status{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.server-icon{
+    width:50px;
+    height:50px;
+    display:grid;
+    place-items:center;
+    border-radius:15px;
+    background:#35d39a12;
+    border:1px solid #35d39a35;
+    font-size:23px;
+}
+
+.server-status h3{
+    margin:0 0 4px;
+    font-size:15px;
+}
+
+.server-status span{
+    color:#8f819e;
+    font-size:11px;
+}
+
+.maintenance.active .server-icon{
+    background:#ff5f7a12;
+    border-color:#ff5f7a35;
+}
+
+.maintenance.active .server-status span{
+    color:#ff8196;
+}
+
+.maintenance-message{
+    margin-top:16px;
+}
+
+.maintenance-message label{
+    display:block;
+    color:#b9acC5;
+    font-size:11px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.input,
+textarea{
+    width:100%;
+    padding:12px 13px;
+    color:#fff;
+    background:#08060d;
+    border:1px solid var(--line);
+    border-radius:11px;
+    outline:none;
+    font-family:inherit;
+}
+
+.input:focus,
+textarea:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 3px #9b5cff12;
+}
+
+textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.warning{
+    margin-top:14px;
+    padding:13px;
+    border-left:3px solid var(--red);
+    background:#ff5f7a09;
+    border-radius:0 10px 10px 0;
+    color:#cbbbc9;
+    font-size:11px;
+    line-height:1.6;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:30;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:#000000b8;
+    backdrop-filter:blur(8px);
+}
+
+.modal-box{
+    width:min(570px,100%);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:23px;
+    background:linear-gradient(145deg,#181021,#0b0812);
+    box-shadow:0 25px 80px #000;
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.modal-head h2{
+    margin:0;
+    font-size:20px;
+}
+
+.close{
+    border:0;
+    background:#ffffff08;
+    color:#aaa;
+    cursor:pointer;
+    border-radius:9px;
+    padding:7px 10px;
+}
+
+.form-group{
+    margin-bottom:13px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:6px;
+    color:#b9acC5;
+    font-size:11px;
+    font-weight:800;
+}
+
+.form-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:17px;
+}
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:50;
+    padding:13px 16px;
+    border-radius:12px;
+    background:#171021;
+    border:1px solid var(--line);
+    color:#fff;
+    box-shadow:0 15px 40px #0008;
+    transform:translateY(80px);
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    font-size:12px;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+.footer{
+    margin-top:30px;
+    text-align:center;
+    color:#746a80;
+    font-size:11px;
+}
+
+@media(max-width:800px){
+
+    .updates{
+        grid-template-columns:1fr;
+    }
+
+    .top{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .server-row{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+
+@media(max-width:550px){
+
+    .wrap{
+        width:calc(100% - 20px);
+        padding-top:15px;
+    }
+
+    .hero{
+        padding:24px;
+    }
+
+    .actions{
+        width:100%;
+    }
+
+    .actions .btn{
+        flex:1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+    <!-- TOP -->
+
+    <div class="top">
+
+        <a class="back" href="index18.html">
+            ← Kembali ke Admin Web
+        </a>
+
+        <div class="admin">
+            <span class="dot"></span>
+            Administrator • Update Center
+        </div>
+
+    </div>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="kicker">
+            WebToolsKita • Administration
+        </div>
+
+        <h1>📢 Update Center</h1>
+
+        <p>
+            Pusat pengelolaan update WebToolsKita.
+            Gunakan halaman ini untuk mencatat pekerjaan,
+            mengubah status penyelesaian, dan mengontrol
+            status maintenance website.
+        </p>
+
+        <div class="badge">
+            ● ADMIN UPDATE CONTROL
+        </div>
+
+    </section>
+
+
+    <!-- UPDATE MANAGER -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>📋 Update Manager</h2>
+
+            <p>
+                Kelola pekerjaan dan update yang nantinya
+                dapat ditampilkan pada halaman Update Terbaru.
+            </p>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="toolbar">
+
+                <div class="stats">
+
+                    <div class="stat">
+                        Total:
+                        <b id="totalCount">0</b>
+                    </div>
+
+                    <div class="stat">
+                        Selesai:
+                        <b id="doneCount">0</b>
+                    </div>
+
+                    <div class="stat">
+                        Belum:
+                        <b id="pendingCount">0</b>
+                    </div>
+
+                </div>
+
+
+                <div class="actions">
+
+                    <button
+                        class="btn primary"
+                        onclick="openUpdateModal()"
+                    >
+                        ＋ Tambah Update
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="filters">
+
+                <button
+                    class="filter active"
+                    data-filter="all"
+                    onclick="setFilter('all',this)"
+                >
+                    Semua
+                </button>
+
+                <button
+                    class="filter"
+                    data-filter="pending"
+                    onclick="setFilter('pending',this)"
+                >
+                    ✕ Belum
+                </button>
+
+                <button
+                    class="filter"
+                    data-filter="done"
+                    onclick="setFilter('done',this)"
+                >
+                    ✓ Selesai
+                </button>
+
+            </div>
+
+
+            <div id="updates"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SERVER CONTROL -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>🚨 Server Control</h2>
+
+            <p>
+                Kontrol status maintenance WebToolsKita.
+            </p>
+
+        </div>
+
+
+        <div
+            class="panel maintenance"
+            id="maintenancePanel"
+        >
+
+            <div class="server-row">
+
+                <div class="server-status">
+
+                    <div class="server-icon" id="serverIcon">
+                        🟢
+                    </div>
+
+                    <div>
+
+                        <h3 id="serverTitle">
+                            Server Online
+                        </h3>
+
+                        <span id="serverSubtitle">
+                            Website berada dalam mode normal.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div id="maintenanceActions">
+
+                    <button
+                        class="btn danger"
+                        onclick="enableMaintenance()"
+                    >
+                        🛑 Aktifkan Maintenance
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="maintenance-message">
+
+                <label>
+                    Pesan Maintenance
+                </label>
+
+                <textarea
+                    id="maintenanceMessage"
+                    placeholder="Contoh: WebToolsKita sedang dalam perbaikan total. Silakan kembali beberapa saat lagi."
+                ></textarea>
+
+                <div class="actions" style="margin-top:9px">
+
+                    <button
+                        class="btn secondary"
+                        onclick="saveMaintenanceMessage()"
+                    >
+                        💾 Simpan Pesan
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="warning">
+
+                ⚠️
+                <b>Catatan:</b>
+                mode maintenance versi UI ini belum memblokir
+                request HTTP publik. Proteksi sebenarnya akan
+                dilakukan melalui <b>server.js</b> agar pengguna
+                biasa benar-benar tidak dapat membuka website
+                saat maintenance aktif.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="footer">
+        WebToolsKita • Update Center • 2026
+    </div>
+
+</div>
+
+
+<!-- UPDATE MODAL -->
+
+<div class="modal" id="updateModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2 id="modalTitle">
+                ＋ Tambah Update
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeUpdateModal()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Judul Update</label>
+
+            <input
+                id="updateTitle"
+                class="input"
+                placeholder="Contoh: Upgrade Admin Tools"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Tanggal</label>
+
+            <input
+                id="updateDate"
+                class="input"
+                type="date"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Deskripsi</label>
+
+            <textarea
+                id="updateDescription"
+                placeholder="Jelaskan pekerjaan atau perubahan yang dilakukan..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn secondary"
+                onclick="closeUpdateModal()"
+            >
+                Batal
+            </button>
+
+            <button
+                class="btn primary"
+                onclick="saveUpdate()"
+            >
+                💾 Simpan Update
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CONFIRM MODAL -->
+
+<div class="modal" id="confirmModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>🚨 Maintenance Mode</h2>
+
+            <button
+                class="close"
+                onclick="closeConfirm()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <p
+            id="confirmText"
+            style="
+                color:#b9acC5;
+                font-size:13px;
+                line-height:1.7;
+            "
+        >
+            Apakah kamu yakin ingin mengaktifkan
+            Maintenance Mode?
+        </p>
+
+        <div class="form-actions">
+
+            <button
+                class="btn secondary"
+                onclick="closeConfirm()"
+            >
+                Batal
+            </button>
+
+            <button
+                class="btn danger"
+                onclick="confirmMaintenance()"
+            >
+                🛑 Ya, Aktifkan
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* =========================================
+   STORAGE
+========================================= */
+
+const UPDATE_KEY =
+    "webtoolskita_admin_updates";
+
+const MAINTENANCE_KEY =
+    "webtoolskita_maintenance";
+
+const MESSAGE_KEY =
+    "webtoolskita_maintenance_message";
+
+
+let updates = [];
+
+let currentFilter = "all";
+
+let editingId = null;
+
+
+/* =========================================
+   INITIAL DATA
+========================================= */
+
+function loadData(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(UPDATE_KEY);
+
+        updates =
+            saved ? JSON.parse(saved) : [];
+
+        if(!Array.isArray(updates)){
+            updates = [];
+        }
+
+    }catch(error){
+
+        updates = [];
+
+    }
+
+
+    const maintenance =
+        localStorage.getItem(MAINTENANCE_KEY) === "true";
+
+    const message =
+        localStorage.getItem(MESSAGE_KEY) ||
+        "WebToolsKita sedang dalam perbaikan total. Silakan kembali beberapa saat lagi.";
+
+    document
+        .getElementById("maintenanceMessage")
+        .value = message;
+
+    updateMaintenanceUI(maintenance);
+
+    renderUpdates();
+
+}
+
+
+/* =========================================
+   SAVE UPDATES
+========================================= */
+
+function persistUpdates(){
+
+    localStorage.setItem(
+        UPDATE_KEY,
+        JSON.stringify(updates)
+    );
+
+}
+
+
+/* =========================================
+   FILTER
+========================================= */
+
+function setFilter(filter,button){
+
+    currentFilter = filter;
+
+    document
+        .querySelectorAll(".filter")
+        .forEach(el =>
+            el.classList.remove("active")
+        );
+
+    button.classList.add("active");
+
+    renderUpdates();
+
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+function openUpdateModal(id=null){
+
+    editingId = id;
+
+    document
+        .getElementById("updateModal")
+        .style.display = "flex";
+
+
+    if(id){
+
+        const item =
+            updates.find(x => x.id === id);
+
+        if(!item) return;
+
+        document
+            .getElementById("modalTitle")
+            .textContent = "✏️ Edit Update";
+
+        document
+            .getElementById("updateTitle")
+            .value = item.title;
+
+        document
+            .getElementById("updateDate")
+            .value = item.date;
+
+        document
+            .getElementById("updateDescription")
+            .value = item.description;
+
+    }else{
+
+        document
+            .getElementById("modalTitle")
+            .textContent = "＋ Tambah Update";
+
+        document
+            .getElementById("updateTitle")
+            .value = "";
+
+        document
+            .getElementById("updateDate")
+            .value =
+                new Date()
+                .toISOString()
+                .slice(0,10);
+
+        document
+            .getElementById("updateDescription")
+            .value = "";
+
+    }
+
+}
+
+
+function closeUpdateModal(){
+
+    document
+        .getElementById("updateModal")
+        .style.display = "none";
+
+    editingId = null;
+
+}
+
+
+/* =========================================
+   SAVE UPDATE
+========================================= */
+
+function saveUpdate(){
+
+    const title =
+        document
+            .getElementById("updateTitle")
+            .value
+            .trim();
+
+    const date =
+        document
+            .getElementById("updateDate")
+            .value;
+
+    const description =
+        document
+            .getElementById("updateDescription")
+            .value
+            .trim();
+
+
+    if(!title || !description){
+
+        showToast(
+            "⚠️ Judul dan deskripsi wajib diisi"
+        );
+
+        return;
+
+    }
+
+
+    if(editingId){
+
+        const item =
+            updates.find(x => x.id === editingId);
+
+        if(item){
+
+            item.title = title;
+            item.date = date;
+            item.description = description;
+
+        }
+
+        showToast("✅ Update berhasil diubah");
+
+    }else{
+
+        updates.unshift({
+
+            id:
+                Date.now().toString(),
+
+            title,
+
+            date,
+
+            description,
+
+            status:"pending"
+
+        });
+
+        showToast("✅ Update berhasil ditambahkan");
+
+    }
+
+
+    persistUpdates();
+
+    closeUpdateModal();
+
+    renderUpdates();
+
+}
+
+
+/* =========================================
+   TOGGLE STATUS
+========================================= */
+
+function toggleStatus(id){
+
+    const item =
+        updates.find(x => x.id === id);
+
+    if(!item) return;
+
+
+    item.status =
+        item.status === "done"
+        ? "pending"
+        : "done";
+
+
+    persistUpdates();
+
+    renderUpdates();
+
+    showToast(
+        item.status === "done"
+        ? "✓ Update ditandai selesai"
+        : "✕ Update dikembalikan menjadi belum selesai"
+    );
+
+}
+
+
+/* =========================================
+   DELETE
+========================================= */
+
+function deleteUpdate(id){
+
+    const item =
+        updates.find(x => x.id === id);
+
+    if(!item) return;
+
+
+    if(!confirm(
+        `Hapus update "${item.title}"?`
+    )){
+        return;
+    }
+
+
+    updates =
+        updates.filter(x => x.id !== id);
+
+    persistUpdates();
+
+    renderUpdates();
+
+    showToast("🗑️ Update dihapus");
+
+}
+
+
+/* =========================================
+   RENDER
+========================================= */
+
+function renderUpdates(){
+
+    const container =
+        document.getElementById("updates");
+
+
+    let list = [...updates];
+
+
+    if(currentFilter !== "all"){
+
+        list =
+            list.filter(
+                item =>
+                    item.status === currentFilter
+            );
+
+    }
+
+
+    document
+        .getElementById("totalCount")
+        .textContent = updates.length;
+
+    document
+        .getElementById("doneCount")
+        .textContent =
+            updates.filter(
+                x => x.status === "done"
+            ).length;
+
+    document
+        .getElementById("pendingCount")
+        .textContent =
+            updates.filter(
+                x => x.status !== "done"
+            ).length;
+
+
+    if(!list.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📋
+                </div>
+
+                <b>
+                    ${
+                        currentFilter === "all"
+                        ? "Belum ada update"
+                        : "Tidak ada update pada filter ini"
+                    }
+                </b>
+
+                <p>
+                    Tambahkan update pertama menggunakan
+                    tombol <b>＋ Tambah Update</b>.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+
+        <div class="updates">
+
+            ${list.map(item => `
+
+                <article
+                    class="update ${
+                        item.status === "done"
+                        ? "done"
+                        : ""
+                    }"
+                >
+
+                    <div class="update-top">
+
+                        <div class="update-title">
+
+                            <div class="update-icon">
+                                ${
+                                    item.status === "done"
+                                    ? "✓"
+                                    : "📋"
+                                }
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    ${escapeHtml(item.title)}
+                                </h3>
+
+                                <div class="date">
+                                    📅 ${escapeHtml(item.date || "-")}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <span
+                            class="status ${
+                                item.status === "done"
+                                ? "done"
+                                : "pending"
+                            }"
+                        >
+
+                            ${
+                                item.status === "done"
+                                ? "✓ SELESAI"
+                                : "✕ BELUM SELESAI"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="update-description">
+
+                        ${escapeHtml(item.description)}
+
+                    </div>
+
+
+                    <div class="update-actions">
+
+                        <button
+                            class="small"
+                            onclick="toggleStatus('${item.id}')"
+                        >
+
+                            ${
+                                item.status === "done"
+                                ? "✕ Tandai Belum"
+                                : "✓ Tandai Selesai"
+                            }
+
+                        </button>
+
+
+                        <button
+                            class="small"
+                            onclick="openUpdateModal('${item.id}')"
+                        >
+                            ✏️ Edit
+                        </button>
+
+
+                        <button
+                            class="small"
+                            onclick="deleteUpdate('${item.id}')"
+                        >
+                            🗑️ Hapus
+                        </button>
+
+                    </div>
+
+                </article>
+
+            `).join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================
+   MAINTENANCE
+========================================= */
+
+function enableMaintenance(){
+
+    document
+        .getElementById("confirmModal")
+        .style.display = "flex";
+
+}
+
+
+function closeConfirm(){
+
+    document
+        .getElementById("confirmModal")
+        .style.display = "none";
+
+}
+
+
+function confirmMaintenance(){
+
+    localStorage.setItem(
+        MAINTENANCE_KEY,
+        "true"
+    );
+
+    closeConfirm();
+
+    updateMaintenanceUI(true);
+
+    showToast(
+        "🛑 Maintenance Mode diaktifkan"
+    );
+
+}
+
+
+function disableMaintenance(){
+
+    localStorage.setItem(
+        MAINTENANCE_KEY,
+        "false"
+    );
+
+    updateMaintenanceUI(false);
+
+    showToast(
+        "🟢 Maintenance Mode dimatikan"
+    );
+
+}
+
+
+function updateMaintenanceUI(active){
+
+    const panel =
+        document.getElementById("maintenancePanel");
+
+    const icon =
+        document.getElementById("serverIcon");
+
+    const title =
+        document.getElementById("serverTitle");
+
+    const subtitle =
+        document.getElementById("serverSubtitle");
+
+    const actions =
+        document.getElementById("maintenanceActions");
+
+
+    if(active){
+
+        panel.classList.add("active");
+
+        icon.textContent = "🔴";
+
+        title.textContent =
+            "Maintenance Aktif";
+
+        subtitle.textContent =
+            "Website berada dalam mode maintenance.";
+
+        actions.innerHTML = `
+
+            <button
+                class="btn success"
+                onclick="disableMaintenance()"
+            >
+                🟢 Matikan Maintenance
+            </button>
+
+        `;
+
+    }else{
+
+        panel.classList.remove("active");
+
+        icon.textContent = "🟢";
+
+        title.textContent =
+            "Server Online";
+
+        subtitle.textContent =
+            "Website berada dalam mode normal.";
+
+        actions.innerHTML = `
+
+            <button
+                class="btn danger"
+                onclick="enableMaintenance()"
+            >
+                🛑 Aktifkan Maintenance
+            </button>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================
+   MAINTENANCE MESSAGE
+========================================= */
+
+function saveMaintenanceMessage(){
+
+    const message =
+        document
+            .getElementById("maintenanceMessage")
+            .value
+            .trim();
+
+
+    if(!message){
+
+        showToast(
+            "⚠️ Pesan maintenance tidak boleh kosong"
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        MESSAGE_KEY,
+        message
+    );
+
+    showToast(
+        "💾 Pesan maintenance disimpan"
+    );
+
+}
+
+
+/* =========================================
+   ESCAPE
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+let toastTimer;
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        },2600);
+
+}
+
+
+/* =========================================
+   CLOSE MODALS OUTSIDE
+========================================= */
+
+document
+    .getElementById("updateModal")
+    .addEventListener("click",event => {
+
+        if(event.target.id === "updateModal"){
+            closeUpdateModal();
+        }
+
+    });
+
+
+document
+    .getElementById("confirmModal")
+    .addEventListener("click",event => {
+
+        if(event.target.id === "confirmModal"){
+            closeConfirm();
+        }
+
+    });
+
+
+/* =========================================
+   INIT
+========================================= */
+
+loadData();
+
+</script>
+
+</body>
+</html>

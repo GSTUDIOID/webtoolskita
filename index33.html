@@ -1,0 +1,3139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Database — WebToolsKita</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #05020c;
+            --bg-soft: #0b0615;
+            --panel: rgba(19, 10, 35, .78);
+            --panel-2: rgba(28, 15, 48, .82);
+
+            --purple: #8b5cf6;
+            --purple-light: #c4b5fd;
+            --pink: #ec4899;
+            --cyan: #22d3ee;
+            --green: #22c55e;
+            --yellow: #facc15;
+            --red: #ef4444;
+
+            --text: #f8fafc;
+            --muted: #a1a1aa;
+            --muted-2: #71717a;
+
+            --border: rgba(168, 85, 247, .20);
+            --border-light: rgba(255,255,255,.07);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--text);
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(124, 58, 237, .18),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(236, 72, 153, .12),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(34, 211, 238, .08),
+                    transparent 32%
+                ),
+                var(--bg);
+
+            overflow-x: hidden;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           BACKGROUND
+        ===================================================== */
+
+        .background {
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .grid {
+            position: absolute;
+            inset: 0;
+            opacity: .14;
+
+            background-image:
+                linear-gradient(
+                    rgba(168,85,247,.08) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(168,85,247,.08) 1px,
+                    transparent 1px
+                );
+
+            background-size: 42px 42px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 92%
+                );
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(85px);
+            opacity: .22;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 340px;
+            height: 340px;
+            left: -120px;
+            top: 70px;
+            background: #7c3aed;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            right: -100px;
+            top: 240px;
+            background: #db2777;
+            animation-delay: -4s;
+        }
+
+        .orb-3 {
+            width: 260px;
+            height: 260px;
+            left: 42%;
+            bottom: -120px;
+            background: #0891b2;
+            animation-delay: -7s;
+        }
+
+        @keyframes floatOrb {
+            from {
+                transform: translate3d(0,0,0) scale(1);
+            }
+
+            to {
+                transform: translate3d(35px,-35px,0) scale(1.08);
+            }
+        }
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            height: 76px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            background: rgba(5,2,12,.76);
+            border-bottom: 1px solid rgba(168,85,247,.16);
+
+            backdrop-filter: blur(22px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,.28),
+                    rgba(236,72,153,.16)
+                );
+
+            border: 1px solid rgba(168,85,247,.25);
+
+            box-shadow:
+                0 0 30px rgba(139,92,246,.15);
+
+            font-size: 21px;
+        }
+
+        .brand-title {
+            font-size: 16px;
+            font-weight: 850;
+        }
+
+        .brand-subtitle {
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-text {
+            text-align: right;
+        }
+
+        .admin-text strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .admin-text span {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+            border: 2px solid rgba(168,85,247,.55);
+
+            background: #171022;
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        main {
+            width: min(1200px, calc(100% - 32px));
+            margin: auto;
+            padding: 42px 0 110px;
+        }
+
+        /* =====================================================
+           BACK BUTTON
+        ===================================================== */
+
+        .back-button {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            z-index: 200;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 11px 15px;
+
+            color: white;
+            text-decoration: none;
+
+            background: rgba(20,10,38,.88);
+            border: 1px solid rgba(168,85,247,.28);
+            border-radius: 13px;
+
+            backdrop-filter: blur(18px);
+
+            font-size: 11px;
+            font-weight: 750;
+
+            box-shadow:
+                0 12px 40px rgba(0,0,0,.35);
+
+            transition: .25s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(168,85,247,.65);
+
+            box-shadow:
+                0 15px 45px rgba(139,92,246,.18);
+        }
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            position: relative;
+
+            padding: 35px;
+
+            border-radius: 25px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(30,16,52,.88),
+                    rgba(10,6,22,.76)
+                );
+
+            border: 1px solid var(--border);
+
+            box-shadow:
+                0 25px 80px rgba(0,0,0,.32),
+                inset 0 1px rgba(255,255,255,.035);
+
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 280px;
+            height: 280px;
+
+            right: -100px;
+            top: -130px;
+
+            border-radius: 50%;
+
+            background: rgba(139,92,246,.13);
+
+            filter: blur(35px);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            color: var(--purple-light);
+
+            background:
+                rgba(139,92,246,.10);
+
+            border:
+                1px solid rgba(168,85,247,.20);
+
+            font-size: 9px;
+            font-weight: 850;
+
+            letter-spacing: .8px;
+        }
+
+        .hero h1 {
+            margin-top: 15px;
+
+            font-size:
+                clamp(30px,5vw,50px);
+
+            line-height: 1.04;
+
+            letter-spacing: -1.7px;
+        }
+
+        .hero h1 span {
+            background:
+                linear-gradient(
+                    90deg,
+                    #c4b5fd,
+                    #e879f9,
+                    #67e8f9
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 720px;
+
+            margin-top: 14px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        /* =====================================================
+           HERO ACTIONS
+        ===================================================== */
+
+        .hero-actions {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            margin-top: 22px;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            min-height: 40px;
+
+            padding: 0 14px;
+
+            color: white;
+
+            background:
+                rgba(139,92,246,.12);
+
+            border:
+                1px solid rgba(168,85,247,.22);
+
+            border-radius: 11px;
+
+            font-size: 11px;
+            font-weight: 750;
+
+            transition: .25s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+
+            background:
+                rgba(139,92,246,.20);
+
+            border-color:
+                rgba(168,85,247,.50);
+        }
+
+        .action-button.primary {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,.85),
+                    rgba(168,85,247,.55)
+                );
+
+            border-color:
+                rgba(196,181,253,.35);
+        }
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+
+            gap: 14px;
+
+            margin-top: 22px;
+        }
+
+        .stat-card {
+            position: relative;
+
+            padding: 20px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 19px;
+
+            background:
+                var(--panel);
+
+            backdrop-filter: blur(18px);
+
+            overflow: hidden;
+
+            transition: .25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+
+            border-color:
+                rgba(168,85,247,.45);
+        }
+
+        .stat-icon {
+            font-size: 20px;
+        }
+
+        .stat-label {
+            margin-top: 11px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+        .stat-value {
+            margin-top: 4px;
+
+            font-size: 24px;
+            font-weight: 850;
+        }
+
+        .stat-extra {
+            margin-top: 6px;
+
+            color: var(--muted-2);
+
+            font-size: 9px;
+        }
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        .section {
+            margin-top: 26px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        /* =====================================================
+           PANEL
+        ===================================================== */
+
+        .panel {
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            background:
+                var(--panel);
+
+            backdrop-filter: blur(18px);
+
+            overflow: hidden;
+
+            box-shadow:
+                0 18px 55px rgba(0,0,0,.20);
+        }
+
+        /* =====================================================
+           DATABASE INFO
+        ===================================================== */
+
+        .database-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+        }
+
+        .database-item {
+            padding: 22px;
+
+            border-right:
+                1px solid rgba(168,85,247,.11);
+        }
+
+        .database-item:last-child {
+            border-right: 0;
+        }
+
+        .database-label {
+            color: var(--muted);
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .8px;
+        }
+
+        .database-value {
+            margin-top: 8px;
+
+            font-size: 13px;
+            font-weight: 780;
+
+            word-break: break-word;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background:
+                var(--green);
+
+            box-shadow:
+                0 0 12px rgba(34,197,94,.7);
+        }
+
+        .status-dot.offline {
+            background:
+                var(--red);
+
+            box-shadow:
+                0 0 12px rgba(239,68,68,.7);
+        }
+
+        .status-dot.warning {
+            background:
+                var(--yellow);
+
+            box-shadow:
+                0 0 12px rgba(250,204,21,.7);
+        }
+
+        /* =====================================================
+           TABLE EXPLORER
+        ===================================================== */
+
+        .table-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding: 15px 18px;
+
+            border-bottom:
+                1px solid rgba(168,85,247,.11);
+        }
+
+        .table-search {
+            width: min(320px,100%);
+
+            padding: 10px 12px;
+
+            color: white;
+
+            background:
+                rgba(255,255,255,.035);
+
+            border:
+                1px solid rgba(168,85,247,.16);
+
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 11px;
+
+            transition: .2s ease;
+        }
+
+        .table-search:focus {
+            border-color:
+                rgba(168,85,247,.50);
+
+            box-shadow:
+                0 0 0 3px rgba(139,92,246,.08);
+        }
+
+        .table-count {
+            color: var(--muted);
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .table-list {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+        }
+
+        .table-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 19px 21px;
+
+            border-bottom:
+                1px solid rgba(168,85,247,.09);
+
+            transition: .2s ease;
+        }
+
+        .table-row:hover {
+            background:
+                rgba(139,92,246,.045);
+        }
+
+        .table-main {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            min-width: 0;
+        }
+
+        .table-icon {
+            width: 40px;
+            height: 40px;
+
+            flex: 0 0 40px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            background:
+                rgba(139,92,246,.12);
+
+            border:
+                1px solid rgba(168,85,247,.16);
+        }
+
+        .table-name {
+            font-size: 12px;
+            font-weight: 780;
+
+            word-break: break-word;
+        }
+
+        .table-description {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+        .active-badge {
+            flex-shrink: 0;
+
+            padding: 6px 9px;
+
+            color: #86efac;
+
+            background:
+                rgba(34,197,94,.08);
+
+            border:
+                1px solid rgba(34,197,94,.16);
+
+            border-radius: 999px;
+
+            font-size: 8px;
+            font-weight: 850;
+
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           TABLE DETAIL
+        ===================================================== */
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 18px 20px;
+
+            border-bottom:
+                1px solid rgba(168,85,247,.11);
+        }
+
+        .detail-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-title-icon {
+            width: 36px;
+            height: 36px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 10px;
+
+            background:
+                rgba(139,92,246,.12);
+        }
+
+        .detail-title strong {
+            display: block;
+
+            font-size: 12px;
+        }
+
+        .detail-title span {
+            display: block;
+
+            margin-top: 2px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+        .detail-placeholder {
+            padding: 38px 20px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .detail-placeholder .big-icon {
+            font-size: 30px;
+            margin-bottom: 9px;
+        }
+
+        /* =====================================================
+           USER DATABASE
+        ===================================================== */
+
+        .user-panel {
+            overflow-x: auto;
+        }
+
+        .user-table {
+            width: 100%;
+            min-width: 720px;
+
+            border-collapse: collapse;
+        }
+
+        .user-table th {
+            padding: 14px 16px;
+
+            color: var(--muted);
+
+            background:
+                rgba(255,255,255,.025);
+
+            border-bottom:
+                1px solid rgba(168,85,247,.13);
+
+            font-size: 9px;
+            font-weight: 800;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+        }
+
+        .user-table td {
+            padding: 15px 16px;
+
+            border-bottom:
+                1px solid rgba(168,85,247,.08);
+
+            font-size: 10px;
+        }
+
+        .user-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .user-table tr:hover td {
+            background:
+                rgba(139,92,246,.035);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .user-mini-avatar {
+            width: 28px;
+            height: 28px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            background: #171022;
+
+            border:
+                1px solid rgba(168,85,247,.2);
+        }
+
+        .user-name {
+            font-weight: 750;
+        }
+
+        .user-email {
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .vip-badge,
+        .normal-badge {
+            display: inline-block;
+
+            padding: 5px 8px;
+
+            border-radius: 999px;
+
+            font-size: 8px;
+            font-weight: 800;
+        }
+
+        .vip-badge {
+            color: #fde68a;
+
+            background:
+                rgba(250,204,21,.09);
+
+            border:
+                1px solid rgba(250,204,21,.18);
+        }
+
+        .normal-badge {
+            color: #c4b5fd;
+
+            background:
+                rgba(139,92,246,.08);
+
+            border:
+                1px solid rgba(139,92,246,.16);
+        }
+
+        /* =====================================================
+           SECURITY
+        ===================================================== */
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+        }
+
+        .security-card {
+            padding: 20px;
+
+            border:
+                1px solid rgba(168,85,247,.17);
+
+            border-radius: 18px;
+
+            background:
+                rgba(255,255,255,.018);
+        }
+
+        .security-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-icon {
+            width: 38px;
+            height: 38px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            background:
+                rgba(34,211,238,.08);
+
+            border:
+                1px solid rgba(34,211,238,.13);
+        }
+
+        .security-card h4 {
+            font-size: 12px;
+        }
+
+        .security-card p {
+            margin-top: 10px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+        .security-status {
+            margin-top: 12px;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            color: #86efac;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        /* =====================================================
+           EMPTY / ERROR
+        ===================================================== */
+
+        .empty-state {
+            padding: 42px 20px;
+
+            text-align: center;
+
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .empty-title {
+            color: white;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .empty-text {
+            max-width: 480px;
+
+            margin: 7px auto 0;
+
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            margin-top: 40px;
+
+            text-align: center;
+
+            color: var(--muted-2);
+
+            font-size: 9px;
+        }
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+
+            z-index: 9999;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            gap: 15px;
+
+            background:
+                rgba(5,2,12,.97);
+
+            backdrop-filter: blur(20px);
+
+            transition:
+                opacity .4s ease,
+                visibility .4s ease;
+        }
+
+        .loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 50%;
+
+            border:
+                3px solid rgba(168,85,247,.12);
+
+            border-top-color:
+                var(--purple);
+
+            border-right-color:
+                var(--pink);
+
+            animation:
+                spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        .toast {
+            position: fixed;
+
+            right: 20px;
+            bottom: 20px;
+
+            z-index: 10000;
+
+            max-width: 340px;
+
+            padding: 13px 15px;
+
+            color: white;
+
+            background:
+                rgba(20,10,38,.96);
+
+            border:
+                1px solid rgba(168,85,247,.28);
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 15px 50px rgba(0,0,0,.45);
+
+            font-size: 10px;
+
+            opacity: 0;
+
+            transform:
+                translateY(15px);
+
+            pointer-events: none;
+
+            transition: .25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+
+            transform:
+                translateY(0);
+        }
+
+        .toast.success {
+            border-color:
+                rgba(34,197,94,.32);
+        }
+
+        .toast.error {
+            border-color:
+                rgba(239,68,68,.32);
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2,1fr);
+            }
+
+            .database-grid {
+                grid-template-columns:
+                    repeat(2,1fr);
+            }
+
+            .database-item:nth-child(2) {
+                border-right: 0;
+            }
+
+            .database-item:nth-child(-n+2) {
+                border-bottom:
+                    1px solid rgba(168,85,247,.11);
+            }
+
+            .table-list {
+                grid-template-columns: 1fr;
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 620px) {
+
+            .topbar {
+                padding: 0 14px;
+            }
+
+            .admin-text {
+                display: none;
+            }
+
+            main {
+                width:
+                    calc(100% - 20px);
+
+                padding-top: 24px;
+            }
+
+            .hero {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+
+            .hero h1 {
+                font-size: 31px;
+            }
+
+            .stats {
+                grid-template-columns:
+                    repeat(2,1fr);
+
+                gap: 9px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .database-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .database-item {
+                border-right: 0 !important;
+
+                border-bottom:
+                    1px solid rgba(168,85,247,.11);
+            }
+
+            .database-item:last-child {
+                border-bottom: 0;
+            }
+
+            .table-toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .table-search {
+                width: 100%;
+            }
+
+            .back-button {
+                left: 11px;
+                bottom: 11px;
+            }
+
+            .toast {
+                left: 11px;
+                right: 11px;
+                bottom: 62px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         BACKGROUND
+    ===================================================== -->
+
+    <div class="background">
+        <div class="grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- =====================================================
+         LOADING
+    ===================================================== -->
+
+    <div
+        class="loading-screen"
+        id="loadingScreen"
+    >
+        <div class="spinner"></div>
+
+        <div
+            class="loading-text"
+            id="loadingText"
+        >
+            Memverifikasi administrator...
+        </div>
+    </div>
+
+    <!-- =====================================================
+         TOPBAR
+    ===================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🗄️
+            </div>
+
+            <div>
+                <div class="brand-title">
+                    WebToolsKita
+                </div>
+
+                <div class="brand-subtitle">
+                    Admin Database Control
+                </div>
+            </div>
+
+        </div>
+
+        <div class="admin-profile">
+
+            <div class="admin-text">
+
+                <strong id="adminName">
+                    Administrator
+                </strong>
+
+                <span id="adminEmail">
+                    Admin
+                </span>
+
+            </div>
+
+            <img
+                id="adminAvatar"
+                class="admin-avatar"
+                alt="Administrator"
+            >
+
+        </div>
+
+    </header>
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main>
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div class="hero-badge">
+                ● DATABASE CONTROL CENTER
+            </div>
+
+            <h1>
+                Database
+                <span>WebToolsKita</span>
+            </h1>
+
+            <p>
+                Pusat kontrol dan monitoring database untuk
+                administrator WebToolsKita. Pantau status koneksi,
+                struktur tabel, pengguna, dan informasi database
+                dalam satu dashboard.
+            </p>
+
+            <div class="hero-actions">
+
+                <button
+                    class="action-button primary"
+                    id="refreshButton"
+                    onclick="refreshDatabase()"
+                >
+                    🔄 Refresh Database
+                </button>
+
+                <button
+                    class="action-button"
+                    onclick="scrollToTables()"
+                >
+                    📋 Table Explorer
+                </button>
+
+                <button
+                    class="action-button"
+                    onclick="scrollToUsers()"
+                >
+                    👥 User Database
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- STATS -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🗄️
+                </div>
+
+                <div class="stat-label">
+                    Database Engine
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statDatabase"
+                >
+                    SQLite
+                </div>
+
+                <div class="stat-extra">
+                    Local database engine
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📋
+                </div>
+
+                <div class="stat-label">
+                    Total Tabel
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statTables"
+                >
+                    —
+                </div>
+
+                <div class="stat-extra">
+                    Database tables
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <div class="stat-label">
+                    Total Pengguna
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statUsers"
+                >
+                    —
+                </div>
+
+                <div class="stat-extra">
+                    Registered users
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🟢
+                </div>
+
+                <div class="stat-label">
+                    Database Status
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statStatus"
+                >
+                    Checking
+                </div>
+
+                <div class="stat-extra">
+                    Live connection status
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- DATABASE INFO -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    🔌 Database Overview
+                </div>
+
+                <div
+                    class="section-subtitle"
+                    id="lastRefresh"
+                >
+                    Belum diperiksa
+                </div>
+
+            </div>
+
+            <div class="panel database-grid">
+
+                <div class="database-item">
+
+                    <div class="database-label">
+                        Engine
+                    </div>
+
+                    <div
+                        class="database-value"
+                        id="infoEngine"
+                    >
+                        SQLite
+                    </div>
+
+                </div>
+
+                <div class="database-item">
+
+                    <div class="database-label">
+                        Connection
+                    </div>
+
+                    <div class="database-value status">
+
+                        <span
+                            class="status-dot"
+                            id="connectionDot"
+                        ></span>
+
+                        <span id="infoConnection">
+                            Checking...
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="database-item">
+
+                    <div class="database-label">
+                        Database
+                    </div>
+
+                    <div
+                        class="database-value"
+                        id="infoDatabase"
+                    >
+                        webtoolskita.db
+                    </div>
+
+                </div>
+
+                <div class="database-item">
+
+                    <div class="database-label">
+                        Last Check
+                    </div>
+
+                    <div
+                        class="database-value"
+                        id="infoLastCheck"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TABLE EXPLORER -->
+
+        <section
+            class="section"
+            id="tablesSection"
+        >
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    📋 Table Explorer
+                </div>
+
+                <div
+                    class="section-subtitle"
+                    id="tableCounter"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <div class="table-toolbar">
+
+                    <input
+                        type="search"
+                        class="table-search"
+                        id="tableSearch"
+                        placeholder="🔎 Cari nama tabel..."
+                        autocomplete="off"
+                    >
+
+                    <div
+                        class="table-count"
+                        id="visibleTableCount"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+                <div
+                    class="table-list"
+                    id="tableList"
+                >
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ⏳
+                        </div>
+
+                        <div class="empty-title">
+                            Memuat database
+                        </div>
+
+                        <div class="empty-text">
+                            Informasi tabel sedang diambil
+                            dari server.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TABLE DETAIL -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    🔎 Table Detail
+                </div>
+
+                <div class="section-subtitle">
+                    Struktur tabel
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <div class="detail-header">
+
+                    <div class="detail-title">
+
+                        <div class="detail-title-icon">
+                            🗃️
+                        </div>
+
+                        <div>
+
+                            <strong id="selectedTableName">
+                                Belum ada tabel dipilih
+                            </strong>
+
+                            <span id="selectedTableInfo">
+                                Pilih tabel dari Table Explorer
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="detail-placeholder"
+                    id="tableDetail"
+                >
+
+                    <div class="big-icon">
+                        🧩
+                    </div>
+
+                    Pilih tabel untuk melihat detailnya.
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- USER DATABASE -->
+
+        <section
+            class="section"
+            id="usersSection"
+        >
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    👥 User Database
+                </div>
+
+                <div class="section-subtitle">
+                    Data pengguna
+                </div>
+
+            </div>
+
+            <div class="panel user-panel">
+
+                <table class="user-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>User</th>
+                            <th>UID</th>
+                            <th>VIP</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="userTableBody">
+
+                        <tr>
+
+                            <td colspan="5">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+                                        👥
+                                    </div>
+
+                                    <div class="empty-title">
+                                        Data pengguna belum dimuat
+                                    </div>
+
+                                    <div class="empty-text">
+                                        Data user akan ditampilkan
+                                        setelah backend menyediakan
+                                        informasi pengguna.
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- SECURITY -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    🔐 Security Status
+                </div>
+
+                <div class="section-subtitle">
+                    Admin protection
+                </div>
+
+            </div>
+
+            <div class="security-grid">
+
+                <div class="security-card">
+
+                    <div class="security-card-header">
+
+                        <div class="security-icon">
+                            🛡️
+                        </div>
+
+                        <h4>
+                            Administrator Session
+                        </h4>
+
+                    </div>
+
+                    <p>
+                        Halaman database hanya ditujukan untuk
+                        administrator yang telah melakukan
+                        autentikasi Firebase.
+                    </p>
+
+                    <div class="security-status">
+                        <span class="status-dot"></span>
+                        Authenticated
+                    </div>
+
+                </div>
+
+                <div class="security-card">
+
+                    <div class="security-card-header">
+
+                        <div class="security-icon">
+                            🔒
+                        </div>
+
+                        <h4>
+                            Read-Only Monitor
+                        </h4>
+
+                    </div>
+
+                    <p>
+                        Interface ini tidak menyediakan operasi
+                        destruktif langsung seperti DROP atau DELETE.
+                        Operasi database nantinya harus melalui
+                        backend yang tervalidasi.
+                    </p>
+
+                    <div class="security-status">
+                        <span class="status-dot"></span>
+                        Protected
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer>
+            WebToolsKita Admin Database · © 2026
+        </footer>
+
+    </main>
+
+    <!-- BACK -->
+
+    <a
+        href="index18.html"
+        class="back-button"
+    >
+        ← Kembali ke Dashboard
+    </a>
+
+    <!-- TOAST -->
+
+    <div
+        class="toast"
+        id="toast"
+    ></div>
+
+    <script>
+
+        /* =====================================================
+           FIREBASE CONFIG
+        ===================================================== */
+
+        const firebaseConfig = {
+            apiKey:
+                "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+            authDomain:
+                "webtoolskita.firebaseapp.com",
+
+            projectId:
+                "webtoolskita",
+
+            storageBucket:
+                "webtoolskita.firebasestorage.app",
+
+            messagingSenderId:
+                "593680487717",
+
+            appId:
+                "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+            measurementId:
+                "G-YVEJ90678G"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const auth =
+            firebase.auth();
+
+        const ADMIN_EMAIL =
+            "ganreffafk@gmail.com";
+
+        let databaseTables = [];
+
+        let currentData = null;
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const loadingScreen =
+            document.getElementById(
+                "loadingScreen"
+            );
+
+        const loadingText =
+            document.getElementById(
+                "loadingText"
+            );
+
+        const toast =
+            document.getElementById(
+                "toast"
+            );
+
+        /* =====================================================
+           HELPERS
+        ===================================================== */
+
+        function showToast(
+            message,
+            type = "success"
+        ) {
+
+            toast.textContent =
+                message;
+
+            toast.className =
+                `toast show ${type}`;
+
+            clearTimeout(
+                showToast.timer
+            );
+
+            showToast.timer =
+                setTimeout(() => {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                }, 3200);
+
+        }
+
+        function setLoading(
+            message
+        ) {
+
+            loadingText.textContent =
+                message;
+
+        }
+
+        function hideLoading() {
+
+            loadingScreen.classList.add(
+                "hide"
+            );
+
+        }
+
+        function nowText() {
+
+            return new Date()
+                .toLocaleString(
+                    "id-ID",
+                    {
+                        dateStyle:
+                            "medium",
+
+                        timeStyle:
+                            "medium"
+                    }
+                );
+
+        }
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+        /* =====================================================
+           AUTH
+        ===================================================== */
+
+        auth.onAuthStateChanged(
+            async (user) => {
+
+                try {
+
+                    if (!user) {
+
+                        setLoading(
+                            "Sesi login tidak ditemukan..."
+                        );
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                "index3.html";
+
+                        }, 800);
+
+                        return;
+                    }
+
+                    /*
+                     * Pemeriksaan frontend awal.
+                     * Otorisasi final nantinya tetap
+                     * wajib dilakukan backend.
+                     */
+
+                    if (
+                        user.email &&
+                        user.email.toLowerCase() !==
+                        ADMIN_EMAIL.toLowerCase()
+                    ) {
+
+                        setLoading(
+                            "Akses administrator diperlukan..."
+                        );
+
+                        showToast(
+                            "Akun ini bukan administrator.",
+                            "error"
+                        );
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                "index3.html";
+
+                        }, 1000);
+
+                        return;
+                    }
+
+                    /* PROFILE */
+
+                    document.getElementById(
+                        "adminName"
+                    ).textContent =
+                        user.displayName ||
+                        "Administrator";
+
+                    document.getElementById(
+                        "adminEmail"
+                    ).textContent =
+                        user.email ||
+                        ADMIN_EMAIL;
+
+                    const avatar =
+                        document.getElementById(
+                            "adminAvatar"
+                        );
+
+                    if (user.photoURL) {
+
+                        avatar.src =
+                            user.photoURL;
+
+                    } else {
+
+                        avatar.style.display =
+                            "none";
+
+                    }
+
+                    /* DATABASE */
+
+                    setLoading(
+                        "Mengambil informasi database..."
+                    );
+
+                    await loadDatabase();
+
+                    hideLoading();
+
+                } catch (error) {
+
+                    console.error(
+                        "Admin Database:",
+                        error
+                    );
+
+                    setLoading(
+                        "Database gagal dimuat."
+                    );
+
+                    showToast(
+                        "Gagal mengambil data database.",
+                        "error"
+                    );
+
+                    setTimeout(
+                        hideLoading,
+                        1000
+                    );
+
+                }
+
+            }
+        );
+
+        /* =====================================================
+           LOAD DATABASE
+        ===================================================== */
+
+        async function loadDatabase() {
+
+            const user =
+                auth.currentUser;
+
+            if (!user) {
+                throw new Error(
+                    "User belum login."
+                );
+            }
+
+            const token =
+                await user.getIdToken();
+
+            const response =
+                await fetch(
+                    "/api/database",
+                    {
+                        method: "GET",
+
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+
+                            "Content-Type":
+                                "application/json"
+                        }
+                    }
+                );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+
+            }
+
+            const result =
+                await response.json();
+
+            if (
+                result &&
+                result.success === false
+            ) {
+
+                throw new Error(
+                    result.message ||
+                    "Database request gagal."
+                );
+
+            }
+
+            const data =
+                result.data ||
+                result;
+
+            currentData =
+                data;
+
+            updateDatabaseUI(
+                data
+            );
+
+        }
+
+        /* =====================================================
+           UPDATE DATABASE UI
+        ===================================================== */
+
+        function updateDatabaseUI(
+            data
+        ) {
+
+            const tables =
+                Array.isArray(
+                    data.tables
+                )
+                    ? data.tables
+                    : [];
+
+            databaseTables =
+                tables;
+
+            const connected =
+                data.connected !== false;
+
+            const engine =
+                data.engine ||
+                "SQLite";
+
+            const database =
+                data.database ||
+                data.name ||
+                "webtoolskita.db";
+
+            const userCount =
+                Number(
+                    data.userCount ??
+                    data.totalUsers ??
+                    data.users ??
+                    0
+                );
+
+            /* STATS */
+
+            document.getElementById(
+                "statDatabase"
+            ).textContent =
+                engine;
+
+            document.getElementById(
+                "statTables"
+            ).textContent =
+                tables.length;
+
+            document.getElementById(
+                "statUsers"
+            ).textContent =
+                Number.isFinite(
+                    userCount
+                )
+                    ? userCount.toLocaleString(
+                        "id-ID"
+                    )
+                    : "0";
+
+            document.getElementById(
+                "statStatus"
+            ).textContent =
+                connected
+                    ? "Online"
+                    : "Offline";
+
+            /* INFO */
+
+            document.getElementById(
+                "infoEngine"
+            ).textContent =
+                engine;
+
+            document.getElementById(
+                "infoDatabase"
+            ).textContent =
+                database;
+
+            document.getElementById(
+                "infoConnection"
+            ).textContent =
+                connected
+                    ? "Connected"
+                    : "Disconnected";
+
+            const dot =
+                document.getElementById(
+                    "connectionDot"
+                );
+
+            dot.classList.toggle(
+                "offline",
+                !connected
+            );
+
+            const now =
+                nowText();
+
+            document.getElementById(
+                "infoLastCheck"
+            ).textContent =
+                now;
+
+            document.getElementById(
+                "lastRefresh"
+            ).textContent =
+                `Diperiksa ${now}`;
+
+            /* TABLES */
+
+            renderTables(
+                tables
+            );
+
+            /* USERS */
+
+            renderUsers(
+                data.usersList ||
+                data.userList ||
+                data.userData ||
+                []
+            );
+
+        }
+
+        /* =====================================================
+           RENDER TABLES
+        ===================================================== */
+
+        function renderTables(
+            tables,
+            search = ""
+        ) {
+
+            const container =
+                document.getElementById(
+                    "tableList"
+                );
+
+            const normalizedSearch =
+                search
+                    .trim()
+                    .toLowerCase();
+
+            const filtered =
+                tables.filter(
+                    table => {
+
+                        const name =
+                            typeof table ===
+                            "string"
+                                ? table
+                                : (
+                                    table.name ||
+                                    table.table_name ||
+                                    ""
+                                );
+
+                        return name
+                            .toLowerCase()
+                            .includes(
+                                normalizedSearch
+                            );
+
+                    }
+                );
+
+            document.getElementById(
+                "tableCounter"
+            ).textContent =
+                `${tables.length} tabel`;
+
+            document.getElementById(
+                "visibleTableCount"
+            ).textContent =
+                `${filtered.length} ditampilkan`;
+
+            if (!filtered.length) {
+
+                container.innerHTML = `
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ${
+                                tables.length
+                                    ? "🔎"
+                                    : "📭"
+                            }
+                        </div>
+
+                        <div class="empty-title">
+                            ${
+                                tables.length
+                                    ? "Tabel tidak ditemukan"
+                                    : "Belum ada tabel"
+                            }
+                        </div>
+
+                        <div class="empty-text">
+                            ${
+                                tables.length
+                                    ? "Coba gunakan kata pencarian lain."
+                                    : "Backend belum mengembalikan daftar tabel."
+                            }
+                        </div>
+
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML =
+                filtered.map(
+                    (table, index) => {
+
+                        let name = "";
+
+                        let description =
+                            "Database table";
+
+                        if (
+                            typeof table ===
+                            "string"
+                        ) {
+
+                            name =
+                                table;
+
+                        } else {
+
+                            name =
+                                table.name ||
+                                table.table_name ||
+                                `Table ${index + 1}`;
+
+                            description =
+                                table.description ||
+                                table.rows != null
+                                    ? `${table.rows ?? 0} records`
+                                    : "Database table";
+
+                        }
+
+                        return `
+                            <div
+                                class="table-row"
+                                data-table-index="${index}"
+                                onclick="selectTable(${databaseTables.indexOf(table)})"
+                            >
+
+                                <div class="table-main">
+
+                                    <div class="table-icon">
+                                        🗃️
+                                    </div>
+
+                                    <div>
+
+                                        <div class="table-name">
+                                            ${escapeHtml(name)}
+                                        </div>
+
+                                        <div class="table-description">
+                                            ${escapeHtml(description)}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="active-badge">
+                                    Active
+                                </div>
+
+                            </div>
+                        `;
+
+                    }
+                ).join("");
+
+        }
+
+        /* =====================================================
+           TABLE SEARCH
+        ===================================================== */
+
+        document
+            .getElementById(
+                "tableSearch"
+            )
+            .addEventListener(
+                "input",
+                event => {
+
+                    renderTables(
+                        databaseTables,
+                        event.target.value
+                    );
+
+                }
+            );
+
+        /* =====================================================
+           SELECT TABLE
+        ===================================================== */
+
+        function selectTable(
+            index
+        ) {
+
+            const table =
+                databaseTables[index];
+
+            if (!table) {
+                return;
+            }
+
+            let name =
+                typeof table ===
+                "string"
+                    ? table
+                    : (
+                        table.name ||
+                        table.table_name ||
+                        "Unknown"
+                    );
+
+            document.getElementById(
+                "selectedTableName"
+            ).textContent =
+                name;
+
+            document.getElementById(
+                "selectedTableInfo"
+            ).textContent =
+                "Table selected";
+
+            const detail =
+                document.getElementById(
+                    "tableDetail"
+                );
+
+            if (
+                typeof table ===
+                "object"
+            ) {
+
+                const columns =
+                    Array.isArray(
+                        table.columns
+                    )
+                        ? table.columns
+                        : [];
+
+                if (columns.length) {
+
+                    detail.innerHTML = `
+                        <div
+                            style="
+                                overflow-x:auto;
+                                padding:0 20px 20px;
+                            "
+                        >
+
+                            <table
+                                class="user-table"
+                                style="min-width:500px;"
+                            >
+
+                                <thead>
+
+                                    <tr>
+                                        <th>Column</th>
+                                        <th>Type</th>
+                                        <th>Nullable</th>
+                                        <th>Key</th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    ${
+                                        columns.map(
+                                            column => {
+
+                                                const columnName =
+                                                    typeof column ===
+                                                    "string"
+                                                        ? column
+                                                        : (
+                                                            column.name ||
+                                                            column.column_name ||
+                                                            "Unknown"
+                                                        );
+
+                                                const type =
+                                                    typeof column ===
+                                                    "object"
+                                                        ? (
+                                                            column.type ||
+                                                            column.data_type ||
+                                                            "—"
+                                                        )
+                                                        : "—";
+
+                                                const nullable =
+                                                    typeof column ===
+                                                    "object"
+                                                        ? (
+                                                            column.nullable ??
+                                                            column.is_nullable ??
+                                                            "—"
+                                                        )
+                                                        : "—";
+
+                                                const key =
+                                                    typeof column ===
+                                                    "object"
+                                                        ? (
+                                                            column.key ||
+                                                            column.primary_key ||
+                                                            "—"
+                                                        )
+                                                        : "—";
+
+                                                return `
+                                                    <tr>
+
+                                                        <td>
+                                                            ${escapeHtml(columnName)}
+                                                        </td>
+
+                                                        <td>
+                                                            ${escapeHtml(type)}
+                                                        </td>
+
+                                                        <td>
+                                                            ${escapeHtml(nullable)}
+                                                        </td>
+
+                                                        <td>
+                                                            ${escapeHtml(key)}
+                                                        </td>
+
+                                                    </tr>
+                                                `;
+
+                                            }
+                                        ).join("")
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    `;
+
+                } else {
+
+                    detail.innerHTML = `
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                🗃️
+                            </div>
+
+                            <div class="empty-title">
+                                ${escapeHtml(name)}
+                            </div>
+
+                            <div class="empty-text">
+                                Backend belum menyediakan
+                                informasi struktur kolom untuk
+                                tabel ini.
+                            </div>
+
+                        </div>
+                    `;
+
+                }
+
+            } else {
+
+                detail.innerHTML = `
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            🗃️
+                        </div>
+
+                        <div class="empty-title">
+                            ${escapeHtml(name)}
+                        </div>
+
+                        <div class="empty-text">
+                            Detail struktur tabel akan tersedia
+                            setelah backend mengirim metadata tabel.
+                        </div>
+
+                    </div>
+                `;
+
+            }
+
+            document
+                .querySelector(
+                    ".section:nth-of-type(4)"
+                );
+
+        }
+
+        /* =====================================================
+           USERS
+        ===================================================== */
+
+        function renderUsers(
+            users
+        ) {
+
+            const body =
+                document.getElementById(
+                    "userTableBody"
+                );
+
+            if (
+                !Array.isArray(users) ||
+                users.length === 0
+            ) {
+
+                body.innerHTML = `
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty-state">
+
+                                <div class="empty-icon">
+                                    👥
+                                </div>
+
+                                <div class="empty-title">
+                                    Data pengguna belum tersedia
+                                </div>
+
+                                <div class="empty-text">
+                                    Backend belum mengirim daftar
+                                    pengguna ke halaman database.
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                `;
+
+                return;
+            }
+
+            body.innerHTML =
+                users.map(
+                    user => {
+
+                        const name =
+                            user.name ||
+                            user.displayName ||
+                            "User";
+
+                        const email =
+                            user.email ||
+                            "—";
+
+                        const uid =
+                            user.uid ||
+                            "—";
+
+                        const vip =
+                            user.vip === true ||
+                            user.isVip === true;
+
+                        const active =
+                            user.active !== false;
+
+                        const created =
+                            user.createdAt ||
+                            user.created_at ||
+                            "—";
+
+                        const photo =
+                            user.photoURL ||
+                            user.photo_url ||
+                            "";
+
+                        return `
+                            <tr>
+
+                                <td>
+
+                                    <div class="user-cell">
+
+                                        ${
+                                            photo
+                                                ? `
+                                                    <img
+                                                        class="user-mini-avatar"
+                                                        src="${escapeHtml(photo)}"
+                                                        alt=""
+                                                    >
+                                                `
+                                                : `
+                                                    <div
+                                                        class="user-mini-avatar"
+                                                        style="
+                                                            display:grid;
+                                                            place-items:center;
+                                                        "
+                                                    >
+                                                        👤
+                                                    </div>
+                                                `
+                                        }
+
+                                        <div>
+
+                                            <div class="user-name">
+                                                ${escapeHtml(name)}
+                                            </div>
+
+                                            <div class="user-email">
+                                                ${escapeHtml(email)}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(uid)}
+                                </td>
+
+                                <td>
+
+                                    ${
+                                        vip
+                                            ? `
+                                                <span class="vip-badge">
+                                                    VIP
+                                                </span>
+                                            `
+                                            : `
+                                                <span class="normal-badge">
+                                                    Normal
+                                                </span>
+                                            `
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    ${
+                                        active
+                                            ? `
+                                                <span class="active-badge">
+                                                    Active
+                                                </span>
+                                            `
+                                            : `
+                                                <span
+                                                    class="active-badge"
+                                                    style="
+                                                        color:#fca5a5;
+                                                        background:rgba(239,68,68,.08);
+                                                        border-color:rgba(239,68,68,.16);
+                                                    "
+                                                >
+                                                    Inactive
+                                                </span>
+                                            `
+                                    }
+
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(created)}
+                                </td>
+
+                            </tr>
+                        `;
+
+                    }
+                ).join("");
+
+        }
+
+        /* =====================================================
+           REFRESH
+        ===================================================== */
+
+        async function refreshDatabase() {
+
+            const button =
+                document.getElementById(
+                    "refreshButton"
+                );
+
+            const oldText =
+                button.innerHTML;
+
+            button.disabled =
+                true;
+
+            button.innerHTML =
+                "⏳ Refreshing...";
+
+            try {
+
+                await loadDatabase();
+
+                showToast(
+                    "Database berhasil diperbarui.",
+                    "success"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+                showToast(
+                    "Refresh database gagal.",
+                    "error"
+                );
+
+            } finally {
+
+                button.disabled =
+                    false;
+
+                button.innerHTML =
+                    oldText;
+
+            }
+
+        }
+
+        /* =====================================================
+           SCROLL
+        ===================================================== */
+
+        function scrollToTables() {
+
+            document
+                .getElementById(
+                    "tablesSection"
+                )
+                .scrollIntoView({
+                    behavior:
+                        "smooth"
+                });
+
+        }
+
+        function scrollToUsers() {
+
+            document
+                .getElementById(
+                    "usersSection"
+                )
+                .scrollIntoView({
+                    behavior:
+                        "smooth"
+                });
+
+        }
+
+        /* =====================================================
+           AUTO REFRESH
+        ===================================================== */
+
+        setInterval(
+            async () => {
+
+                if (
+                    document.hidden ||
+                    !auth.currentUser
+                ) {
+                    return;
+                }
+
+                try {
+
+                    await loadDatabase();
+
+                } catch (error) {
+
+                    console.warn(
+                        "Auto refresh gagal:",
+                        error
+                    );
+
+                }
+
+            },
+            60000
+        );
+
+    </script>
+
+</body>
+</html>
