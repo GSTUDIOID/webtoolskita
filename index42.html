@@ -601,10 +601,10 @@ function formatUptime(sec){
   }
 
   if(m){
-    return `${m}m ${s}d`;
+    return `${m}m ${s}s`;
   }
 
-  return `${s}d`;
+  return `${s}s`;
 }
 
 
@@ -851,41 +851,46 @@ async function loadMonitor(){
     */
 
     $("hostname").textContent=
-      "Tidak diekspos API";
+      monitoring.hostname || server.hostname || "—";
 
 
     /*
       OS
     */
 
+    const os=monitoring.operatingSystem||{};
     $("osInfo").textContent=
-      "Tidak diekspos API";
-
+      [os.platform,os.release,os.architecture].filter(Boolean).join(" • ") || "—";
 
     /*
       CPU
     */
 
-    $("cpu").textContent=
-      "—";
+    const cpu=monitoring.cpu||{};
+    const cpuUsage=Number(cpu.usagePercent);
 
-    $("cpuBar").style.width="0%";
+    $("cpu").textContent=
+      Number.isFinite(cpuUsage) ? cpuUsage.toFixed(1)+"%" : "—";
+
+    $("cpuBar").style.width=
+      Math.max(0,Math.min(100,Number(cpuUsage)||0))+"%";
 
     $("cpuInfo").textContent=
-      "Tidak diekspos API";
+      cpu.model || "CPU tidak tersedia";
 
 
     $("cpuDesc").textContent=
-      "Data CPU host belum diekspos API server.";
+      `CPU ${cpu.cores||0} cores • Load ${Array.isArray(cpu.loadAverage) ? cpu.loadAverage.map(v=>Number(v).toFixed(2)).join(" / ") : "—"}`;
+
 
 
     /*
       DISK
     */
 
+    const disk=monitoring.disk||{};
     $("diskInfo").textContent=
-      "Data disk belum diekspos API";
-
+      Number.isFinite(Number(disk.usagePercent)) ? `Used ${Number(disk.usagePercent).toFixed(1)}% • ${formatBytes(Number(disk.used||0))} / ${formatBytes(Number(disk.total||0))}` : "Data disk tidak tersedia";
 
     /*
       STATUS
