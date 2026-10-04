@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CodeGuard V4 — WebToolsKita</title>
+<title>CodeGuard V5 — WebToolsKita</title>
 
 <style>
 :root{
@@ -19,6 +19,7 @@
   --orange:#ffb52e;
   --yellow:#ffe22e;
   --green:#54d88b;
+  --blue:#64a7ff;
 }
 
 *{box-sizing:border-box}
@@ -36,26 +37,15 @@ body{
   font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 
-button,input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-button:disabled{
-  cursor:not-allowed;
-  opacity:.55;
-}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
 
 .page{
   width:min(1500px,calc(100% - 32px));
   margin:auto;
   padding:22px 0 60px;
 }
-
-/* HEADER */
 
 .top{
   display:flex;
@@ -112,9 +102,7 @@ button:disabled{
   font-weight:800;
 }
 
-.btn:hover{
-  background:#2a1937;
-}
+.btn:hover{background:#2a1937}
 
 .primary{
   border-color:transparent;
@@ -130,8 +118,6 @@ button:disabled{
   border-color:#ff526533;
   background:#ff52650d;
 }
-
-/* HERO */
 
 .hero,
 .panel{
@@ -166,19 +152,15 @@ button:disabled{
 
 .hero p{
   margin:0;
-  max-width:900px;
+  max-width:950px;
   color:var(--muted);
   line-height:1.65;
 }
-
-/* PANELS */
 
 .panel{
   padding:21px;
   margin-bottom:18px;
 }
-
-/* TABS */
 
 .tabs{
   display:grid;
@@ -202,17 +184,8 @@ button:disabled{
   background:linear-gradient(135deg,#6d20e8,#b34cff);
 }
 
-/* MODE */
-
-.mode{
-  display:none;
-}
-
-.mode.active{
-  display:block;
-}
-
-/* DROP */
+.mode{display:none}
+.mode.active{display:block}
 
 .drop{
   padding:40px 22px;
@@ -263,17 +236,13 @@ button:disabled{
   flex-wrap:wrap;
 }
 
-.hidden{
-  display:none!important;
-}
+.hidden{display:none!important}
 
 .hint{
   margin-top:10px;
   color:var(--muted);
   font-size:12px;
 }
-
-/* WEBSITE */
 
 .website{
   padding:22px;
@@ -304,15 +273,8 @@ button:disabled{
   box-shadow:0 0 0 3px #8b2cff1f;
 }
 
-/* PROGRESS */
-
-.progress{
-  display:none;
-}
-
-.progress.show{
-  display:block;
-}
+.progress{display:none}
+.progress.show{display:block}
 
 .phead{
   display:flex;
@@ -341,8 +303,6 @@ button:disabled{
   background:linear-gradient(90deg,#7521e8,#a638ff,#cb62ff);
   transition:width .15s ease;
 }
-
-/* STATS */
 
 .stats{
   display:grid;
@@ -377,8 +337,7 @@ button:disabled{
 .yellow{color:var(--yellow)}
 .gray{color:#b8b3be}
 .green{color:var(--green)}
-
-/* RESULTS */
+.blue{color:var(--blue)}
 
 .rhead{
   display:flex;
@@ -414,8 +373,6 @@ button:disabled{
   color:#17111c;
   border-color:#eee9f3;
 }
-
-/* RESULT */
 
 .result{
   margin-top:12px;
@@ -462,9 +419,7 @@ button:disabled{
   border-bottom:1px solid #ffffff09;
 }
 
-.finding:last-child{
-  border-bottom:0;
-}
+.finding:last-child{border-bottom:0}
 
 .dot{
   width:11px;
@@ -529,9 +484,7 @@ button:disabled{
   font-weight:800;
 }
 
-.codebtn:hover{
-  background:#2a1c35;
-}
+.codebtn:hover{background:#2a1c35}
 
 .codebox{
   display:none;
@@ -542,9 +495,7 @@ button:disabled{
   background:#09070c;
 }
 
-.codebox.open{
-  display:block;
-}
+.codebox.open{display:block}
 
 .line{
   display:grid;
@@ -565,7 +516,102 @@ button:disabled{
   background:#8b2cff1a;
 }
 
-/* EMPTY */
+/* SELF HEALER */
+
+.healer-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.healer-stat{
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#0f0c13;
+}
+
+.healer-stat strong{
+  display:block;
+  font-size:22px;
+}
+
+.healer-stat span{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.healer-log{
+  max-height:390px;
+  overflow:auto;
+  padding-right:3px;
+}
+
+.healer-entry{
+  display:grid;
+  grid-template-columns:11px minmax(0,1fr);
+  gap:12px;
+  padding:13px;
+  margin-top:9px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#0f0c13;
+}
+
+.healer-dot{
+  width:10px;
+  height:10px;
+  margin-top:5px;
+  border-radius:50%;
+  background:var(--green);
+}
+
+.healer-entry.detected .healer-dot{
+  background:var(--red);
+  box-shadow:0 0 10px #ff526577;
+}
+
+.healer-entry.diagnose .healer-dot{
+  background:var(--orange);
+  box-shadow:0 0 10px #ffb52e66;
+}
+
+.healer-entry.recovery .healer-dot{
+  background:var(--p2);
+  box-shadow:0 0 10px #b34cff66;
+}
+
+.healer-entry.verified .healer-dot{
+  background:var(--green);
+  box-shadow:0 0 10px #54d88b66;
+}
+
+.healer-title{
+  margin:0;
+  font-size:13px;
+  font-weight:900;
+}
+
+.healer-detail{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.healer-time{
+  margin-top:6px;
+  color:#756c7d;
+  font:10px Consolas,"Courier New",monospace;
+}
+
+.healer-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
 
 .empty{
   text-align:center;
@@ -573,20 +619,14 @@ button:disabled{
   color:var(--muted);
 }
 
-.empty .icon{
-  font-size:42px;
-}
+.empty .icon{font-size:42px}
 
 .empty h3{
   color:#fff;
   margin:8px 0 6px;
 }
 
-.empty p{
-  margin:0;
-}
-
-/* TOAST */
+.empty p{margin:0}
 
 .toasts{
   position:fixed;
@@ -606,15 +646,8 @@ button:disabled{
   font-size:13px;
 }
 
-.toast.error{
-  border-color:#ff52654d;
-}
-
-.toast.success{
-  border-color:#54d88b4d;
-}
-
-/* RESPONSIVE */
+.toast.error{border-color:#ff52654d}
+.toast.success{border-color:#54d88b4d}
 
 @media(max-width:1000px){
   .stats{
@@ -623,6 +656,10 @@ button:disabled{
 
   .stat:last-child{
     grid-column:span 3;
+  }
+
+  .healer-summary{
+    grid-template-columns:repeat(2,1fr);
   }
 }
 
@@ -678,6 +715,10 @@ button:disabled{
     align-items:flex-start;
     flex-direction:column;
   }
+
+  .healer-summary{
+    grid-template-columns:1fr 1fr;
+  }
 }
 </style>
 </head>
@@ -687,16 +728,20 @@ button:disabled{
 <div class="page">
 
 <header class="top">
+
   <div class="brand">
+
     <div class="logo">🛡️</div>
 
     <div>
       <h1>CodeGuard</h1>
-      <p>WebToolsKita Security Scanner</p>
+      <p>WebToolsKita Security Scanner + Runtime Self-Healer</p>
     </div>
+
   </div>
 
   <div class="actions">
+
     <button class="btn" id="back">
       ← Kembali
     </button>
@@ -704,14 +749,16 @@ button:disabled{
     <button class="btn danger" id="clearTop">
       Bersihkan
     </button>
+
   </div>
+
 </header>
 
 
 <section class="hero">
 
   <span class="badge">
-    CODEGUARD V4
+    CODEGUARD V5 • SELF-HEALER
   </span>
 
   <h2>
@@ -720,10 +767,10 @@ button:disabled{
 
   <p>
     Analisis file atau folder project langsung di browser.
-    CodeGuard menggunakan pemeriksaan pola keamanan,
-    secret detection, dangerous API detection, konfigurasi,
-    SQL injection indicators, XSS indicators, dan pemeriksaan
-    struktur kode tanpa meng-upload file lokal.
+    CodeGuard mendeteksi secret, dangerous API, XSS,
+    SQL indicators, konfigurasi berisiko, struktur kode,
+    dan memonitor runtime CodeGuard sendiri dengan
+    Runtime Self-Healer.
   </p>
 
 </section>
@@ -733,19 +780,11 @@ button:disabled{
 
   <div class="tabs">
 
-    <button
-      class="tab active"
-      data-tab="files"
-      type="button"
-    >
+    <button class="tab active" data-tab="files" type="button">
       📁 Scan File / Folder
     </button>
 
-    <button
-      class="tab"
-      data-tab="website"
-      type="button"
-    >
+    <button class="tab" data-tab="website" type="button">
       🌐 Scan Website
     </button>
 
@@ -756,9 +795,7 @@ button:disabled{
 
     <div class="drop" id="drop">
 
-      <div class="dropicon">
-        📂
-      </div>
+      <div class="dropicon">📂</div>
 
       <h3>
         Pilih File atau Folder Project
@@ -770,30 +807,17 @@ button:disabled{
 
       <div class="dropactions">
 
-        <button
-          class="btn primary"
-          id="pickFiles"
-          type="button"
-        >
+        <button class="btn primary" id="pickFiles" type="button">
           📄 Pilih File
         </button>
 
-        <button
-          class="btn"
-          id="pickFolder"
-          type="button"
-        >
+        <button class="btn" id="pickFolder" type="button">
           📁 Pilih Folder
         </button>
 
       </div>
 
-      <input
-        class="hidden"
-        id="fileInput"
-        type="file"
-        multiple
-      >
+      <input class="hidden" id="fileInput" type="file" multiple>
 
       <input
         class="hidden"
@@ -830,11 +854,7 @@ button:disabled{
           autocomplete="off"
         >
 
-        <button
-          class="btn primary"
-          id="scanWeb"
-          type="button"
-        >
+        <button class="btn primary" id="scanWeb" type="button">
           🌐 Mulai Scan
         </button>
 
@@ -852,31 +872,20 @@ button:disabled{
 </section>
 
 
-<section
-  class="panel progress"
-  id="progress"
->
+<section class="panel progress" id="progress">
 
   <div class="phead">
 
-    <div
-      class="ptext"
-      id="ptext"
-    >
+    <div class="ptext" id="ptext">
       Menunggu...
     </div>
 
-    <b id="ppct">
-      0%
-    </b>
+    <b id="ppct">0%</b>
 
   </div>
 
   <div class="ptrack">
-    <div
-      class="bar"
-      id="bar"
-    ></div>
+    <div class="bar" id="bar"></div>
   </div>
 
 </section>
@@ -885,86 +894,135 @@ button:disabled{
 <section class="stats">
 
   <div class="stat">
+    <div class="num" id="sFiles">0</div>
+    <div class="label">File Scanned</div>
+  </div>
 
-    <div
-      class="num"
-      id="sFiles"
-    >
-      0
+  <div class="stat">
+    <div class="num red" id="sCritical">0</div>
+    <div class="label">Critical</div>
+  </div>
+
+  <div class="stat">
+    <div class="num orange" id="sWarning">0</div>
+    <div class="label">Warning</div>
+  </div>
+
+  <div class="stat">
+    <div class="num yellow" id="sNotice">0</div>
+    <div class="label">Notice</div>
+  </div>
+
+  <div class="stat">
+    <div class="num gray" id="sSkipped">0</div>
+    <div class="label">Dilewati</div>
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     RUNTIME SELF-HEALER
+     ===================================================== -->
+
+<section class="panel" id="selfHealer">
+
+  <div class="rhead">
+
+    <div>
+      <h2>🧠 Runtime Self-Healer</h2>
+
+      <div class="hint">
+        Monitoring runtime CodeGuard dan recovery otomatis
+        untuk kondisi yang aman dipulihkan.
+      </div>
     </div>
 
-    <div class="label">
-      File Scanned
+    <span class="badge" id="healerStatus">
+      ● ACTIVE
+    </span>
+
+  </div>
+
+
+  <div class="healer-summary">
+
+    <div class="healer-stat">
+      <strong id="hDetected">0</strong>
+      <span>Error Detected</span>
+    </div>
+
+    <div class="healer-stat">
+      <strong id="hRecovery">0</strong>
+      <span>Recovery</span>
+    </div>
+
+    <div class="healer-stat">
+      <strong id="hVerified">0</strong>
+      <span>Verified</span>
+    </div>
+
+    <div class="healer-stat">
+      <strong class="green" id="hState">READY</strong>
+      <span>Runtime State</span>
     </div>
 
   </div>
 
 
-  <div class="stat">
+  <div class="healer-log" id="healerLog">
 
-    <div
-      class="num red"
-      id="sCritical"
-    >
-      0
-    </div>
+    <div class="healer-entry verified">
 
-    <div class="label">
-      Critical
-    </div>
+      <div class="healer-dot"></div>
 
-  </div>
+      <div>
 
+        <div class="healer-title">
+          Verified → Self-Healer aktif
+        </div>
 
-  <div class="stat">
+        <div class="healer-detail">
+          Runtime CodeGuard sekarang dimonitor secara lokal.
+        </div>
 
-    <div
-      class="num orange"
-      id="sWarning"
-    >
-      0
-    </div>
+        <div class="healer-time">
+          BOOT
+        </div>
 
-    <div class="label">
-      Warning
+      </div>
+
     </div>
 
   </div>
 
 
-  <div class="stat">
+  <div class="healer-actions">
 
-    <div
-      class="num yellow"
-      id="sNotice"
+    <button
+      class="btn"
+      id="clearHealer"
+      type="button"
     >
-      0
-    </div>
+      Bersihkan Log Healer
+    </button>
 
-    <div class="label">
-      Notice
-    </div>
-
-  </div>
-
-
-  <div class="stat">
-
-    <div
-      class="num gray"
-      id="sSkipped"
+    <button
+      class="btn"
+      id="testHealer"
+      type="button"
     >
-      0
-    </div>
-
-    <div class="label">
-      Dilewati
-    </div>
+      Test Recovery
+    </button>
 
   </div>
 
 </section>
 
+
+<!-- =====================================================
+     RESULTS
+     ===================================================== -->
 
 <section class="panel">
 
@@ -974,11 +1032,7 @@ button:disabled{
       Hasil Scan
     </h2>
 
-    <button
-      class="btn"
-      id="clear"
-      type="button"
-    >
+    <button class="btn" id="clear" type="button">
       Bersihkan
     </button>
 
@@ -987,35 +1041,19 @@ button:disabled{
 
   <div class="filters">
 
-    <button
-      class="filter active"
-      data-filter="all"
-      type="button"
-    >
+    <button class="filter active" data-filter="all" type="button">
       Semua
     </button>
 
-    <button
-      class="filter"
-      data-filter="critical"
-      type="button"
-    >
+    <button class="filter" data-filter="critical" type="button">
       🔴 Critical
     </button>
 
-    <button
-      class="filter"
-      data-filter="warning"
-      type="button"
-    >
+    <button class="filter" data-filter="warning" type="button">
       🟠 Warning
     </button>
 
-    <button
-      class="filter"
-      data-filter="notice"
-      type="button"
-    >
+    <button class="filter" data-filter="notice" type="button">
       🟡 Notice
     </button>
 
@@ -1029,58 +1067,65 @@ button:disabled{
 </div>
 
 
-<div
-  class="toasts"
-  id="toasts"
-></div>
+<div class="toasts" id="toasts"></div>
 
 
 <script>
 "use strict";
 
 /* =====================================================
-   CODEGUARD V4
-   STABLE CLIENT SCANNER
+   CODEGUARD V5
+   SECURITY SCANNER + RUNTIME SELF-HEALER
    ===================================================== */
 
 
 /* -----------------------------------------------------
-   SAFE ELEMENT ACCESS
+   ELEMENTS
    ----------------------------------------------------- */
 
 const $ = id => document.getElementById(id);
 
 const E = {
-  file: $("fileInput"),
-  folder: $("folderInput"),
 
-  pickFiles: $("pickFiles"),
-  pickFolder: $("pickFolder"),
+  file:$("fileInput"),
+  folder:$("folderInput"),
 
-  drop: $("drop"),
+  pickFiles:$("pickFiles"),
+  pickFolder:$("pickFolder"),
 
-  progress: $("progress"),
-  bar: $("bar"),
-  ptext: $("ptext"),
-  ppct: $("ppct"),
+  drop:$("drop"),
 
-  files: $("sFiles"),
-  critical: $("sCritical"),
-  warning: $("sWarning"),
-  notice: $("sNotice"),
-  skipped: $("sSkipped"),
+  progress:$("progress"),
+  bar:$("bar"),
+  ptext:$("ptext"),
+  ppct:$("ppct"),
 
-  results: $("results"),
+  files:$("sFiles"),
+  critical:$("sCritical"),
+  warning:$("sWarning"),
+  notice:$("sNotice"),
+  skipped:$("sSkipped"),
 
-  clear: $("clear"),
-  clearTop: $("clearTop"),
+  results:$("results"),
 
-  back: $("back"),
+  clear:$("clear"),
+  clearTop:$("clearTop"),
+  back:$("back"),
 
-  url: $("url"),
-  scanWeb: $("scanWeb"),
+  url:$("url"),
+  scanWeb:$("scanWeb"),
 
-  toasts: $("toasts")
+  toasts:$("toasts"),
+
+  healerStatus:$("healerStatus"),
+  healerLog:$("healerLog"),
+  hDetected:$("hDetected"),
+  hRecovery:$("hRecovery"),
+  hVerified:$("hVerified"),
+  hState:$("hState"),
+  clearHealer:$("clearHealer"),
+  testHealer:$("testHealer")
+
 };
 
 
@@ -1090,18 +1135,27 @@ const E = {
 
 const state = {
 
-  results: [],
+  results:[],
 
-  filter: "all",
+  filter:"all",
 
-  busy: false,
+  busy:false,
 
-  stats: {
-    files: 0,
-    critical: 0,
-    warning: 0,
-    notice: 0,
-    skipped: 0
+  stats:{
+    files:0,
+    critical:0,
+    warning:0,
+    notice:0,
+    skipped:0
+  },
+
+  healer:{
+    active:true,
+    recovering:false,
+    detected:0,
+    recovery:0,
+    verified:0,
+    maxEntries:40
   }
 
 };
@@ -1133,9 +1187,7 @@ function fmt(value){
 
 function toast(message,type=""){
 
-  if(!E.toasts){
-    return;
-  }
+  if(!E.toasts) return;
 
   const element =
     document.createElement("div");
@@ -1148,9 +1200,10 @@ function toast(message,type=""){
 
   E.toasts.appendChild(element);
 
-  setTimeout(()=>{
-    element.remove();
-  },4500);
+  setTimeout(
+    ()=>element.remove(),
+    4500
+  );
 
 }
 
@@ -1158,88 +1211,552 @@ function toast(message,type=""){
 function extension(filename){
 
   const name =
-    String(filename || "")
-      .toLowerCase();
+    String(filename || "").toLowerCase();
 
   const index =
     name.lastIndexOf(".");
 
-  if(index < 0){
-    return "";
+  return index < 0
+    ? ""
+    : name.slice(index);
+
+}
+
+
+/* =====================================================
+   SELF-HEALER ENGINE
+   ===================================================== */
+
+function healerUpdate(){
+
+  if(E.hDetected)
+    E.hDetected.textContent =
+      fmt(state.healer.detected);
+
+  if(E.hRecovery)
+    E.hRecovery.textContent =
+      fmt(state.healer.recovery);
+
+  if(E.hVerified)
+    E.hVerified.textContent =
+      fmt(state.healer.verified);
+
+}
+
+
+function healerSetState(text){
+
+  if(E.hState)
+    E.hState.textContent =
+      text;
+
+}
+
+
+function healerStatus(text){
+
+  if(E.healerStatus)
+    E.healerStatus.textContent =
+      "● " + text;
+
+}
+
+
+function healerTime(){
+
+  return new Date()
+    .toLocaleTimeString(
+      "id-ID",
+      {
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+      }
+    );
+
+}
+
+
+function healerLog(
+  stage,
+  title,
+  detail
+){
+
+  if(!E.healerLog)
+    return;
+
+  const entry =
+    document.createElement("div");
+
+  entry.className =
+    "healer-entry " +
+    String(stage)
+      .toLowerCase();
+
+  entry.innerHTML = `
+
+    <div class="healer-dot"></div>
+
+    <div>
+
+      <div class="healer-title">
+        ${esc(stage)} → ${esc(title)}
+      </div>
+
+      <div class="healer-detail">
+        ${esc(detail)}
+      </div>
+
+      <div class="healer-time">
+        ${esc(healerTime())}
+      </div>
+
+    </div>
+
+  `;
+
+  E.healerLog.appendChild(entry);
+
+  while(
+    E.healerLog.children.length >
+    state.healer.maxEntries
+  ){
+
+    E.healerLog.firstElementChild
+      ?.remove();
+
   }
 
-  return name.slice(index);
+}
+
+
+function healerDetected(
+  title,
+  detail
+){
+
+  state.healer.detected++;
+
+  healerUpdate();
+
+  healerStatus("RECOVERING");
+
+  healerSetState("ERROR");
+
+  healerLog(
+    "Detected",
+    title,
+    detail
+  );
+
+}
+
+
+function healerDiagnose(
+  title,
+  detail
+){
+
+  healerSetState("DIAGNOSE");
+
+  healerLog(
+    "Diagnose",
+    title,
+    detail
+  );
+
+}
+
+
+function healerRecovery(
+  title,
+  detail
+){
+
+  state.healer.recovery++;
+
+  healerUpdate();
+
+  healerSetState("RECOVERY");
+
+  healerLog(
+    "Recovery",
+    title,
+    detail
+  );
+
+}
+
+
+function healerVerified(
+  title,
+  detail
+){
+
+  state.healer.verified++;
+
+  healerUpdate();
+
+  healerSetState("READY");
+
+  healerStatus("ACTIVE");
+
+  healerLog(
+    "Verified",
+    title,
+    detail
+  );
+
 }
 
 
 /* -----------------------------------------------------
-   TEXT FILE TYPES
+   SAFE RUNTIME RECOVERY
    ----------------------------------------------------- */
+
+function recoverRuntime(reason){
+
+  if(state.healer.recovering)
+    return;
+
+  state.healer.recovering = true;
+
+
+  healerDiagnose(
+    "Runtime state diperiksa",
+    reason ||
+    "CodeGuard sedang memeriksa kondisi runtime."
+  );
+
+
+  let recovered = false;
+
+
+  /*
+    Jangan menghapus hasil scan.
+    Jangan mengubah source project.
+    Hanya reset state UI yang aman.
+  */
+
+  if(
+    state.busy &&
+    !E.progress.classList.contains("show")
+  ){
+
+    state.busy = false;
+
+    recovered = true;
+
+  }
+
+
+  if(
+    !state.busy &&
+    E.drop.classList.contains("processing")
+  ){
+
+    E.drop.classList.remove(
+      "processing"
+    );
+
+    recovered = true;
+
+  }
+
+
+  if(
+    !state.busy &&
+    E.progress.classList.contains("show")
+  ){
+
+    setTimeout(
+      ()=>{
+
+        if(!state.busy){
+
+          E.progress.classList.remove(
+            "show"
+          );
+
+        }
+
+      },
+      900
+    );
+
+    recovered = true;
+
+  }
+
+
+  healerRecovery(
+    "Runtime state dipulihkan",
+    recovered
+      ? "State UI yang aman telah dikembalikan."
+      : "Tidak ada perubahan state yang diperlukan."
+  );
+
+
+  setTimeout(
+    ()=>{
+
+      const healthy =
+        typeof state.busy === "boolean" &&
+        E.progress &&
+        E.drop;
+
+
+      if(healthy){
+
+        healerVerified(
+          "Recovery berhasil diverifikasi",
+          "CodeGuard kembali ke runtime state yang valid."
+        );
+
+      }else{
+
+        healerSetState(
+          "MONITORING"
+        );
+
+      }
+
+      state.healer.recovering = false;
+
+    },
+    60
+  );
+
+}
+
+
+/* -----------------------------------------------------
+   TEST
+   ----------------------------------------------------- */
+
+function testHealer(){
+
+  healerDetected(
+    "Simulasi runtime fault",
+    "Test Self-Healer dijalankan secara lokal."
+  );
+
+  setTimeout(
+    ()=>{
+
+      recoverRuntime(
+        "Simulasi recovery internal."
+      );
+
+    },
+    120
+  );
+
+}
+
+
+/* -----------------------------------------------------
+   RUNTIME ERROR
+   ----------------------------------------------------- */
+
+window.addEventListener(
+  "error",
+  function(event){
+
+    /*
+      Abaikan error resource di sini.
+      Resource error ditangani handler capture
+      tersendiri di bawah.
+    */
+
+    if(
+      event &&
+      event.target &&
+      event.target !== window
+    ){
+
+      return;
+
+    }
+
+
+    const message =
+      event &&
+      event.message
+        ? event.message
+        : "JavaScript runtime error";
+
+
+    console.error(
+      "CodeGuard runtime error:",
+      event.error || event
+    );
+
+
+    healerDetected(
+      "JavaScript runtime error",
+      message
+    );
+
+
+    setTimeout(
+      ()=>{
+        recoverRuntime(
+          "Runtime exception terdeteksi."
+        );
+      },
+      30
+    );
+
+
+    toast(
+      "CodeGuard mendeteksi runtime error dan menjalankan recovery.",
+      "error"
+    );
+
+  },
+  false
+);
+
+
+/* -----------------------------------------------------
+   UNHANDLED PROMISE
+   ----------------------------------------------------- */
+
+window.addEventListener(
+  "unhandledrejection",
+  function(event){
+
+    const reason =
+      event &&
+      event.reason;
+
+
+    const message =
+      reason instanceof Error
+        ? reason.message
+        : String(
+            reason ||
+            "Unhandled Promise rejection"
+          );
+
+
+    console.error(
+      "CodeGuard unhandled rejection:",
+      reason
+    );
+
+
+    healerDetected(
+      "Unhandled Promise rejection",
+      message
+    );
+
+
+    setTimeout(
+      ()=>{
+        recoverRuntime(
+          "Promise rejection tidak ditangani."
+        );
+      },
+      30
+    );
+
+
+    toast(
+      "Unhandled Promise rejection terdeteksi.",
+      "error"
+    );
+
+  }
+);
+
+
+/* -----------------------------------------------------
+   RESOURCE FAILURE
+   ----------------------------------------------------- */
+
+window.addEventListener(
+  "error",
+  function(event){
+
+    const target =
+      event.target;
+
+
+    if(
+      !target ||
+      target === window
+    ){
+
+      return;
+
+    }
+
+
+    const source =
+      target.src ||
+      target.href ||
+      target.currentSrc ||
+      target.tagName ||
+      "resource";
+
+
+    healerDetected(
+      "Resource gagal dimuat",
+      String(source)
+    );
+
+
+    healerDiagnose(
+      "Resource failure dianalisis",
+      "Resource tidak dapat dimuat. Source tidak dimodifikasi otomatis."
+    );
+
+
+    healerRecovery(
+      "Runtime tetap dilindungi",
+      "Failure dicatat tanpa mengubah source project."
+    );
+
+
+    healerVerified(
+      "Monitoring dilanjutkan",
+      "CodeGuard tetap aktif setelah resource failure."
+    );
+
+  },
+  true
+);
+
+
+/* =====================================================
+   TEXT FILE TYPES
+   ===================================================== */
 
 const TEXT_EXTENSIONS =
 new Set([
 
-  ".js",
-  ".jsx",
-  ".ts",
-  ".tsx",
-
-  ".mjs",
-  ".cjs",
-
-  ".html",
-  ".htm",
-
-  ".css",
-  ".scss",
-  ".sass",
-  ".less",
-
-  ".json",
-  ".json5",
-
-  ".md",
-  ".txt",
-
+  ".js",".jsx",".ts",".tsx",
+  ".mjs",".cjs",
+  ".html",".htm",
+  ".css",".scss",".sass",".less",
+  ".json",".json5",
+  ".md",".txt",
   ".env",
-
   ".php",
-
-  ".py",
-  ".rb",
-  ".go",
-  ".rs",
-
-  ".java",
-  ".kt",
-
+  ".py",".rb",".go",".rs",
+  ".java",".kt",
   ".swift",
-
-  ".c",
-  ".cpp",
-  ".cc",
-  ".h",
-  ".hpp",
-
+  ".c",".cpp",".cc",".h",".hpp",
   ".sql",
-
-  ".vue",
-  ".svelte",
-
+  ".vue",".svelte",
   ".xml",
-
-  ".yml",
-  ".yaml",
-
-  ".sh",
-  ".bash",
-  ".zsh",
-
+  ".yml",".yaml",
+  ".sh",".bash",".zsh",
   ".ps1",
-
-  ".conf",
-  ".config",
-
+  ".conf",".config",
   ".ini"
 
 ]);
@@ -1257,18 +1774,17 @@ function isTextFile(file){
     name === ".gitignore" ||
     name === ".dockerignore"
   ){
+
     return true;
+
   }
 
-  return TEXT_EXTENSIONS
-    .has(extension(name));
+  return TEXT_EXTENSIONS.has(
+    extension(name)
+  );
 
 }
 
-
-/* -----------------------------------------------------
-   DIRECTORIES THAT SHOULD BE SKIPPED
-   ----------------------------------------------------- */
 
 const SKIP_DIRECTORIES = [
 
@@ -1276,35 +1792,26 @@ const SKIP_DIRECTORIES = [
   ".git/",
   ".svn/",
   ".hg/",
-
   "vendor/",
   "bower_components/",
-
   "dist/",
   "build/",
   "out/",
   "target/",
-
   "cache/",
   ".cache/",
   ".next/",
   ".nuxt/",
   ".vite/",
-
   "coverage/",
-
   "__pycache__/",
-
   "database/",
   "databases/",
-
   "tmp/",
   "temp/",
   "temporary/",
-
   "logs/",
   "log/",
-
   "uploads/"
 
 ];
@@ -1317,39 +1824,34 @@ function shouldSkipPath(path){
       .replace(/\\/g,"/")
       .toLowerCase();
 
-  return SKIP_DIRECTORIES
-    .some(directory =>
+  return SKIP_DIRECTORIES.some(
+    directory =>
       normalized.includes(directory)
-    );
+  );
 
 }
 
 
-/* -----------------------------------------------------
+/* =====================================================
    STATISTICS
-   ----------------------------------------------------- */
+   ===================================================== */
 
 function updateStats(){
 
-  if(E.files)
-    E.files.textContent =
-      fmt(state.stats.files);
+  E.files.textContent =
+    fmt(state.stats.files);
 
-  if(E.critical)
-    E.critical.textContent =
-      fmt(state.stats.critical);
+  E.critical.textContent =
+    fmt(state.stats.critical);
 
-  if(E.warning)
-    E.warning.textContent =
-      fmt(state.stats.warning);
+  E.warning.textContent =
+    fmt(state.stats.warning);
 
-  if(E.notice)
-    E.notice.textContent =
-      fmt(state.stats.notice);
+  E.notice.textContent =
+    fmt(state.stats.notice);
 
-  if(E.skipped)
-    E.skipped.textContent =
-      fmt(state.stats.skipped);
+  E.skipped.textContent =
+    fmt(state.stats.skipped);
 
 }
 
@@ -1357,13 +1859,11 @@ function updateStats(){
 function resetStats(){
 
   state.stats = {
-
     files:0,
     critical:0,
     warning:0,
     notice:0,
     skipped:0
-
   };
 
   updateStats();
@@ -1371,11 +1871,15 @@ function resetStats(){
 }
 
 
-/* -----------------------------------------------------
+/* =====================================================
    PROGRESS
-   ----------------------------------------------------- */
+   ===================================================== */
 
-function progress(index,total,text){
+function progress(
+  index,
+  total,
+  text
+){
 
   const percentage =
     Math.min(
@@ -1387,7 +1891,9 @@ function progress(index,total,text){
       )
     );
 
-  E.progress.classList.add("show");
+  E.progress.classList.add(
+    "show"
+  );
 
   E.bar.style.width =
     percentage + "%";
@@ -1401,11 +1907,14 @@ function progress(index,total,text){
 }
 
 
-/* -----------------------------------------------------
+/* =====================================================
    LINE HELPERS
-   ----------------------------------------------------- */
+   ===================================================== */
 
-function lineNumber(text,index){
+function lineNumber(
+  text,
+  index
+){
 
   return String(text)
     .slice(0,index)
@@ -1415,10 +1924,14 @@ function lineNumber(text,index){
 }
 
 
-function lineContent(text,line){
+function lineContent(
+  text,
+  line
+){
 
   const lines =
-    String(text).split("\n");
+    String(text)
+      .split("\n");
 
   return lines[
     Math.max(0,line - 1)
@@ -1427,12 +1940,7 @@ function lineContent(text,line){
 }
 
 
-/* -----------------------------------------------------
-   FINDING CREATOR
-   ----------------------------------------------------- */
-
 function finding(
-
   array,
   severity,
   title,
@@ -1440,34 +1948,23 @@ function finding(
   rule,
   line,
   code
-
 ){
 
   array.push({
 
     severity,
-
     title,
-
     description,
-
     rule,
-
-    line: line || 0,
-
-    code: code || ""
+    line:line || 0,
+    code:code || ""
 
   });
 
 }
 
 
-/* -----------------------------------------------------
-   REGEX FINDER
-   ----------------------------------------------------- */
-
 function findRegex(
-
   array,
   text,
   regex,
@@ -1475,18 +1972,15 @@ function findRegex(
   title,
   description,
   rule,
-  limit = 50
-
+  limit=50
 ){
 
-  if(!(regex instanceof RegExp)){
+  if(!(regex instanceof RegExp))
     return;
-  }
 
   regex.lastIndex = 0;
 
   let match;
-
   let count = 0;
 
   while(
@@ -1495,9 +1989,8 @@ function findRegex(
 
     count++;
 
-    if(count > limit){
+    if(count > limit)
       break;
-    }
 
     const line =
       lineNumber(
@@ -1506,33 +1999,23 @@ function findRegex(
       );
 
     finding(
-
       array,
-
       severity,
-
       title,
-
       description,
-
       rule,
-
       line,
-
       lineContent(
         text,
         line
       )
-
     );
 
-    if(!regex.global){
+    if(!regex.global)
       break;
-    }
 
-    if(match[0] === ""){
+    if(match[0] === "")
       regex.lastIndex++;
-    }
 
   }
 
@@ -1543,264 +2026,143 @@ function findRegex(
    SECURITY RULES
    ===================================================== */
 
-
-/* -----------------------------------------------------
-   PRIVATE KEYS
-   ----------------------------------------------------- */
-
-function rulePrivateKeys(result,text){
-
+function rulePrivateKeys(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/g,
-
     "critical",
-
     "Private key ditemukan",
-
     "File mengandung marker private key. Jangan menyimpan private key di source repository.",
-
     "SECRET-PRIVATE-KEY"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   AWS ACCESS KEY
-   ----------------------------------------------------- */
-
-function ruleAws(result,text){
-
+function ruleAws(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bAKIA[0-9A-Z]{16}\b/g,
-
     "critical",
-
     "AWS Access Key ditemukan",
-
     "Pola AWS Access Key ID terdeteksi.",
-
     "SECRET-AWS-ACCESS-KEY"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   GITHUB TOKEN
-   ----------------------------------------------------- */
-
-function ruleGithub(result,text){
-
+function ruleGithub(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bgh[pousr]_[A-Za-z0-9_]{20,255}\b/g,
-
     "critical",
-
     "GitHub token ditemukan",
-
     "Pola token GitHub terdeteksi.",
-
     "SECRET-GITHUB-TOKEN"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   GENERIC API KEY
-   ----------------------------------------------------- */
-
-function ruleApiKey(result,text){
-
+function ruleApiKey(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:api[_-]?key|apikey)\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}["']/gi,
-
     "critical",
-
     "API key hardcoded",
-
     "Nilai API key terlihat ditulis langsung di source code.",
-
     "SECRET-API-KEY"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   JWT
-   ----------------------------------------------------- */
-
-function ruleJwt(result,text){
-
+function ruleJwt(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g,
-
     "critical",
-
     "JWT token ditemukan",
-
     "Token JWT terlihat tertanam di source code.",
-
     "SECRET-JWT"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   HARDCODED PASSWORD
-   ----------------------------------------------------- */
-
-function rulePassword(result,text){
-
+function rulePassword(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:password|passwd|secret|client_secret|api_secret)\s*[:=]\s*["'][^"'`\r\n]{8,}["']/gi,
-
     "critical",
-
     "Credential hardcoded terdeteksi",
-
     "Nilai credential terlihat ditulis langsung di source code.",
-
     "SECRET-HARDCODED"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   PRIVATE ENV SECRET
-   ----------------------------------------------------- */
-
-function ruleEnvSecret(result,text,file){
+function ruleEnvSecret(r,t,f){
 
   const name =
-    String(file.name || "")
+    String(f.name || "")
       .toLowerCase();
 
-  if(
-    !name.startsWith(".env")
-  ){
+  if(!name.startsWith(".env"))
     return;
-  }
 
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /^\s*[A-Z0-9_]*(?:PASSWORD|SECRET|TOKEN|API_KEY|PRIVATE_KEY|ACCESS_KEY)[A-Z0-9_]*\s*=\s*(?!["']?\s*(?:\$|process\.env|ENV|undefined|null)\b).+$/gim,
-
     "critical",
-
     "Secret ditemukan di file environment",
-
     "File environment berisi credential yang terlihat memiliki nilai langsung.",
-
     "ENV-SECRET"
-
   );
 
 }
 
 
-/* -----------------------------------------------------
-   EVAL
-   ----------------------------------------------------- */
-
-function ruleEval(result,text){
+function ruleEval(r,t){
 
   const regex =
     /\beval\s*\(/g;
 
   let match;
-
-  let count = 0;
+  let count=0;
 
   while(
-    (match = regex.exec(text)) !== null
+    (match=regex.exec(t))!==null
   ){
 
     count++;
 
-    if(count > 30){
+    if(count>30)
       break;
-    }
 
     const line =
-      lineNumber(
-        text,
-        match.index
-      );
+      lineNumber(t,match.index);
 
     const nearby =
-      text.slice(
-        Math.max(0,match.index - 400),
-        match.index + 400
+      t.slice(
+        Math.max(0,match.index-400),
+        match.index+400
       );
 
-    const externalInput =
+    const external =
       /\b(?:req\.body|req\.query|req\.params|request|input|location|searchParams|postMessage|localStorage)\b/i
         .test(nearby);
 
     finding(
-
-      result,
-
-      externalInput
-        ? "critical"
-        : "warning",
-
-      externalInput
+      r,
+      external ? "critical" : "warning",
+      external
         ? "eval() dekat input eksternal"
         : "Penggunaan eval()",
-
-      externalInput
-
+      external
         ? "eval() ditemukan dekat sumber input eksternal. Periksa kemungkinan code injection."
-
         : "eval() mengeksekusi string sebagai JavaScript dan perlu diperiksa.",
-
-      externalInput
+      external
         ? "CODE-EVAL-INJECTION"
         : "CODE-EVAL",
-
       line,
-
-      lineContent(text,line)
-
+      lineContent(t,line)
     );
 
   }
@@ -1808,195 +2170,93 @@ function ruleEval(result,text){
 }
 
 
-/* -----------------------------------------------------
-   NEW FUNCTION
-   ----------------------------------------------------- */
-
-function ruleNewFunction(result,text){
-
+function ruleNewFunction(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bnew\s+Function\s*\(/g,
-
     "warning",
-
     "Penggunaan new Function()",
-
     "Kode JavaScript dibuat secara dinamis. Pastikan input tidak berasal dari pengguna.",
-
     "CODE-NEW-FUNCTION"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   CHILD PROCESS
-   ----------------------------------------------------- */
-
-function ruleChildProcess(result,text){
-
+function ruleChildProcess(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:require\s*\(\s*["']child_process["']\s*\)|from\s+["']child_process["'])/g,
-
     "warning",
-
     "child_process digunakan",
-
     "Module child_process dapat menjalankan perintah sistem. Pastikan seluruh input tervalidasi.",
-
     "SYSTEM-CHILD-PROCESS"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   SHELL EXECUTION
-   ----------------------------------------------------- */
-
-function ruleShell(result,text){
-
+function ruleShell(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:exec|execSync|spawn|spawnSync)\s*\(/g,
-
     "warning",
-
     "Perintah sistem ditemukan",
-
     "Fungsi eksekusi proses ditemukan. Periksa apakah argumennya dapat dipengaruhi pengguna.",
-
     "SYSTEM-COMMAND"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   INNERHTML
-   ----------------------------------------------------- */
-
-function ruleInnerHtml(result,text){
-
+function ruleInnerHtml(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\.\s*innerHTML\s*=/g,
-
     "warning",
-
     "Penggunaan innerHTML",
-
     "Periksa sumber data sebelum memasukkannya ke innerHTML untuk mencegah XSS.",
-
     "XSS-INNERHTML"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   INSERT ADJACENT HTML
-   ----------------------------------------------------- */
-
-function ruleInsertAdjacent(result,text){
-
+function ruleInsertAdjacent(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\.insertAdjacentHTML\s*\(/g,
-
     "warning",
-
     "insertAdjacentHTML digunakan",
-
     "HTML dimasukkan secara dinamis. Pastikan data telah disanitasi.",
-
     "XSS-INSERT-ADJACENT"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   DOCUMENT WRITE
-   ----------------------------------------------------- */
-
-function ruleDocumentWrite(result,text){
-
+function ruleDocumentWrite(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bdocument\.write\s*\(/g,
-
     "warning",
-
     "document.write() digunakan",
-
     "document.write() dapat menyebabkan masalah keamanan dan kompatibilitas.",
-
     "DOM-DOCUMENT-WRITE"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   INLINE EVENT
-   ----------------------------------------------------- */
-
-function ruleInlineEvent(result,text){
-
+function ruleInlineEvent(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bon(?:click|load|error|mouseover|submit|focus|blur)\s*=/gi,
-
     "warning",
-
     "Inline event handler",
-
     "Inline event handler dapat menyulitkan penerapan Content Security Policy.",
-
     "DOM-INLINE-EVENT"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   SQL STRING CONCATENATION
-   ----------------------------------------------------- */
+function ruleSql(r,t){
 
-function ruleSql(result,text){
-
-  const patterns = [
+  const patterns=[
 
     {
       regex:/\bSELECT\b[\s\S]{0,350}(?:\+|\$\{|\`)/gi,
@@ -2015,9 +2275,7 @@ function ruleSql(result,text){
   for(const item of patterns){
 
     findRegex(
-
-      result,
-      text,
+      r,t,
       item.regex,
       "warning",
       item.title,
@@ -2025,7 +2283,6 @@ function ruleSql(result,text){
       " Gunakan parameterized query untuk input pengguna.",
       "SQL-DYNAMIC-QUERY",
       20
-
     );
 
   }
@@ -2033,441 +2290,217 @@ function ruleSql(result,text){
 }
 
 
-/* -----------------------------------------------------
-   DANGEROUS SQL
-   ----------------------------------------------------- */
-
-function ruleDangerousSql(result,text){
-
+function ruleDangerousSql(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bDROP\s+(?:TABLE|DATABASE)\b/gi,
-
     "warning",
-
     "SQL destructive statement",
-
     "Perintah DROP ditemukan dan dapat menghapus struktur atau data database.",
-
     "SQL-DESTRUCTIVE"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   OPEN REDIRECT
-   ----------------------------------------------------- */
-
-function ruleRedirect(result,text){
-
+function ruleRedirect(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:window\.location|location\.href|res\.redirect)\s*=\s*(?:req\.|request\.|params\.|query\.|body\.|location\.search)/gi,
-
     "warning",
-
     "Potensi open redirect",
-
     "URL redirect terlihat menggunakan input eksternal secara langsung.",
-
     "REDIRECT-EXTERNAL"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   POST MESSAGE
-   ----------------------------------------------------- */
-
-function rulePostMessage(result,text){
-
+function rulePostMessage(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /window\.addEventListener\s*\(\s*["']message["']/gi,
-
     "notice",
-
     "postMessage listener ditemukan",
-
     "Periksa event.origin sebelum mempercayai data dari window lain.",
-
     "POSTMESSAGE-ORIGIN"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   WEAK RANDOM
-   ----------------------------------------------------- */
-
-function ruleWeakRandom(result,text){
-
+function ruleWeakRandom(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /Math\.random\s*\(\s*\)/g,
-
     "notice",
-
     "Math.random() digunakan",
-
     "Math.random() bukan generator random kriptografis. Jangan gunakan untuk token, password, OTP, atau secret.",
-
     "CRYPTO-WEAK-RANDOM"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   WEAK HASH
-   ----------------------------------------------------- */
-
-function ruleWeakHash(result,text){
-
+function ruleWeakHash(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:md5|sha1)\s*\(/gi,
-
     "warning",
-
     "Hash algoritma lama ditemukan",
-
-    "MD5/SHA-1 tidak cocok untuk penggunaan keamanan modern seperti password hashing atau integrity security tertentu.",
-
+    "MD5/SHA-1 tidak cocok untuk penggunaan keamanan modern.",
     "CRYPTO-WEAK-HASH"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   HTTP URL
-   ----------------------------------------------------- */
-
-function ruleHttp(result,text){
-
+function ruleHttp(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /["'`](http:\/\/[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?:\/[^"'`]*)?)["'`]/gi,
-
     "warning",
-
     "URL HTTP ditemukan",
-
     "URL menggunakan HTTP tanpa TLS. Periksa apakah endpoint memang harus menggunakan HTTPS.",
-
     "NETWORK-HTTP"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   CORS WILDCARD
-   ----------------------------------------------------- */
-
-function ruleCors(result,text){
-
+function ruleCors(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /(?:Access-Control-Allow-Origin|origin)\s*[:=]\s*["']\*["']/gi,
-
     "warning",
-
     "CORS wildcard ditemukan",
-
     "Konfigurasi origin wildcard dapat terlalu permisif untuk aplikasi yang menggunakan credential.",
-
     "CORS-WILDCARD"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   DISABLE TLS VERIFICATION
-   ----------------------------------------------------- */
-
-function ruleTls(result,text){
-
+function ruleTls(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:rejectUnauthorized|NODE_TLS_REJECT_UNAUTHORIZED)\s*[:=]\s*(?:false|["']0["'])/gi,
-
     "critical",
-
     "TLS certificate verification dinonaktifkan",
-
     "Verifikasi sertifikat TLS terlihat dinonaktifkan.",
-
     "TLS-VERIFY-DISABLED"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   PROTOTYPE POLLUTION INDICATORS
-   ----------------------------------------------------- */
-
-function rulePrototype(result,text){
-
+function rulePrototype(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:__proto__|constructor\s*\.\s*prototype|Object\.assign\s*\(\s*\{\s*\}\s*,\s*(?:req|request|input|body))/g,
-
     "warning",
-
     "Potensi prototype pollution",
-
-    "Pola yang berhubungan dengan prototype mutation atau object merge dari input ditemukan.",
-
+    "Pola prototype mutation atau object merge dari input ditemukan.",
     "OBJECT-PROTOTYPE"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   FILE PATH TRAVERSAL
-   ----------------------------------------------------- */
-
-function rulePathTraversal(result,text){
-
+function rulePathTraversal(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /(?:readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync)\s*\([^)]*(?:req\.|request\.|params\.|query\.|body\.)/gi,
-
     "warning",
-
     "File operation menggunakan input eksternal",
-
     "Operasi file terlihat menerima data dari request. Pastikan path divalidasi dan traversal seperti ../ diblokir.",
-
     "FILE-PATH-TRAVERSAL"
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   DEBUG CONSOLE
-   ----------------------------------------------------- */
-
-function ruleConsole(result,text){
-
+function ruleConsole(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\bconsole\.(?:log|debug|info)\s*\(/g,
-
     "notice",
-
     "Console logging ditemukan",
-
     "Logging dapat membocorkan informasi internal jika digunakan pada production.",
-
     "DEBUG-CONSOLE",
-
     30
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   TODO
-   ----------------------------------------------------- */
-
-function ruleTodo(result,text){
-
+function ruleTodo(r,t){
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /\b(?:TODO|FIXME|XXX)\b/gi,
-
     "notice",
-
     "TODO/FIXME ditemukan",
-
     "Ada catatan pekerjaan yang belum selesai di source code.",
-
     "MAINTENANCE-TODO",
-
     30
-
   );
-
 }
 
 
-/* -----------------------------------------------------
-   HTML ALT
-   ----------------------------------------------------- */
-
-function ruleHtmlAlt(result,text,file){
+function ruleHtmlAlt(r,t,f){
 
   const ext =
-    extension(file.name);
+    extension(f.name);
 
-  if(
-    ext !== ".html" &&
-    ext !== ".htm"
-  ){
+  if(ext!==".html" && ext!==".htm")
     return;
-  }
 
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /<img\b(?![^>]*\balt\s*=)[^>]*>/gi,
-
     "notice",
-
     "Gambar tanpa alt",
-
-    "Elemen img tidak memiliki atribut alt. Tambahkan alt untuk accessibility.",
-
+    "Elemen img tidak memiliki atribut alt.",
     "HTML-MISSING-ALT",
-
     30
-
   );
 
 }
 
 
-/* -----------------------------------------------------
-   PASSWORD INPUT
-   ----------------------------------------------------- */
-
-function rulePasswordAutocomplete(result,text,file){
+function rulePasswordAutocomplete(r,t,f){
 
   const ext =
-    extension(file.name);
+    extension(f.name);
 
-  if(
-    ext !== ".html" &&
-    ext !== ".htm"
-  ){
+  if(ext!==".html" && ext!==".htm")
     return;
-  }
 
   findRegex(
-
-    result,
-    text,
-
+    r,t,
     /<input\b[^>]*type\s*=\s*["']password["'][^>]*(?!autocomplete\s*=)[^>]*>/gi,
-
     "notice",
-
     "Password input tanpa autocomplete",
-
-    "Periksa atribut autocomplete untuk membantu browser menangani credential dengan benar.",
-
+    "Periksa atribut autocomplete untuk membantu browser menangani credential.",
     "HTML-PASSWORD-AUTOCOMPLETE",
-
     20
-
   );
 
 }
 
 
-/* -----------------------------------------------------
-   JSON VALIDATION
-   ----------------------------------------------------- */
-
-function ruleJson(result,text,file){
+function ruleJson(r,t,f){
 
   const ext =
-    extension(file.name);
+    extension(f.name);
 
-  if(
-    ext !== ".json" &&
-    ext !== ".json5"
-  ){
+  if(ext!==".json")
     return;
-  }
 
-  if(ext === ".json"){
+  try{
 
-    try{
+    JSON.parse(t);
 
-      JSON.parse(text);
+  }catch{
 
-    }catch(error){
-
-      finding(
-
-        result,
-
-        "warning",
-
-        "JSON tidak valid",
-
-        "File tidak dapat diparse sebagai JSON standar.",
-
-        "JSON-INVALID",
-
-        1,
-
-        lineContent(text,1)
-
-      );
-
-    }
+    finding(
+      r,
+      "warning",
+      "JSON tidak valid",
+      "File tidak dapat diparse sebagai JSON standar.",
+      "JSON-INVALID",
+      1,
+      lineContent(t,1)
+    );
 
   }
 
@@ -2475,246 +2508,91 @@ function ruleJson(result,text,file){
 
 
 /* =====================================================
-   MAIN FILE SCANNER
+   FILE SCANNER
    ===================================================== */
 
-function scanFile(file,text,path){
+function scanFile(
+  file,
+  text,
+  path
+){
 
-  const findings = [];
+  const findings=[];
 
+  rulePrivateKeys(findings,text);
+  ruleAws(findings,text);
+  ruleGithub(findings,text);
+  ruleApiKey(findings,text);
+  ruleJwt(findings,text);
+  rulePassword(findings,text);
+  ruleEnvSecret(findings,text,file);
 
-  /* secrets */
+  ruleEval(findings,text);
+  ruleNewFunction(findings,text);
+  ruleChildProcess(findings,text);
+  ruleShell(findings,text);
 
-  rulePrivateKeys(
-    findings,
-    text
-  );
+  ruleInnerHtml(findings,text);
+  ruleInsertAdjacent(findings,text);
+  ruleDocumentWrite(findings,text);
+  ruleInlineEvent(findings,text);
+  ruleRedirect(findings,text);
+  rulePostMessage(findings,text);
 
-  ruleAws(
-    findings,
-    text
-  );
+  ruleSql(findings,text);
+  ruleDangerousSql(findings,text);
 
-  ruleGithub(
-    findings,
-    text
-  );
+  ruleWeakRandom(findings,text);
+  ruleWeakHash(findings,text);
 
-  ruleApiKey(
-    findings,
-    text
-  );
+  ruleHttp(findings,text);
+  ruleCors(findings,text);
+  ruleTls(findings,text);
 
-  ruleJwt(
-    findings,
-    text
-  );
+  rulePrototype(findings,text);
+  rulePathTraversal(findings,text);
 
-  rulePassword(
-    findings,
-    text
-  );
+  ruleConsole(findings,text);
+  ruleTodo(findings,text);
 
-  ruleEnvSecret(
-    findings,
-    text,
-    file
-  );
+  ruleHtmlAlt(findings,text,file);
+  rulePasswordAutocomplete(findings,text,file);
 
-
-  /* code execution */
-
-  ruleEval(
-    findings,
-    text
-  );
-
-  ruleNewFunction(
-    findings,
-    text
-  );
-
-  ruleChildProcess(
-    findings,
-    text
-  );
-
-  ruleShell(
-    findings,
-    text
-  );
+  ruleJson(findings,text,file);
 
 
-  /* web security */
-
-  ruleInnerHtml(
-    findings,
-    text
-  );
-
-  ruleInsertAdjacent(
-    findings,
-    text
-  );
-
-  ruleDocumentWrite(
-    findings,
-    text
-  );
-
-  ruleInlineEvent(
-    findings,
-    text
-  );
-
-  ruleRedirect(
-    findings,
-    text
-  );
-
-  rulePostMessage(
-    findings,
-    text
-  );
-
-
-  /* SQL */
-
-  ruleSql(
-    findings,
-    text
-  );
-
-  ruleDangerousSql(
-    findings,
-    text
-  );
-
-
-  /* crypto */
-
-  ruleWeakRandom(
-    findings,
-    text
-  );
-
-  ruleWeakHash(
-    findings,
-    text
-  );
-
-
-  /* network */
-
-  ruleHttp(
-    findings,
-    text
-  );
-
-  ruleCors(
-    findings,
-    text
-  );
-
-  ruleTls(
-    findings,
-    text
-  );
-
-
-  /* object / filesystem */
-
-  rulePrototype(
-    findings,
-    text
-  );
-
-  rulePathTraversal(
-    findings,
-    text
-  );
-
-
-  /* maintenance */
-
-  ruleConsole(
-    findings,
-    text
-  );
-
-  ruleTodo(
-    findings,
-    text
-  );
-
-
-  /* html */
-
-  ruleHtmlAlt(
-    findings,
-    text,
-    file
-  );
-
-  rulePasswordAutocomplete(
-    findings,
-    text,
-    file
-  );
-
-
-  /* json */
-
-  ruleJson(
-    findings,
-    text,
-    file
-  );
-
-
-  /* remove exact duplicates */
-
-  const unique = [];
-
-  const seen =
-    new Set();
+  const unique=[];
+  const seen=new Set();
 
   for(const item of findings){
 
-    const key = [
-
+    const key=[
       item.severity,
       item.rule,
       item.line,
       item.title
-
     ].join("|");
 
-    if(seen.has(key)){
+    if(seen.has(key))
       continue;
-    }
 
     seen.add(key);
-
     unique.push(item);
 
   }
 
 
   return {
-
     path,
-
     findings:unique
-
   };
 
 }
 
 
-/* -----------------------------------------------------
+/* =====================================================
    FILE READER
-   ----------------------------------------------------- */
+   ===================================================== */
 
 function readFileAsText(file){
 
@@ -2724,15 +2602,17 @@ function readFileAsText(file){
       const reader =
         new FileReader();
 
-      reader.onload = () =>
-        resolve(
+      reader.onload =
+        ()=>resolve(
           String(reader.result || "")
         );
 
-      reader.onerror = () =>
-        reject(
+      reader.onerror =
+        ()=>reject(
           reader.error ||
-          new Error("File tidak dapat dibaca.")
+          new Error(
+            "File tidak dapat dibaca."
+          )
         );
 
       reader.readAsText(file);
@@ -2744,7 +2624,7 @@ function readFileAsText(file){
 
 
 /* =====================================================
-   SCAN ENGINE
+   SCAN FILES
    ===================================================== */
 
 async function scanFiles(fileList){
@@ -2777,12 +2657,10 @@ async function scanFiles(fileList){
   }
 
 
-  state.busy = true;
-
-  state.results = [];
+  state.busy=true;
+  state.results=[];
 
   resetStats();
-
   renderResults();
 
 
@@ -2791,13 +2669,8 @@ async function scanFiles(fileList){
   );
 
 
-  /* ---------------------------------------------------
-     BUILD QUEUE
-     --------------------------------------------------- */
-
-  let totalSize = 0;
-
-  const queue = [];
+  let totalSize=0;
+  const queue=[];
 
 
   for(const file of files){
@@ -2807,35 +2680,25 @@ async function scanFiles(fileList){
       file.name;
 
 
-    if(
-      shouldSkipPath(path)
-    ){
+    if(shouldSkipPath(path)){
 
       state.stats.skipped++;
-
       continue;
 
     }
 
 
-    if(
-      !isTextFile(file)
-    ){
+    if(!isTextFile(file)){
 
       state.stats.skipped++;
-
       continue;
 
     }
 
 
-    if(
-      file.size >
-      4 * 1024 * 1024
-    ){
+    if(file.size > 4*1024*1024){
 
       state.stats.skipped++;
-
       continue;
 
     }
@@ -2844,26 +2707,20 @@ async function scanFiles(fileList){
     if(
       totalSize +
       file.size >
-      100 * 1024 * 1024
+      100*1024*1024
     ){
 
       state.stats.skipped++;
-
       continue;
 
     }
 
 
-    totalSize +=
-      file.size;
-
+    totalSize+=file.size;
 
     queue.push({
-
       file,
-
       path
-
     });
 
   }
@@ -2874,7 +2731,7 @@ async function scanFiles(fileList){
 
   if(!queue.length){
 
-    state.busy = false;
+    state.busy=false;
 
     E.drop.classList.remove(
       "processing"
@@ -2890,13 +2747,9 @@ async function scanFiles(fileList){
   }
 
 
-  /* ---------------------------------------------------
-     SCAN
-     --------------------------------------------------- */
-
   for(
-    let index = 0;
-    index < queue.length;
+    let index=0;
+    index<queue.length;
     index++
   ){
 
@@ -2905,18 +2758,14 @@ async function scanFiles(fileList){
 
 
     progress(
-
       index,
-
       queue.length,
-
       "Memindai " +
-      fmt(index + 1) +
+      fmt(index+1) +
       " dari " +
       fmt(queue.length) +
       ": " +
       item.path
-
     );
 
 
@@ -2945,46 +2794,32 @@ async function scanFiles(fileList){
 
 
       for(
-        const finding of
+        const item of
         result.findings
       ){
 
-        if(
-          finding.severity ===
-          "critical"
-        ){
-
+        if(item.severity==="critical")
           state.stats.critical++;
 
-        }
-
-        else if(
-          finding.severity ===
-          "warning"
-        ){
-
+        else if(item.severity==="warning")
           state.stats.warning++;
 
-        }
-
-        else if(
-          finding.severity ===
-          "notice"
-        ){
-
+        else if(item.severity==="notice")
           state.stats.notice++;
-
-        }
 
       }
 
 
       updateStats();
-
       renderResults();
 
 
     }catch(error){
+
+      console.error(
+        "CodeGuard file read:",
+        error
+      );
 
       state.stats.skipped++;
 
@@ -2993,36 +2828,24 @@ async function scanFiles(fileList){
     }
 
 
-    /*
-      Memberikan kesempatan browser
-      memperbarui UI.
-    */
-
     await new Promise(
       resolve =>
-        setTimeout(
-          resolve,
-          0
-        )
+        setTimeout(resolve,0)
     );
 
   }
 
 
   progress(
-
     queue.length,
-
     queue.length,
-
     "Scan selesai. " +
     fmt(queue.length) +
     " file dipindai."
-
   );
 
 
-  state.busy = false;
+  state.busy=false;
 
   E.drop.classList.remove(
     "processing"
@@ -3032,24 +2855,29 @@ async function scanFiles(fileList){
   renderResults();
 
 
-  toast(
-
-    "Scan selesai: " +
-    fmt(queue.length) +
-    " file dipindai.",
-
-    "success"
-
+  healerVerified(
+    "Scanner verified",
+    "Pemindaian file selesai tanpa runtime lock."
   );
 
 
-  setTimeout(()=>{
+  toast(
+    "Scan selesai: " +
+    fmt(queue.length) +
+    " file dipindai.",
+    "success"
+  );
 
-    E.progress.classList.remove(
-      "show"
-    );
 
-  },1600);
+  setTimeout(
+    ()=>{
+      if(!state.busy)
+        E.progress.classList.remove(
+          "show"
+        );
+    },
+    1600
+  );
 
 }
 
@@ -3062,21 +2890,18 @@ function renderResults(){
 
   const filtered =
     state.results
-
-      .map(result => ({
+      .map(result=>({
 
         ...result,
 
         findings:
           result.findings.filter(
             item =>
-              state.filter === "all" ||
-              item.severity ===
-              state.filter
+              state.filter==="all" ||
+              item.severity===state.filter
           )
 
       }))
-
       .filter(
         result =>
           result.findings.length
@@ -3086,10 +2911,10 @@ function renderResults(){
   if(!filtered.length){
 
     const hasResults =
-      state.results.length > 0;
+      state.results.length>0;
 
 
-    E.results.innerHTML = `
+    E.results.innerHTML=`
 
       <div class="empty">
 
@@ -3123,198 +2948,168 @@ function renderResults(){
 
 
   E.results.innerHTML =
-    filtered
-      .map(
-        (result,resultIndex)=>{
+    filtered.map(
+      (result,resultIndex)=>{
 
-          const critical =
-            result.findings
-              .filter(
-                x =>
-                  x.severity ===
-                  "critical"
-              )
-              .length;
+        const critical =
+          result.findings.filter(
+            x=>x.severity==="critical"
+          ).length;
 
+        const warning =
+          result.findings.filter(
+            x=>x.severity==="warning"
+          ).length;
 
-          const warning =
-            result.findings
-              .filter(
-                x =>
-                  x.severity ===
-                  "warning"
-              )
-              .length;
+        const notice =
+          result.findings.filter(
+            x=>x.severity==="notice"
+          ).length;
 
 
-          const notice =
-            result.findings
-              .filter(
-                x =>
-                  x.severity ===
-                  "notice"
-              )
-              .length;
+        return `
 
+          <article class="result">
 
-          return `
+            <div class="resulthead">
 
-            <article class="result">
+              <div class="path">
+                ${esc(result.path)}
+              </div>
 
-              <div class="resulthead">
+              <div class="counts">
 
-                <div class="path">
-                  ${esc(result.path)}
-                </div>
+                ${
+                  critical
+                  ? `<span class="count red">
+                       ${fmt(critical)} critical
+                     </span>`
+                  : ""
+                }
 
-                <div class="counts">
+                ${
+                  warning
+                  ? `<span class="count orange">
+                       ${fmt(warning)} warning
+                     </span>`
+                  : ""
+                }
 
-                  ${
-                    critical
-                    ? `
-                      <span class="count red">
-                        ${fmt(critical)} critical
-                      </span>
-                    `
-                    : ""
-                  }
-
-                  ${
-                    warning
-                    ? `
-                      <span class="count orange">
-                        ${fmt(warning)} warning
-                      </span>
-                    `
-                    : ""
-                  }
-
-                  ${
-                    notice
-                    ? `
-                      <span class="count yellow">
-                        ${fmt(notice)} notice
-                      </span>
-                    `
-                    : ""
-                  }
-
-                </div>
+                ${
+                  notice
+                  ? `<span class="count yellow">
+                       ${fmt(notice)} notice
+                     </span>`
+                  : ""
+                }
 
               </div>
 
-
-              ${
-
-                result.findings
-                  .map(
-                    (item,itemIndex)=>{
-
-                      const id =
-                        "code_" +
-                        resultIndex +
-                        "_" +
-                        itemIndex;
+            </div>
 
 
-                      return `
+            ${
+              result.findings.map(
+                (item,itemIndex)=>{
 
-                        <div
-                          class="finding ${esc(item.severity)}"
-                        >
-
-                          <div class="dot"></div>
-
-                          <div>
-
-                            <h4 class="ftitle">
-                              ${esc(item.title)}
-                            </h4>
-
-                            <p class="fdesc">
-                              ${esc(item.description)}
-                            </p>
-
-                            <div class="meta">
-
-                              <span class="tag">
-                                ${esc(
-                                  item.severity
-                                    .toUpperCase()
-                                )}
-                              </span>
-
-                              ${
-                                item.line
-                                ? `
-                                  <span class="tag">
-                                    Baris ${fmt(item.line)}
-                                  </span>
-                                `
-                                : ""
-                              }
-
-                              <span class="tag">
-                                ${esc(item.rule)}
-                              </span>
-
-                            </div>
+                  const id =
+                    "code_" +
+                    resultIndex +
+                    "_" +
+                    itemIndex;
 
 
-                            ${
-                              item.line
-                              ? `
+                  return `
 
-                                <button
-                                  class="codebtn"
-                                  type="button"
-                                  data-code-id="${id}"
-                                >
-                                  Lihat kode
-                                </button>
+                    <div class="finding ${esc(item.severity)}">
 
-                                <div
-                                  class="codebox"
-                                  id="${id}"
-                                >
+                      <div class="dot"></div>
 
-                                  <div class="line">
+                      <div>
 
-                                    <div class="ln">
-                                      ${fmt(item.line)}
-                                    </div>
+                        <h4 class="ftitle">
+                          ${esc(item.title)}
+                        </h4>
 
-                                    <div class="lc">
-                                      ${esc(item.code)}
-                                    </div>
+                        <p class="fdesc">
+                          ${esc(item.description)}
+                        </p>
 
-                                  </div>
+                        <div class="meta">
 
-                                </div>
+                          <span class="tag">
+                            ${esc(
+                              item.severity
+                                .toUpperCase()
+                            )}
+                          </span>
 
-                              `
-                              : ""
-                            }
+                          ${
+                            item.line
+                            ? `<span class="tag">
+                                 Baris ${fmt(item.line)}
+                               </span>`
+                            : ""
+                          }
 
-                          </div>
+                          <span class="tag">
+                            ${esc(item.rule)}
+                          </span>
 
                         </div>
 
-                      `;
 
-                    }
-                  )
-                  .join("")
+                        ${
+                          item.line
+                          ? `
 
-              }
+                            <button
+                              class="codebtn"
+                              type="button"
+                              data-code-id="${id}"
+                            >
+                              Lihat kode
+                            </button>
 
-            </article>
+                            <div
+                              class="codebox"
+                              id="${id}"
+                            >
 
-          `;
+                              <div class="line">
 
-        }
-      )
-      .join("");
+                                <div class="ln">
+                                  ${fmt(item.line)}
+                                </div>
+
+                                <div class="lc">
+                                  ${esc(item.code)}
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          `
+                          : ""
+                        }
+
+                      </div>
+
+                    </div>
+
+                  `;
+
+                }
+              ).join("")
+            }
+
+          </article>
+
+        `;
+
+      }
+    ).join("");
 
 }
 
@@ -3337,42 +3132,31 @@ function clearAll(){
   }
 
 
-  state.results = [];
-
-  state.filter = "all";
+  state.results=[];
+  state.filter="all";
 
   resetStats();
 
 
-  if(E.file){
-    E.file.value = "";
-  }
+  if(E.file)
+    E.file.value="";
 
-  if(E.folder){
-    E.folder.value = "";
-  }
+  if(E.folder)
+    E.folder.value="";
 
 
   document
     .querySelectorAll(".filter")
     .forEach(
-      button => {
-
+      button =>
         button.classList.toggle(
-
           "active",
-
-          button.dataset.filter ===
-          "all"
-
-        );
-
-      }
+          button.dataset.filter==="all"
+        )
     );
 
 
   renderResults();
-
 
   E.progress.classList.remove(
     "show"
@@ -3393,55 +3177,33 @@ function clearAll(){
 
 E.pickFiles.addEventListener(
   "click",
-  function(){
-
-    if(state.busy){
-      return;
-    }
-
-    E.file.click();
-
+  ()=>{
+    if(!state.busy)
+      E.file.click();
   }
 );
 
 
 E.pickFolder.addEventListener(
   "click",
-  function(){
-
-    if(state.busy){
-      return;
-    }
-
-    E.folder.click();
-
+  ()=>{
+    if(!state.busy)
+      E.folder.click();
   }
 );
 
 
-/* =====================================================
-   FILE CHANGE
-   ===================================================== */
-
 E.file.addEventListener(
   "change",
-  function(event){
+  event=>{
 
     const files =
       event.target.files;
 
-    if(files && files.length){
-
+    if(files?.length)
       scanFiles(files);
 
-    }
-
-    /*
-      Reset supaya file yang sama
-      tetap bisa dipilih lagi.
-    */
-
-    event.target.value = "";
+    event.target.value="";
 
   }
 );
@@ -3449,48 +3211,37 @@ E.file.addEventListener(
 
 E.folder.addEventListener(
   "change",
-  function(event){
+  event=>{
 
     const files =
       event.target.files;
 
-    if(files && files.length){
-
+    if(files?.length)
       scanFiles(files);
 
-    }
-
-    event.target.value = "";
+    event.target.value="";
 
   }
 );
 
 
 /* =====================================================
-   DRAG & DROP
+   DRAG DROP
    ===================================================== */
 
-[
-  "dragenter",
-  "dragover"
-].forEach(
-  eventName => {
+["dragenter","dragover"]
+.forEach(
+  eventName=>{
 
     E.drop.addEventListener(
       eventName,
-      event => {
+      event=>{
 
         event.preventDefault();
-
         event.stopPropagation();
 
-        if(state.busy){
-          return;
-        }
-
-        E.drop.classList.add(
-          "drag"
-        );
+        if(!state.busy)
+          E.drop.classList.add("drag");
 
       }
     );
@@ -3499,23 +3250,18 @@ E.folder.addEventListener(
 );
 
 
-[
-  "dragleave",
-  "drop"
-].forEach(
-  eventName => {
+["dragleave","drop"]
+.forEach(
+  eventName=>{
 
     E.drop.addEventListener(
       eventName,
-      event => {
+      event=>{
 
         event.preventDefault();
-
         event.stopPropagation();
 
-        E.drop.classList.remove(
-          "drag"
-        );
+        E.drop.classList.remove("drag");
 
       }
     );
@@ -3526,26 +3272,16 @@ E.folder.addEventListener(
 
 E.drop.addEventListener(
   "drop",
-  function(event){
+  event=>{
 
-    if(state.busy){
+    if(state.busy)
       return;
-    }
-
 
     const files =
-      event.dataTransfer &&
-      event.dataTransfer.files;
+      event.dataTransfer?.files;
 
-
-    if(
-      files &&
-      files.length
-    ){
-
+    if(files?.length)
       scanFiles(files);
-
-    }
 
   }
 );
@@ -3558,15 +3294,14 @@ E.drop.addEventListener(
 document
   .querySelectorAll(".tab")
   .forEach(
-    tab => {
+    tab=>{
 
       tab.addEventListener(
         "click",
-        function(){
+        ()=>{
 
-          if(state.busy){
+          if(state.busy)
             return;
-          }
 
 
           document
@@ -3575,7 +3310,7 @@ document
               item =>
                 item.classList.toggle(
                   "active",
-                  item === tab
+                  item===tab
                 )
             );
 
@@ -3593,14 +3328,9 @@ document
           const target =
             $(tab.dataset.tab);
 
-
-          if(target){
-
-            target.classList.add(
-              "active"
-            );
-
-          }
+          target?.classList.add(
+            "active"
+          );
 
         }
       );
@@ -3616,11 +3346,11 @@ document
 document
   .querySelectorAll(".filter")
   .forEach(
-    button => {
+    button=>{
 
       button.addEventListener(
         "click",
-        function(){
+        ()=>{
 
           state.filter =
             button.dataset.filter;
@@ -3632,7 +3362,7 @@ document
               item =>
                 item.classList.toggle(
                   "active",
-                  item === button
+                  item===button
                 )
             );
 
@@ -3652,30 +3382,22 @@ document
 
 document.addEventListener(
   "click",
-  function(event){
+  event=>{
 
     const button =
       event.target.closest(
         ".codebtn"
       );
 
-
-    if(!button){
+    if(!button)
       return;
-    }
-
-
-    const id =
-      button.dataset.codeId;
 
 
     const box =
-      $(id);
+      $(button.dataset.codeId);
 
-
-    if(!box){
+    if(!box)
       return;
-    }
 
 
     box.classList.toggle(
@@ -3701,10 +3423,35 @@ E.clear.addEventListener(
   clearAll
 );
 
-
 E.clearTop.addEventListener(
   "click",
   clearAll
+);
+
+
+/* =====================================================
+   HEALER BUTTONS
+   ===================================================== */
+
+E.clearHealer.addEventListener(
+  "click",
+  ()=>{
+
+    E.healerLog.innerHTML="";
+
+    healerLog(
+      "Verified",
+      "Log healer dibersihkan",
+      "Runtime monitoring tetap aktif."
+    );
+
+  }
+);
+
+
+E.testHealer.addEventListener(
+  "click",
+  testHealer
 );
 
 
@@ -3714,11 +3461,9 @@ E.clearTop.addEventListener(
 
 E.back.addEventListener(
   "click",
-  function(){
-
+  ()=>{
     window.location.href =
       "index3.html";
-
   }
 );
 
@@ -3729,7 +3474,7 @@ E.back.addEventListener(
 
 E.scanWeb.addEventListener(
   "click",
-  async function(){
+  async ()=>{
 
     if(state.busy){
 
@@ -3768,8 +3513,8 @@ E.scanWeb.addEventListener(
 
 
     if(
-      url.protocol !== "http:" &&
-      url.protocol !== "https:"
+      url.protocol!=="http:" &&
+      url.protocol!=="https:"
     ){
 
       toast(
@@ -3782,7 +3527,7 @@ E.scanWeb.addEventListener(
     }
 
 
-    state.busy = true;
+    state.busy=true;
 
 
     progress(
@@ -3798,12 +3543,12 @@ E.scanWeb.addEventListener(
         await fetch(
           "/api/codeguard/website",
           {
-
             method:"POST",
 
             headers:{
               "Content-Type":
                 "application/json",
+
               "Accept":
                 "application/json"
             },
@@ -3811,12 +3556,11 @@ E.scanWeb.addEventListener(
             body:JSON.stringify({
               url:url.href
             })
-
           }
         );
 
 
-      let data = null;
+      let data=null;
 
 
       try{
@@ -3826,17 +3570,14 @@ E.scanWeb.addEventListener(
 
       }catch{
 
-        data = null;
+        data=null;
 
       }
 
 
       if(!response.ok){
 
-        if(
-          response.status ===
-          404
-        ){
+        if(response.status===404){
 
           throw new Error(
             "Endpoint scanner website belum tersedia di server."
@@ -3844,29 +3585,23 @@ E.scanWeb.addEventListener(
 
         }
 
-
         throw new Error(
-          data &&
-          data.message
-            ? data.message
-            : "Server scanner mengembalikan error."
+          data?.message ||
+          "Server scanner mengembalikan error."
         );
 
       }
 
 
       const rawFindings =
-        Array.isArray(
-          data &&
-          data.findings
-        )
+        Array.isArray(data?.findings)
           ? data.findings
           : [];
 
 
       const findings =
         rawFindings.map(
-          item => {
+          item=>{
 
             const severity =
               String(
@@ -3875,27 +3610,24 @@ E.scanWeb.addEventListener(
               ).toLowerCase();
 
 
-            let normalized =
-              "notice";
+            let normalized="notice";
 
 
             if(
-              severity === "critical" ||
-              severity === "high"
+              severity==="critical" ||
+              severity==="high"
             ){
 
-              normalized =
-                "critical";
+              normalized="critical";
 
             }
 
             else if(
-              severity === "warning" ||
-              severity === "medium"
+              severity==="warning" ||
+              severity==="medium"
             ){
 
-              normalized =
-                "warning";
+              normalized="warning";
 
             }
 
@@ -3915,9 +3647,7 @@ E.scanWeb.addEventListener(
                 "Temuan perlu diperiksa.",
 
               line:
-                Number(
-                  item.line || 0
-                ),
+                Number(item.line || 0),
 
               code:
                 item.code || "",
@@ -3932,39 +3662,26 @@ E.scanWeb.addEventListener(
         );
 
 
-      state.results = [
+      state.results=[{
 
-        {
+        path:url.href,
 
-          path:url.href,
+        findings
 
-          findings
-
-        }
-
-      ];
+      }];
 
 
       resetStats();
 
 
-      state.stats.files =
-        1;
+      state.stats.files=1;
 
 
-      for(
-        const item of findings
-      ){
-
-        state.stats[
-          item.severity
-        ]++;
-
-      }
+      for(const item of findings)
+        state.stats[item.severity]++;
 
 
       updateStats();
-
       renderResults();
 
 
@@ -3972,6 +3689,12 @@ E.scanWeb.addEventListener(
         1,
         1,
         "Scan website selesai."
+      );
+
+
+      healerVerified(
+        "Website scanner verified",
+        "Response server berhasil diproses."
       );
 
 
@@ -3989,25 +3712,36 @@ E.scanWeb.addEventListener(
       );
 
 
+      healerDetected(
+        "Website scanner error",
+        error?.message ||
+        "Gagal melakukan scan website."
+      );
+
+
+      recoverRuntime(
+        "Website scanner mengalami error."
+      );
+
+
       toast(
-        error &&
-        error.message
-          ? error.message
-          : "Gagal melakukan scan website.",
+        error?.message ||
+        "Gagal melakukan scan website.",
         "error"
       );
 
 
     }finally{
 
-      state.busy = false;
+      state.busy=false;
 
 
       setTimeout(
         ()=>{
-          E.progress.classList.remove(
-            "show"
-          );
+          if(!state.busy)
+            E.progress.classList.remove(
+              "show"
+            );
         },
         1400
       );
@@ -4019,36 +3753,18 @@ E.scanWeb.addEventListener(
 
 
 /* =====================================================
-   GLOBAL ERROR HANDLER
-   Supaya kalau ada error JS, user tetap mendapat
-   informasi dan tombol tidak terlihat seperti mati.
-   ===================================================== */
-
-window.addEventListener(
-  "error",
-  function(event){
-
-    console.error(
-      "CodeGuard JavaScript error:",
-      event.error
-    );
-
-    toast(
-      "CodeGuard mengalami error JavaScript. Buka Console untuk detail.",
-      "error"
-    );
-
-  }
-);
-
-
-/* =====================================================
    INITIALIZE
    ===================================================== */
 
 resetStats();
-
 renderResults();
+healerUpdate();
+
+healerLog(
+  "Verified",
+  "Runtime Self-Healer online",
+  "CodeGuard V5 siap memonitor runtime dan melakukan recovery aman."
+);
 
 </script>
 

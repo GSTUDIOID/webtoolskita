@@ -544,6 +544,7 @@ Halo WebToolsKita"
 </div>
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 "use strict";
 
@@ -880,66 +881,45 @@ async function generateQr() {
 
 
     try {
+        // Generate QR directly in the browser; no backend /api/qrcode route required.
+        if (typeof QRCode === "undefined") {
+            throw new Error("Library QR tidak berhasil dimuat. Periksa koneksi internet lalu coba lagi.");
+        }
 
-        const response = await fetch("/api/qrcode", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                text: value
-            })
-
-        });
-
-
-        let data = null;
+        const holder = document.createElement("div");
+        holder.style.cssText = "position:fixed;left:-10000px;top:-10000px;background:#fff;padding:0;";
+        document.body.appendChild(holder);
 
         try {
+            new QRCode(holder, {
+                text: value,
+                width: 600,
+                height: 600,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
-            data = await response.json();
-
-        } catch (error) {
-
-            throw new Error(
-                "Server mengirim respons yang tidak valid."
-            );
-
+            const canvas = holder.querySelector("canvas");
+            const generatedImage = holder.querySelector("img");
+            if (canvas) {
+                currentQrDataUrl = canvas.toDataURL("image/png");
+            } else if (generatedImage && generatedImage.src) {
+                currentQrDataUrl = generatedImage.src;
+            } else {
+                throw new Error("QR Code gagal dirender oleh browser.");
+            }
+        } finally {
+            holder.remove();
         }
 
-
-        if (
-            !response.ok ||
-            !data ||
-            !data.success ||
-            !data.qr
-        ) {
-
-            throw new Error(
-                data?.message ||
-                "Gagal membuat QR Code."
-            );
-
-        }
-
-
-        currentQrDataUrl = data.qr;
         currentValue = value;
-
-
-        qrImage.src = data.qr;
+        qrImage.src = currentQrDataUrl;
         qrImage.style.display = "block";
-
         emptyMessage.style.display = "none";
-
         resultPanel.classList.add("show");
-
         copyBtn.disabled = false;
         downloadBtn.disabled = false;
-
 
         showStatus(
             detected.type === "WEB"
@@ -948,20 +928,12 @@ async function generateQr() {
             "success"
         );
 
-
-        resultPanel.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
+        resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 
     } catch (error) {
-
         console.error("QR Generator error:", error);
-
         showStatus(
-            error?.message ||
-            "Tidak dapat membuat QR Code. Pastikan server WebToolsKita aktif.",
+            error?.message || "Tidak dapat membuat QR Code. Pastikan koneksi internet aktif.",
             "error"
         );
 
