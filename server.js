@@ -3326,7 +3326,14 @@ function validatePaymentInput(body) {
 
     if (name.length < 2 || name.length > 120) throw new Error("Nama pembayar tidak valid");
     if (!/^[0-9+()\\-\\s]{8,30}$/.test(phone)) throw new Error("Nomor telepon tidak valid");
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) throw new Error("Email tidak valid");
+    if (
+    email.length < 5 ||
+    email.length > 254 ||
+    !/^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+(?:\.[A-Z0-9-]+)+$/i.test(email)
+) {
+    throw new Error("Email tidak valid");
+}
+
     if (!Number.isSafeInteger(amount) || amount < 1000) throw new Error("Nominal minimal Rp1.000");
     const allowed = {
         va: ["bag","bca","bpd_bali","bni","cimb","mandiri","bmi","bri","bsi","permata","danamon","btn"],
