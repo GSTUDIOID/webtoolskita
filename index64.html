@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo List & Crate List — WebToolsKita</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0b0f14;
+        color: #ffffff;
+        min-height: 100vh;
+        padding: 30px 15px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .header p {
+        color: #9ca3af;
+        font-size: 15px;
+    }
+
+    .box {
+        background: #111820;
+        border: 1px solid #26313d;
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+
+    .box h2 {
+        font-size: 21px;
+        margin-bottom: 15px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        background: #0b0f14;
+        color: #ffffff;
+        border: 1px solid #344150;
+        border-radius: 10px;
+        padding: 14px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    textarea:focus {
+        border-color: #5b9cff;
+    }
+
+    .counter {
+        color: #9ca3af;
+        font-size: 13px;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    button {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        opacity: 0.85;
+    }
+
+    .upload-btn {
+        margin-top: 14px;
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+    }
+
+    .todo-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .todo-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #0b0f14;
+        border: 1px solid #293543;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .todo-text {
+        flex: 1;
+        word-break: break-word;
+        line-height: 1.5;
+    }
+
+    .todo-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .check-btn {
+        background: #16a34a;
+        color: white;
+    }
+
+    .delete-btn {
+        background: #dc2626;
+        color: white;
+    }
+
+    .edit-btn {
+        background: #d97706;
+        color: white;
+    }
+
+    .save-btn {
+        background: #2563eb;
+        color: white;
+    }
+
+    .cancel-btn {
+        background: #4b5563;
+        color: white;
+    }
+
+    .edit-input {
+        flex: 1;
+        background: #111820;
+        border: 1px solid #405064;
+        color: white;
+        border-radius: 7px;
+        padding: 9px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .empty {
+        color: #6b7280;
+        text-align: center;
+        padding: 20px 10px;
+        border: 1px dashed #303b48;
+        border-radius: 10px;
+    }
+
+    .history-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .history-box {
+        background: #111820;
+        border: 1px solid #26313d;
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .history-box h2 {
+        margin-bottom: 15px;
+        font-size: 19px;
+    }
+
+    .history-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #0b0f14;
+        border: 1px solid #293543;
+        border-radius: 9px;
+        padding: 11px;
+        margin-bottom: 9px;
+    }
+
+    .history-item-text {
+        flex: 1;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .clear-btn {
+        background: #7f1d1d;
+        color: white;
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .status {
+        margin-top: 12px;
+        min-height: 20px;
+        font-size: 14px;
+        color: #9ca3af;
+    }
+
+    @media (max-width: 700px) {
+        body {
+            padding: 20px 10px;
+        }
+
+        .header h1 {
+            font-size: 25px;
+        }
+
+        .history-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .todo-item {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .todo-actions {
+            width: 100%;
+        }
+
+        .todo-actions button {
+            flex: 1;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Todo List & Crate List</h1>
+        <p>Kelola catatan dan tugas dengan sederhana.</p>
+    </div>
+
+    <!-- CRATE LIST -->
+    <div class="box">
+        <h2>Crate List</h2>
+
+        <textarea
+            id="crateInput"
+            maxlength="1000"
+            placeholder="Tulis catatan atau tugas di sini..."
+        ></textarea>
+
+        <div class="counter">
+            <span id="wordCount">0</span> / 75 kata
+        </div>
+
+        <button class="upload-btn" id="uploadBtn">
+            Upload
+        </button>
+
+        <div class="status" id="crateStatus"></div>
+    </div>
+
+
+    <!-- TODO LIST -->
+    <div class="box">
+        <h2>Todo List</h2>
+
+        <div id="todoList" class="todo-list">
+            <div class="empty">
+                Belum ada Todo.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- INDEX CENTANG & SILANG -->
+    <div class="history-grid">
+
+        <div class="history-box">
+            <h2>Index Centang</h2>
+
+            <div id="completedList">
+                <div class="empty">
+                    Belum ada tugas selesai.
+                </div>
+            </div>
+
+            <button class="clear-btn" id="clearCompletedBtn">
+                Hapus Index Centang
+            </button>
+        </div>
+
+
+        <div class="history-box">
+            <h2>Index Silang</h2>
+
+            <div id="deletedList">
+                <div class="empty">
+                    Belum ada tugas yang disilang.
+                </div>
+            </div>
+
+            <button class="clear-btn" id="clearDeletedBtn">
+                Hapus Index Silang
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+/*
+    WebToolsKita
+    Tool 14
+    Todo List + Crate List
+
+    Tidak menggunakan:
+    - Local Storage
+    - Database
+    - Server
+    - Export / Import
+    - Tag
+    - Folder
+    - Search
+*/
+
+
+const crateInput = document.getElementById("crateInput");
+const wordCount = document.getElementById("wordCount");
+const uploadBtn = document.getElementById("uploadBtn");
+const crateStatus = document.getElementById("crateStatus");
+
+const todoList = document.getElementById("todoList");
+const completedList = document.getElementById("completedList");
+const deletedList = document.getElementById("deletedList");
+
+const clearCompletedBtn =
+    document.getElementById("clearCompletedBtn");
+
+const clearDeletedBtn =
+    document.getElementById("clearDeletedBtn");
+
+
+let todos = [];
+let completedTodos = [];
+let deletedTodos = [];
+
+
+// ==========================================
+// WORD COUNT
+// ==========================================
+
+function countWords(text) {
+
+    const cleaned = text.trim();
+
+    if (!cleaned) {
+        return 0;
+    }
+
+    return cleaned.split(/\s+/).length;
+}
+
+
+function updateWordCount() {
+
+    const count = countWords(crateInput.value);
+
+    wordCount.textContent = count;
+
+    if (count > 75) {
+        wordCount.style.color = "#ef4444";
+    } else {
+        wordCount.style.color = "";
+    }
+}
+
+
+crateInput.addEventListener("input", updateWordCount);
+
+
+// ==========================================
+// UPLOAD CRATE → TODO
+// ==========================================
+
+uploadBtn.addEventListener("click", function () {
+
+    const text = crateInput.value.trim();
+
+    if (!text) {
+
+        crateStatus.textContent =
+            "Crate List masih kosong.";
+
+        crateStatus.style.color = "#ef4444";
+
+        return;
+    }
+
+
+    const count = countWords(text);
+
+    if (count > 75) {
+
+        crateStatus.textContent =
+            "Maksimal 75 kata.";
+
+        crateStatus.style.color = "#ef4444";
+
+        return;
+    }
+
+
+    todos.push({
+        id: Date.now() + Math.random(),
+        text: text
+    });
+
+
+    crateInput.value = "";
+
+    updateWordCount();
+
+    crateStatus.textContent =
+        "Catatan berhasil masuk ke Todo List.";
+
+    crateStatus.style.color = "#22c55e";
+
+
+    renderTodos();
+
+
+    setTimeout(function () {
+
+        crateStatus.textContent = "";
+
+    }, 2500);
+
+});
+
+
+// ==========================================
+// RENDER TODO
+// ==========================================
+
+function renderTodos() {
+
+    todoList.innerHTML = "";
+
+
+    if (todos.length === 0) {
+
+        todoList.innerHTML = `
+            <div class="empty">
+                Belum ada Todo.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    todos.forEach(function (todo) {
+
+        const item = document.createElement("div");
+
+        item.className = "todo-item";
+
+
+        const text = document.createElement("div");
+
+        text.className = "todo-text";
+
+        text.textContent = todo.text;
+
+
+        const actions = document.createElement("div");
+
+        actions.className = "todo-actions";
+
+
+        const checkButton =
+            document.createElement("button");
+
+        checkButton.className = "check-btn";
+
+        checkButton.textContent = "✓";
+
+
+        const crossButton =
+            document.createElement("button");
+
+        crossButton.className = "delete-btn";
+
+        crossButton.textContent = "✕";
+
+
+        const editButton =
+            document.createElement("button");
+
+        editButton.className = "edit-btn";
+
+        editButton.textContent = "Edit";
+
+
+        // CHECK
+        checkButton.addEventListener("click", function () {
+
+            moveToCompleted(todo.id);
+
+        });
+
+
+        // CROSS
+        crossButton.addEventListener("click", function () {
+
+            moveToDeleted(todo.id);
+
+        });
+
+
+        // EDIT
+        editButton.addEventListener("click", function () {
+
+            startEdit(item, todo);
+
+        });
+
+
+        actions.appendChild(checkButton);
+        actions.appendChild(crossButton);
+        actions.appendChild(editButton);
+
+
+        item.appendChild(text);
+        item.appendChild(actions);
+
+
+        todoList.appendChild(item);
+
+    });
+
+}
+
+
+// ==========================================
+// EDIT TODO
+// ==========================================
+
+function startEdit(item, todo) {
+
+    item.innerHTML = "";
+
+
+    const input =
+        document.createElement("input");
+
+    input.className = "edit-input";
+
+    input.type = "text";
+
+    input.value = todo.text;
+
+
+    const actions =
+        document.createElement("div");
+
+    actions.className = "todo-actions";
+
+
+    const saveButton =
+        document.createElement("button");
+
+    saveButton.className = "save-btn";
+
+    saveButton.textContent = "Simpan";
+
+
+    const cancelButton =
+        document.createElement("button");
+
+    cancelButton.className = "cancel-btn";
+
+    cancelButton.textContent = "Batal";
+
+
+    saveButton.addEventListener("click", function () {
+
+        const newText = input.value.trim();
+
+        if (!newText) {
+
+            alert("Todo tidak boleh kosong.");
+
+            return;
+        }
+
+
+        todo.text = newText;
+
+        renderTodos();
+
+    });
+
+
+    cancelButton.addEventListener("click", function () {
+
+        renderTodos();
+
+    });
+
+
+    actions.appendChild(saveButton);
+    actions.appendChild(cancelButton);
+
+
+    item.appendChild(input);
+    item.appendChild(actions);
+
+
+    input.focus();
+
+
+    input.addEventListener("keydown", function (event) {
+
+        if (event.key === "Enter") {
+
+            saveButton.click();
+
+        }
+
+        if (event.key === "Escape") {
+
+            cancelButton.click();
+
+        }
+
+    });
+
+}
+
+
+// ==========================================
+// MOVE TO INDEX CENTANG
+// ==========================================
+
+function moveToCompleted(id) {
+
+    const index =
+        todos.findIndex(function (todo) {
+
+            return todo.id === id;
+
+        });
+
+
+    if (index === -1) {
+        return;
+    }
+
+
+    const todo =
+        todos.splice(index, 1)[0];
+
+
+    completedTodos.push(todo);
+
+
+    renderTodos();
+    renderCompleted();
+
+}
+
+
+// ==========================================
+// MOVE TO INDEX SILANG
+// ==========================================
+
+function moveToDeleted(id) {
+
+    const index =
+        todos.findIndex(function (todo) {
+
+            return todo.id === id;
+
+        });
+
+
+    if (index === -1) {
+        return;
+    }
+
+
+    const todo =
+        todos.splice(index, 1)[0];
+
+
+    deletedTodos.push(todo);
+
+
+    renderTodos();
+    renderDeleted();
+
+}
+
+
+// ==========================================
+// RENDER INDEX CENTANG
+// ==========================================
+
+function renderCompleted() {
+
+    completedList.innerHTML = "";
+
+
+    if (completedTodos.length === 0) {
+
+        completedList.innerHTML = `
+            <div class="empty">
+                Belum ada tugas selesai.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    completedTodos.forEach(function (todo) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "history-item";
+
+
+        const text =
+            document.createElement("div");
+
+        text.className = "history-item-text";
+
+        text.textContent = "✓ " + todo.text;
+
+
+        item.appendChild(text);
+
+        completedList.appendChild(item);
+
+    });
+
+}
+
+
+// ==========================================
+// RENDER INDEX SILANG
+// ==========================================
+
+function renderDeleted() {
+
+    deletedList.innerHTML = "";
+
+
+    if (deletedTodos.length === 0) {
+
+        deletedList.innerHTML = `
+            <div class="empty">
+                Belum ada tugas yang disilang.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    deletedTodos.forEach(function (todo) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "history-item";
+
+
+        const text =
+            document.createElement("div");
+
+        text.className = "history-item-text";
+
+        text.textContent = "✕ " + todo.text;
+
+
+        item.appendChild(text);
+
+        deletedList.appendChild(item);
+
+    });
+
+}
+
+
+// ==========================================
+// HAPUS INDEX CENTANG
+// ==========================================
+
+clearCompletedBtn.addEventListener("click", function () {
+
+    if (completedTodos.length === 0) {
+        return;
+    }
+
+
+    completedTodos = [];
+
+    renderCompleted();
+
+});
+
+
+// ==========================================
+// HAPUS INDEX SILANG
+// ==========================================
+
+clearDeletedBtn.addEventListener("click", function () {
+
+    if (deletedTodos.length === 0) {
+        return;
+    }
+
+
+    deletedTodos = [];
+
+    renderDeleted();
+
+});
+
+
+// ==========================================
+// INITIAL RENDER
+// ==========================================
+
+renderTodos();
+renderCompleted();
+renderDeleted();
+updateWordCount();
+
+</script>
+
+</body>
+</html>

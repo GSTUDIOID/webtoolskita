@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Meme Generator — WebToolsKita</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:
+        radial-gradient(
+            circle at top,
+            #24103d 0%,
+            #0b0712 38%,
+            #050308 100%
+        );
+    color:#f5f3ff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    width:min(1250px,94%);
+    margin:25px auto 50px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #160b24,
+            #3b0764
+        );
+    color:#fff;
+    padding:28px;
+    border-radius:20px;
+    margin-bottom:22px;
+    border:1px solid #4c1d95;
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.45);
+}
+
+.header h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+.header p{
+    margin:0;
+    color:#d8b4fe;
+}
+
+/* =========================
+   BOX
+========================= */
+
+.box{
+    background:
+        linear-gradient(
+            145deg,
+            #120c1c,
+            #0b0711
+        );
+    border:1px solid #3b1d5d;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:22px;
+    box-shadow:
+        0 8px 28px rgba(0,0,0,.4);
+}
+
+.box h2{
+    margin:0 0 18px;
+    color:#f3e8ff;
+}
+
+/* =========================
+   CONTROLS
+========================= */
+
+.controls{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.control{
+    border:1px solid #3b1d5d;
+    border-radius:14px;
+    padding:15px;
+    background:#0d0913;
+}
+
+.control h3{
+    margin:0 0 12px;
+    font-size:16px;
+    color:#e9d5ff;
+}
+
+/* =========================
+   INPUT
+========================= */
+
+input[type=text],
+input[type=number],
+textarea,
+select{
+    width:100%;
+    padding:10px;
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    outline:none;
+    font-family:inherit;
+    background:#08050c;
+    color:#fff;
+}
+
+input[type=text]::placeholder,
+input[type=number]::placeholder,
+textarea::placeholder{
+    color:#81758f;
+}
+
+input[type=text]:focus,
+input[type=number]:focus,
+textarea:focus,
+select:focus{
+    border-color:#a855f7;
+    box-shadow:
+        0 0 0 2px rgba(168,85,247,.12);
+}
+
+input[type=range]{
+    width:100%;
+    accent-color:#9333ea;
+}
+
+/* =========================
+   FILE INPUT
+========================= */
+
+input[type=file]{
+    width:100%;
+    color:#d8b4fe;
+}
+
+input[type=file]::file-selector-button{
+    border:1px solid #4c1d95;
+    border-radius:8px;
+    padding:9px 12px;
+    margin-right:10px;
+    background:#111827;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+input[type=file]::file-selector-button:hover{
+    background:#4c1d95;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+button{
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    padding:11px 15px;
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #1b1025
+        );
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #3b0764,
+            #6b21a8
+        );
+    border-color:#a855f7;
+}
+
+button.success{
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    border-color:#a855f7;
+}
+
+button.success:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #7e22ce,
+            #a855f7
+        );
+}
+
+button.danger{
+    background:
+        linear-gradient(
+            135deg,
+            #350b43,
+            #581c87
+        );
+    border-color:#86198f;
+}
+
+button.secondary{
+    background:#374151;
+    border-color:#4c1d95;
+}
+
+button.active{
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    border-color:#c084fc;
+}
+
+/* =========================
+   UPLOAD AREA
+========================= */
+
+.drop-zone{
+    border:2px dashed #6b21a8;
+    border-radius:16px;
+    min-height:180px;
+    padding:30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:
+        radial-gradient(
+            circle at center,
+            #1a0c27,
+            #09060d
+        );
+    cursor:pointer;
+    transition:.2s;
+}
+
+.drop-zone:hover{
+    border-color:#a855f7;
+    background:#12091b;
+}
+
+.drop-zone.dragover{
+    border-color:#c084fc;
+    background:#241033;
+    box-shadow:
+        0 0 25px rgba(168,85,247,.18);
+}
+
+.drop-zone-content{
+    pointer-events:none;
+}
+
+.drop-zone-title{
+    font-size:20px;
+    font-weight:bold;
+    color:#f3e8ff;
+    margin-bottom:8px;
+}
+
+.drop-zone-text{
+    color:#a78bfa;
+    font-size:13px;
+}
+
+/* =========================
+   EDITOR
+========================= */
+
+.editor-grid{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:22px;
+}
+
+.editor-controls{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+/* =========================
+   MEME AREA
+========================= */
+
+.meme-area{
+    background:
+        radial-gradient(
+            circle at center,
+            #241333,
+            #100a16 65%,
+            #08050c
+        );
+    border:1px solid #3b1d5d;
+    border-radius:18px;
+    padding:20px;
+    min-height:560px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+.meme-wrapper{
+    width:min(100%,800px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+#memeCanvas{
+    display:block;
+    max-width:100%;
+    height:auto;
+    background:#000;
+    border-radius:8px;
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.55),
+        0 0 30px rgba(126,34,206,.12);
+}
+
+/* =========================
+   VIDEO
+========================= */
+
+#sourceVideo{
+    display:none;
+}
+
+/* =========================
+   TEXT LIST
+========================= */
+
+.text-list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    max-height:220px;
+    overflow:auto;
+    margin-top:10px;
+}
+
+.text-row{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+.text-row span{
+    flex:1;
+    padding:8px;
+    border:1px solid #3b1d5d;
+    border-radius:8px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    cursor:pointer;
+    background:#08050c;
+    color:#e9d5ff;
+}
+
+.text-row span:hover{
+    border-color:#9333ea;
+}
+
+.text-row button{
+    padding:7px 10px;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+    min-height:20px;
+    margin-top:10px;
+    font-weight:bold;
+    color:#d8b4fe;
+}
+
+.help{
+    color:#a78bfa;
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* =========================
+   PREVIEW INFO
+========================= */
+
+.preview-info{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+}
+
+.info-badge{
+    border:1px solid #4c1d95;
+    border-radius:8px;
+    padding:7px 10px;
+    background:#08050c;
+    color:#d8b4fe;
+    font-size:12px;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+    width:9px;
+    height:9px;
+}
+
+::-webkit-scrollbar-track{
+    background:#08050c;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#4c1d95;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#9333ea;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+    .editor-grid{
+        grid-template-columns:1fr;
+    }
+
+    .meme-area{
+        min-height:400px;
+    }
+}
+
+@media(max-width:600px){
+
+    .header h1{
+        font-size:24px;
+    }
+
+    .box{
+        padding:16px;
+    }
+
+    .meme-area{
+        padding:8px;
+    }
+
+    .drop-zone{
+        min-height:150px;
+        padding:20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="header">
+
+    <h1>Meme Generator</h1>
+
+    <p>
+        Buat meme dari foto atau video dengan teks yang dapat dipindahkan.
+    </p>
+
+</div>
+
+
+<!-- =========================
+     UPLOAD
+========================= -->
+
+<div class="box">
+
+    <h2>Upload Foto / Video</h2>
+
+    <div
+        id="dropZone"
+        class="drop-zone">
+
+        <div class="drop-zone-content">
+
+            <div class="drop-zone-title">
+                Drop Foto / Video di Sini
+            </div>
+
+            <div class="drop-zone-text">
+                atau klik untuk memilih file
+            </div>
+
+        </div>
+
+    </div>
+
+    <input
+        type="file"
+        id="mediaInput"
+        accept="image/*,video/*"
+        hidden>
+
+    <div
+        id="mediaStatus"
+        class="status">
+    </div>
+
+</div>
+
+
+<!-- =========================
+     EDITOR
+========================= -->
+
+<div class="box">
+
+    <h2>Editor Meme</h2>
+
+    <div class="editor-grid">
+
+
+        <!-- =====================
+             CONTROLS
+        ====================== -->
+
+        <div class="editor-controls">
+
+
+            <!-- ADD TEXT -->
+
+            <div class="control">
+
+                <h3>Tambah Teks</h3>
+
+                <input
+                    type="text"
+                    id="textInput"
+                    placeholder="Tulis teks meme...">
+
+                <br><br>
+
+                <div class="buttons">
+
+                    <button
+                        class="success"
+                        onclick="addText()">
+                        + Add Text
+                    </button>
+
+                    <button
+                        class="danger"
+                        onclick="deleteSelectedText()">
+                        Hapus Text
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- EDIT TEXT -->
+
+            <div class="control">
+
+                <h3>Edit Teks Terpilih</h3>
+
+                <input
+                    type="text"
+                    id="editTextInput"
+                    placeholder="Pilih teks pada meme">
+
+                <br><br>
+
+                <label class="help">
+                    Ukuran Teks
+                </label>
+
+                <input
+                    type="range"
+                    id="textSize"
+                    min="12"
+                    max="120"
+                    step="1"
+                    value="42">
+
+            </div>
+
+
+            <!-- POSITION -->
+
+            <div class="control">
+
+                <h3>Posisi Teks</h3>
+
+                <div class="buttons">
+
+                    <button onclick="moveSelected(-5,0)">
+                        ←
+                    </button>
+
+                    <button onclick="moveSelected(5,0)">
+                        →
+                    </button>
+
+                    <button onclick="moveSelected(0,-5)">
+                        ↑
+                    </button>
+
+                    <button onclick="moveSelected(0,5)">
+                        ↓
+                    </button>
+
+                </div>
+
+                <p class="help">
+                    Teks juga dapat di-grab dan digeser langsung pada meme.
+                </p>
+
+            </div>
+
+
+            <!-- TEXT LIST -->
+
+            <div class="control">
+
+                <h3>Daftar Teks</h3>
+
+                <div
+                    id="textList"
+                    class="text-list">
+                </div>
+
+            </div>
+
+
+            <!-- GENERATE -->
+
+            <div class="control">
+
+                <h3>Generate Meme</h3>
+
+                <button
+                    class="success"
+                    onclick="generateMeme()">
+                    Generate Meme
+                </button>
+
+                <div
+                    id="generateStatus"
+                    class="status">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================
+             MEME PREVIEW
+        ====================== -->
+
+        <div class="meme-area">
+
+            <div class="meme-wrapper">
+
+                <canvas
+                    id="memeCanvas">
+                </canvas>
+
+                <video
+                    id="sourceVideo"
+                    playsinline
+                    muted>
+                </video>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     FINISH
+========================= -->
+
+<div class="box">
+
+    <h2>Selesai</h2>
+
+    <p class="help">
+        Setelah meme selesai dibuat, gunakan tombol di bawah untuk menyimpan hasilnya ke perangkat.
+    </p>
+
+    <div class="buttons">
+
+        <button
+            class="success"
+            onclick="finishAndSave()">
+            Selesai &amp; Simpan
+        </button>
+
+    </div>
+
+    <div
+        id="finishStatus"
+        class="status">
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ==================================================
+   STATE
+================================================== */
+
+let mediaType = null;
+
+let imageSource = null;
+
+let videoSource = null;
+
+let mediaFileName = "";
+
+let texts = [];
+
+let textCounter = 0;
+
+let selectedText = null;
+
+let isDraggingText = false;
+
+let dragStartX = 0;
+
+let dragStartY = 0;
+
+let dragOriginalX = 0;
+
+let dragOriginalY = 0;
+
+let videoAnimationId = null;
+
+
+/* ==================================================
+   ELEMENTS
+================================================== */
+
+const mediaInput =
+    document.getElementById(
+        "mediaInput"
+    );
+
+const dropZone =
+    document.getElementById(
+        "dropZone"
+    );
+
+const canvas =
+    document.getElementById(
+        "memeCanvas"
+    );
+
+const ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+const video =
+    document.getElementById(
+        "sourceVideo"
+    );
+
+const textInput =
+    document.getElementById(
+        "textInput"
+    );
+
+const editTextInput =
+    document.getElementById(
+        "editTextInput"
+    );
+
+const textSize =
+    document.getElementById(
+        "textSize"
+    );
+
+const textList =
+    document.getElementById(
+        "textList"
+    );
+
+
+/* ==================================================
+   UPLOAD
+================================================== */
+
+dropZone.addEventListener(
+    "click",
+    function(){
+
+        mediaInput.click();
+
+    }
+);
+
+
+mediaInput.addEventListener(
+    "change",
+    function(){
+
+        const file =
+            this.files[0];
+
+        if(!file){
+            return;
+        }
+
+        loadMedia(file);
+
+    }
+);
+
+
+/* ==================================================
+   DRAG & DROP
+================================================== */
+
+dropZone.addEventListener(
+    "dragover",
+    function(event){
+
+        event.preventDefault();
+
+        dropZone.classList.add(
+            "dragover"
+        );
+
+    }
+);
+
+
+dropZone.addEventListener(
+    "dragleave",
+    function(){
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+    }
+);
+
+
+dropZone.addEventListener(
+    "drop",
+    function(event){
+
+        event.preventDefault();
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+        const file =
+            event.dataTransfer.files[0];
+
+        if(!file){
+            return;
+        }
+
+        loadMedia(file);
+
+    }
+);
+
+
+/* ==================================================
+   LOAD MEDIA
+================================================== */
+
+function loadMedia(file){
+
+    if(
+        !file.type.startsWith("image/") &&
+        !file.type.startsWith("video/")
+    ){
+
+        document
+            .getElementById(
+                "mediaStatus"
+            )
+            .textContent =
+            "File harus berupa foto atau video.";
+
+        return;
+    }
+
+
+    mediaFileName =
+        file.name;
+
+
+    if(
+        file.type.startsWith("image/")
+    ){
+
+        loadImage(file);
+
+    }else{
+
+        loadVideo(file);
+
+    }
+}
+
+
+/* ==================================================
+   LOAD IMAGE
+================================================== */
+
+function loadImage(file){
+
+    mediaType =
+        "image";
+
+
+    if(videoSource){
+
+        URL.revokeObjectURL(
+            videoSource
+        );
+
+        videoSource = null;
+    }
+
+
+    video.pause();
+
+    video.removeAttribute(
+        "src"
+    );
+
+    video.load();
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(event){
+
+            imageSource =
+                new Image();
+
+
+            imageSource.onload =
+                function(){
+
+                    canvas.width =
+                        imageSource.naturalWidth;
+
+                    canvas.height =
+                        imageSource.naturalHeight;
+
+
+                    drawImageMeme();
+
+
+                    document
+                        .getElementById(
+                            "mediaStatus"
+                        )
+                        .textContent =
+                        "Foto berhasil dimuat.";
+
+                };
+
+
+            imageSource.src =
+                event.target.result;
+
+        };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* ==================================================
+   LOAD VIDEO
+================================================== */
+
+function loadVideo(file){
+
+    mediaType =
+        "video";
+
+
+    imageSource = null;
+
+
+    if(videoSource){
+
+        URL.revokeObjectURL(
+            videoSource
+        );
+    }
+
+
+    videoSource =
+        URL.createObjectURL(file);
+
+
+    video.src =
+        videoSource;
+
+
+    video.load();
+
+
+    video.onloadedmetadata =
+        function(){
+
+            canvas.width =
+                video.videoWidth;
+
+            canvas.height =
+                video.videoHeight;
+
+
+            drawVideoFrame();
+
+
+            document
+                .getElementById(
+                    "mediaStatus"
+                )
+                .textContent =
+                "Video berhasil dimuat.";
+
+        };
+
+}
+
+
+/* ==================================================
+   DRAW IMAGE
+================================================== */
+
+function drawImageMeme(){
+
+    if(
+        !imageSource ||
+        !imageSource.complete
+    ){
+        return;
+    }
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.drawImage(
+        imageSource,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    drawTexts();
+
+}
+
+
+/* ==================================================
+   DRAW VIDEO FRAME
+================================================== */
+
+function drawVideoFrame(){
+
+    if(
+        mediaType !== "video" ||
+        !video.videoWidth
+    ){
+        return;
+    }
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    drawTexts();
+
+
+    if(
+        !video.paused &&
+        !video.ended
+    ){
+
+        videoAnimationId =
+            requestAnimationFrame(
+                drawVideoFrame
+            );
+
+    }
+
+}
+
+
+/* ==================================================
+   DRAW TEXTS
+================================================== */
+
+function drawTexts(){
+
+    texts.forEach(
+        function(item){
+
+            ctx.save();
+
+            ctx.font =
+                "bold " +
+                item.size +
+                "px Arial";
+
+            ctx.textAlign =
+                "left";
+
+            ctx.textBaseline =
+                "top";
+
+
+            /*
+             * OUTLINE
+             */
+
+            ctx.lineWidth =
+                Math.max(
+                    2,
+                    item.size * 0.08
+                );
+
+            ctx.strokeStyle =
+                "#000";
+
+            ctx.strokeText(
+                item.text,
+                item.x,
+                item.y
+            );
+
+
+            /*
+             * TEXT
+             */
+
+            ctx.fillStyle =
+                "#fff";
+
+            ctx.fillText(
+                item.text,
+                item.x,
+                item.y
+            );
+
+
+            ctx.restore();
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   ADD TEXT
+================================================== */
+
+function addText(){
+
+    const value =
+        textInput.value.trim();
+
+
+    if(!value){
+
+        alert(
+            "Masukkan teks terlebih dahulu."
+        );
+
+        return;
+    }
+
+
+    if(!mediaType){
+
+        alert(
+            "Upload foto atau video terlebih dahulu."
+        );
+
+        return;
+    }
+
+
+    textCounter++;
+
+
+    const item = {
+
+        id:
+            "text-" +
+            textCounter,
+
+        text:
+            value,
+
+        x:
+            40,
+
+        y:
+            40 +
+            (texts.length * 55),
+
+        size:
+            42
+
+    };
+
+
+    texts.push(item);
+
+
+    selectedText =
+        item;
+
+
+    textInput.value =
+        "";
+
+
+    updateEditor();
+
+    redraw();
+
+}
+
+
+/* ==================================================
+   SELECT TEXT
+================================================== */
+
+function selectText(item){
+
+    selectedText =
+        item;
+
+
+    editTextInput.value =
+        item.text;
+
+
+    textSize.value =
+        item.size;
+
+
+    updateEditor();
+
+    redraw();
+
+}
+
+
+/* ==================================================
+   EDIT TEXT
+================================================== */
+
+editTextInput.addEventListener(
+    "input",
+    function(){
+
+        if(!selectedText){
+            return;
+        }
+
+
+        selectedText.text =
+            this.value;
+
+
+        refreshTextList();
+
+        redraw();
+
+    }
+);
+
+
+textSize.addEventListener(
+    "input",
+    function(){
+
+        if(!selectedText){
+            return;
+        }
+
+
+        selectedText.size =
+            parseInt(
+                this.value,
+                10
+            );
+
+
+        redraw();
+
+    }
+);
+
+
+/* ==================================================
+   DELETE TEXT
+================================================== */
+
+function deleteSelectedText(){
+
+    if(!selectedText){
+
+        alert(
+            "Pilih teks yang ingin dihapus."
+        );
+
+        return;
+    }
+
+
+    const index =
+        texts.indexOf(
+            selectedText
+        );
+
+
+    if(index !== -1){
+
+        texts.splice(
+            index,
+            1
+        );
+
+    }
+
+
+    selectedText =
+        null;
+
+
+    editTextInput.value =
+        "";
+
+    textSize.value =
+        "42";
+
+
+    updateEditor();
+
+    redraw();
+
+}
+
+
+/* ==================================================
+   MOVE TEXT
+================================================== */
+
+function moveSelected(dx,dy){
+
+    if(!selectedText){
+
+        alert(
+            "Pilih teks terlebih dahulu."
+        );
+
+        return;
+    }
+
+
+    selectedText.x +=
+        dx;
+
+    selectedText.y +=
+        dy;
+
+
+    redraw();
+
+}
+
+
+/* ==================================================
+   CANVAS POINTER
+================================================== */
+
+canvas.addEventListener(
+    "pointerdown",
+    function(event){
+
+        if(
+            !mediaType ||
+            !texts.length
+        ){
+            return;
+        }
+
+
+        const position =
+            getCanvasPosition(
+                event
+            );
+
+
+        const found =
+            findTextAtPosition(
+                position.x,
+                position.y
+            );
+
+
+        if(!found){
+            return;
+        }
+
+
+        selectText(found);
+
+
+        isDraggingText =
+            true;
+
+
+        dragStartX =
+            position.x;
+
+        dragStartY =
+            position.y;
+
+
+        dragOriginalX =
+            found.x;
+
+        dragOriginalY =
+            found.y;
+
+
+        canvas.setPointerCapture(
+            event.pointerId
+        );
+
+        event.preventDefault();
+
+    }
+);
+
+
+canvas.addEventListener(
+    "pointermove",
+    function(event){
+
+        if(
+            !isDraggingText ||
+            !selectedText
+        ){
+            return;
+        }
+
+
+        const position =
+            getCanvasPosition(
+                event
+            );
+
+
+        const dx =
+            position.x -
+            dragStartX;
+
+
+        const dy =
+            position.y -
+            dragStartY;
+
+
+        selectedText.x =
+            dragOriginalX +
+            dx;
+
+
+        selectedText.y =
+            dragOriginalY +
+            dy;
+
+
+        redraw();
+
+    }
+);
+
+
+canvas.addEventListener(
+    "pointerup",
+    function(){
+
+        isDraggingText =
+            false;
+
+    }
+);
+
+
+canvas.addEventListener(
+    "pointercancel",
+    function(){
+
+        isDraggingText =
+            false;
+
+    }
+);
+
+
+/* ==================================================
+   CANVAS POSITION
+================================================== */
+
+function getCanvasPosition(event){
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const scaleX =
+        canvas.width /
+        rect.width;
+
+
+    const scaleY =
+        canvas.height /
+        rect.height;
+
+
+    return {
+
+        x:
+            (event.clientX -
+            rect.left) *
+            scaleX,
+
+        y:
+            (event.clientY -
+            rect.top) *
+            scaleY
+
+    };
+
+}
+
+
+/* ==================================================
+   FIND TEXT
+================================================== */
+
+function findTextAtPosition(x,y){
+
+    for(
+        let i =
+            texts.length - 1;
+        i >= 0;
+        i--
+    ){
+
+        const item =
+            texts[i];
+
+
+        ctx.font =
+            "bold " +
+            item.size +
+            "px Arial";
+
+
+        const width =
+            ctx.measureText(
+                item.text
+            ).width;
+
+
+        const height =
+            item.size;
+
+
+        if(
+            x >= item.x &&
+            x <= item.x + width &&
+            y >= item.y &&
+            y <= item.y + height
+        ){
+
+            return item;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* ==================================================
+   REFRESH TEXT LIST
+================================================== */
+
+function refreshTextList(){
+
+    textList.innerHTML =
+        "";
+
+
+    texts.forEach(
+        function(item){
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "text-row";
+
+
+            const span =
+                document.createElement(
+                    "span"
+                );
+
+
+            span.textContent =
+                item.text;
+
+
+            span.onclick =
+                function(){
+
+                    selectText(
+                        item
+                    );
+
+                };
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.textContent =
+                "Hapus";
+
+
+            deleteButton.className =
+                "danger";
+
+
+            deleteButton.onclick =
+                function(){
+
+                    selectText(
+                        item
+                    );
+
+                    deleteSelectedText();
+
+                };
+
+
+            row.appendChild(
+                span
+            );
+
+            row.appendChild(
+                deleteButton
+            );
+
+
+            textList.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   UPDATE EDITOR
+================================================== */
+
+function updateEditor(){
+
+    refreshTextList();
+
+
+    if(selectedText){
+
+        editTextInput.value =
+            selectedText.text;
+
+        textSize.value =
+            selectedText.size;
+
+    }
+
+}
+
+
+/* ==================================================
+   REDRAW
+================================================== */
+
+function redraw(){
+
+    if(
+        mediaType === "image"
+    ){
+
+        drawImageMeme();
+
+    }else if(
+        mediaType === "video"
+    ){
+
+        drawVideoFrame();
+
+    }
+
+}
+
+
+/* ==================================================
+   GENERATE MEME
+================================================== */
+
+function generateMeme(){
+
+    if(!mediaType){
+
+        document
+            .getElementById(
+                "generateStatus"
+            )
+            .textContent =
+            "Upload foto atau video terlebih dahulu.";
+
+        return;
+    }
+
+
+    redraw();
+
+
+    document
+        .getElementById(
+            "generateStatus"
+        )
+        .textContent =
+        "Meme berhasil dibuat.";
+
+}
+
+
+/* ==================================================
+   SAVE IMAGE
+================================================== */
+
+function saveImage(){
+
+    const data =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        data;
+
+
+    link.download =
+        "webtoolskita-meme.png";
+
+
+    link.click();
+
+}
+
+
+/* ==================================================
+   SAVE VIDEO
+================================================== */
+
+async function saveVideo(){
+
+    if(
+        mediaType !== "video"
+    ){
+
+        return;
+    }
+
+
+    if(
+        !canvas.captureStream ||
+        typeof MediaRecorder ===
+        "undefined"
+    ){
+
+        alert(
+            "Browser ini tidak mendukung penyimpanan video meme."
+        );
+
+        return;
+    }
+
+
+    video.pause();
+
+    video.currentTime =
+        0;
+
+
+    await new Promise(
+        function(resolve){
+
+            if(
+                video.readyState >= 2
+            ){
+
+                resolve();
+
+            }else{
+
+                video.addEventListener(
+                    "loadeddata",
+                    resolve,
+                    {
+                        once:true
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    const stream =
+        canvas.captureStream(
+            30
+        );
+
+
+    let recorder;
+
+
+    try{
+
+        recorder =
+            new MediaRecorder(
+                stream,
+                {
+                    mimeType:
+                        "video/webm"
+                }
+            );
+
+    }catch(error){
+
+        recorder =
+            new MediaRecorder(
+                stream
+            );
+
+    }
+
+
+    const chunks =
+        [];
+
+
+    recorder.ondataavailable =
+        function(event){
+
+            if(
+                event.data &&
+                event.data.size
+            ){
+
+                chunks.push(
+                    event.data
+                );
+
+            }
+
+        };
+
+
+    const finished =
+        new Promise(
+            function(resolve){
+
+                recorder.onstop =
+                    resolve;
+
+            }
+        );
+
+
+    recorder.start();
+
+
+    video.currentTime =
+        0;
+
+
+    await video.play();
+
+
+    return new Promise(
+        function(resolve){
+
+            function render(){
+
+                if(
+                    video.ended
+                ){
+
+                    redraw();
+
+                    recorder.stop();
+
+                    finished.then(
+                        function(){
+
+                            const blob =
+                                new Blob(
+                                    chunks,
+                                    {
+                                        type:
+                                            "video/webm"
+                                    }
+                                );
+
+
+                            const url =
+                                URL.createObjectURL(
+                                    blob
+                                );
+
+
+                            const link =
+                                document.createElement(
+                                    "a"
+                                );
+
+
+                            link.href =
+                                url;
+
+
+                            link.download =
+                                "webtoolskita-meme.webm";
+
+
+                            link.click();
+
+
+                            setTimeout(
+                                function(){
+
+                                    URL.revokeObjectURL(
+                                        url
+                                    );
+
+                                },
+                                1000
+                            );
+
+
+                            resolve();
+
+                        }
+                    );
+
+
+                    return;
+
+                }
+
+
+                drawVideoFrame();
+
+
+                requestAnimationFrame(
+                    render
+                );
+
+            }
+
+
+            render();
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   FINISH & SAVE
+================================================== */
+
+async function finishAndSave(){
+
+    if(!mediaType){
+
+        document
+            .getElementById(
+                "finishStatus"
+            )
+            .textContent =
+            "Upload foto atau video terlebih dahulu.";
+
+        return;
+    }
+
+
+    document
+        .getElementById(
+            "finishStatus"
+        )
+        .textContent =
+        "Menyimpan meme...";
+
+
+    try{
+
+        if(
+            mediaType === "image"
+        ){
+
+            drawImageMeme();
+
+            saveImage();
+
+
+            document
+                .getElementById(
+                    "finishStatus"
+                )
+                .textContent =
+                "Meme foto berhasil disimpan.";
+
+        }else{
+
+            await saveVideo();
+
+
+            document
+                .getElementById(
+                    "finishStatus"
+                )
+                .textContent =
+                "Meme video berhasil disimpan.";
+
+        }
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        document
+            .getElementById(
+                "finishStatus"
+            )
+            .textContent =
+            "Gagal menyimpan meme.";
+
+    }
+
+}
+
+
+/* ==================================================
+   INITIAL
+================================================== */
+
+refreshTextList();
+
+</script>
+
+</body>
+</html>

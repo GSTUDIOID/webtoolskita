@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SKU & Barcode Generator — WebToolsKita</title>
+
+<!-- JsBarcode -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:
+        radial-gradient(
+            circle at top,
+            #24103d 0%,
+            #0b0712 38%,
+            #050308 100%
+        );
+    color:#f5f3ff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    width:min(1100px,94%);
+    margin:25px auto 50px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #160b24,
+            #3b0764
+        );
+    border:1px solid #4c1d95;
+    border-radius:20px;
+    padding:28px;
+    margin-bottom:22px;
+    box-shadow:0 12px 35px rgba(0,0,0,.45);
+}
+
+.header h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+.header p{
+    margin:0;
+    color:#d8b4fe;
+    line-height:1.5;
+}
+
+/* =========================
+   BOX
+========================= */
+
+.box{
+    background:
+        linear-gradient(
+            145deg,
+            #120c1c,
+            #0b0711
+        );
+    border:1px solid #3b1d5d;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:22px;
+    box-shadow:0 8px 28px rgba(0,0,0,.4);
+}
+
+.box h2{
+    margin:0 0 18px;
+    color:#f3e8ff;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.form-group.full{
+    grid-column:1 / -1;
+}
+
+.form-group label{
+    color:#d8b4fe;
+    font-size:13px;
+    font-weight:bold;
+}
+
+input,
+select{
+    width:100%;
+    padding:12px;
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    outline:none;
+    background:#08050c;
+    color:#fff;
+    font-family:inherit;
+}
+
+input::placeholder{
+    color:#81758f;
+}
+
+input:focus,
+select:focus{
+    border-color:#a855f7;
+    box-shadow:
+        0 0 0 2px rgba(168,85,247,.12);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:18px;
+}
+
+button{
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    padding:11px 16px;
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #1b1025
+        );
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #3b0764,
+            #6b21a8
+        );
+    border-color:#a855f7;
+}
+
+button.success{
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    border-color:#a855f7;
+}
+
+button.success:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #7e22ce,
+            #a855f7
+        );
+}
+
+button.danger{
+    background:
+        linear-gradient(
+            135deg,
+            #350b43,
+            #581c87
+        );
+    border-color:#86198f;
+}
+
+/* =========================
+   BARCODE AREA
+========================= */
+
+.barcode-area{
+    background:#08050c;
+    border:1px solid #3b1d5d;
+    border-radius:14px;
+    padding:30px 20px;
+    min-height:300px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.barcode-wrapper{
+    background:#fff;
+    padding:20px;
+    border-radius:8px;
+    max-width:100%;
+    overflow:auto;
+}
+
+#barcode{
+    display:block;
+    max-width:100%;
+    height:auto;
+}
+
+.barcode-empty{
+    color:#8b7b96;
+    text-align:center;
+    font-size:14px;
+}
+
+/* =========================
+   SKU RESULT
+========================= */
+
+.sku-result{
+    width:100%;
+    margin-top:18px;
+    padding:14px;
+    border:1px solid #4c1d95;
+    border-radius:10px;
+    background:#0d0913;
+    text-align:center;
+}
+
+.sku-label{
+    color:#a78bfa;
+    font-size:12px;
+    margin-bottom:6px;
+}
+
+#skuOutput{
+    color:#f3e8ff;
+    font-size:22px;
+    font-weight:bold;
+    word-break:break-all;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+    min-height:20px;
+    margin-top:12px;
+    color:#d8b4fe;
+    font-weight:bold;
+}
+
+.help{
+    color:#a78bfa;
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* =========================
+   PREVIEW INFO
+========================= */
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:18px;
+}
+
+.info-item{
+    background:#0d0913;
+    border:1px solid #3b1d5d;
+    border-radius:10px;
+    padding:12px;
+}
+
+.info-item .label{
+    display:block;
+    color:#8b7b96;
+    font-size:11px;
+    margin-bottom:5px;
+}
+
+.info-item .value{
+    color:#e9d5ff;
+    font-weight:bold;
+    word-break:break-word;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+    width:9px;
+    height:9px;
+}
+
+::-webkit-scrollbar-track{
+    background:#08050c;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#4c1d95;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#9333ea;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:750px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
+    }
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .header h1{
+        font-size:24px;
+    }
+
+}
+
+@media(max-width:500px){
+
+    .container{
+        width:94%;
+    }
+
+    .box{
+        padding:16px;
+    }
+
+    .header{
+        padding:22px;
+    }
+
+    .barcode-area{
+        padding:20px 10px;
+    }
+
+    .barcode-wrapper{
+        padding:12px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="header">
+
+        <h1>SKU &amp; Barcode Generator</h1>
+
+        <p>
+            Buat SKU dan barcode dengan cepat langsung dari browser.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         INPUT
+    ========================== -->
+
+    <div class="box">
+
+        <h2>Data Produk</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="productName">
+                    Nama Produk
+                </label>
+
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="Contoh: Kaos Hitam">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="productCode">
+                    Kode Produk
+                </label>
+
+                <input
+                    type="text"
+                    id="productCode"
+                    placeholder="Contoh: KAOS001">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="category">
+                    Kategori
+                </label>
+
+                <input
+                    type="text"
+                    id="category"
+                    placeholder="Contoh: Fashion">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="variant">
+                    Varian
+                </label>
+
+                <input
+                    type="text"
+                    id="variant"
+                    placeholder="Contoh: Black / XL">
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label for="barcodeValue">
+                    Nilai Barcode
+                </label>
+
+                <input
+                    type="text"
+                    id="barcodeValue"
+                    placeholder="Masukkan angka atau kode barcode">
+
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="success"
+                onclick="generateBarcode()">
+                Generate Barcode
+            </button>
+
+            <button
+                onclick="generateSKU()">
+                Generate SKU
+            </button>
+
+            <button
+                class="danger"
+                onclick="resetGenerator()">
+                Reset
+            </button>
+
+        </div>
+
+
+        <div
+            id="status"
+            class="status">
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SKU
+    ========================== -->
+
+    <div class="box">
+
+        <h2>SKU</h2>
+
+        <div class="sku-result">
+
+            <div class="sku-label">
+                SKU PRODUK
+            </div>
+
+            <div id="skuOutput">
+                -
+            </div>
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+                onclick="copySKU()">
+                Copy SKU
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         BARCODE
+    ========================== -->
+
+    <div class="box">
+
+        <h2>Barcode</h2>
+
+        <div class="barcode-area">
+
+            <div
+                id="barcodeEmpty"
+                class="barcode-empty">
+                Barcode belum dibuat.
+            </div>
+
+            <div
+                id="barcodeWrapper"
+                class="barcode-wrapper"
+                style="display:none;">
+
+                <svg
+                    id="barcode">
+                </svg>
+
+            </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+            <div class="info-item">
+
+                <span class="label">
+                    Nama Produk
+                </span>
+
+                <span
+                    class="value"
+                    id="previewName">
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span class="label">
+                    Kode
+                </span>
+
+                <span
+                    class="value"
+                    id="previewCode">
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span class="label">
+                    Barcode
+                </span>
+
+                <span
+                    class="value"
+                    id="previewBarcode">
+                    -
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="success"
+                onclick="downloadBarcode()">
+                Simpan Barcode
+            </button>
+
+        </div>
+
+        <div class="help">
+            Barcode diproses langsung di browser dan tidak disimpan ke server.
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const productName =
+    document.getElementById(
+        "productName"
+    );
+
+const productCode =
+    document.getElementById(
+        "productCode"
+    );
+
+const category =
+    document.getElementById(
+        "category"
+    );
+
+const variant =
+    document.getElementById(
+        "variant"
+    );
+
+const barcodeValue =
+    document.getElementById(
+        "barcodeValue"
+    );
+
+const skuOutput =
+    document.getElementById(
+        "skuOutput"
+    );
+
+const statusBox =
+    document.getElementById(
+        "status"
+    );
+
+const barcodeWrapper =
+    document.getElementById(
+        "barcodeWrapper"
+    );
+
+const barcodeEmpty =
+    document.getElementById(
+        "barcodeEmpty"
+    );
+
+const previewName =
+    document.getElementById(
+        "previewName"
+    );
+
+const previewCode =
+    document.getElementById(
+        "previewCode"
+    );
+
+const previewBarcode =
+    document.getElementById(
+        "previewBarcode"
+    );
+
+
+/* =========================================
+   GENERATE SKU
+========================================= */
+
+function generateSKU(){
+
+    const name =
+        productName.value.trim();
+
+    const code =
+        productCode.value.trim();
+
+    const cat =
+        category.value.trim();
+
+    const varian =
+        variant.value.trim();
+
+
+    const parts = [];
+
+
+    if(cat){
+
+        parts.push(
+            cleanSKU(cat)
+        );
+
+    }
+
+
+    if(code){
+
+        parts.push(
+            cleanSKU(code)
+        );
+
+    }else if(name){
+
+        parts.push(
+            cleanSKU(name)
+        );
+
+    }
+
+
+    if(varian){
+
+        parts.push(
+            cleanSKU(varian)
+        );
+
+    }
+
+
+    if(parts.length === 0){
+
+        statusBox.textContent =
+            "Isi data produk terlebih dahulu.";
+
+        return;
+    }
+
+
+    const sku =
+        parts
+            .filter(Boolean)
+            .join("-")
+            .toUpperCase();
+
+
+    skuOutput.textContent =
+        sku;
+
+
+    statusBox.textContent =
+        "SKU berhasil dibuat.";
+
+
+    updatePreview();
+
+}
+
+
+/* =========================================
+   CLEAN SKU
+========================================= */
+
+function cleanSKU(value){
+
+    return value
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[^a-zA-Z0-9]+/g,
+            "-"
+        )
+        .replace(
+            /^-+|-+$/g,
+            ""
+        );
+
+}
+
+
+/* =========================================
+   GENERATE BARCODE
+========================================= */
+
+function generateBarcode(){
+
+    if(
+        typeof JsBarcode ===
+        "undefined"
+    ){
+
+        statusBox.textContent =
+            "JsBarcode belum tersedia.";
+
+        return;
+    }
+
+
+    let value =
+        barcodeValue.value.trim();
+
+
+    if(!value){
+
+        value =
+            productCode.value.trim();
+
+    }
+
+
+    if(!value){
+
+        value =
+            skuOutput.textContent
+                .trim();
+
+    }
+
+
+    if(
+        !value ||
+        value === "-"
+    ){
+
+        statusBox.textContent =
+            "Masukkan nilai barcode terlebih dahulu.";
+
+        return;
+    }
+
+
+    /*
+     * CODE128 menerima angka,
+     * huruf, dan karakter umum.
+     */
+
+    try{
+
+        JsBarcode(
+            "#barcode",
+            value,
+            {
+                format:"CODE128",
+                lineColor:"#000000",
+                background:"#ffffff",
+                width:2,
+                height:100,
+                displayValue:true,
+                fontSize:16,
+                margin:10
+            }
+        );
+
+
+        barcodeWrapper.style.display =
+            "block";
+
+        barcodeEmpty.style.display =
+            "none";
+
+
+        previewBarcode.textContent =
+            value;
+
+
+        statusBox.textContent =
+            "Barcode berhasil dibuat.";
+
+        updatePreview();
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+        statusBox.textContent =
+            "Nilai barcode tidak dapat diproses.";
+
+    }
+
+}
+
+
+/* =========================================
+   UPDATE PREVIEW
+========================================= */
+
+function updatePreview(){
+
+    previewName.textContent =
+        productName.value.trim() ||
+        "-";
+
+
+    previewCode.textContent =
+        productCode.value.trim() ||
+        "-";
+
+}
+
+
+/* =========================================
+   COPY SKU
+========================================= */
+
+async function copySKU(){
+
+    const sku =
+        skuOutput.textContent.trim();
+
+
+    if(
+        !sku ||
+        sku === "-"
+    ){
+
+        statusBox.textContent =
+            "SKU belum dibuat.";
+
+        return;
+    }
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            sku
+        );
+
+
+        statusBox.textContent =
+            "SKU berhasil disalin.";
+
+    }catch(error){
+
+        /*
+         * Fallback untuk browser
+         * yang tidak mengizinkan
+         * Clipboard API.
+         */
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textarea.value =
+            sku;
+
+
+        document.body.appendChild(
+            textarea
+        );
+
+
+        textarea.select();
+
+
+        try{
+
+            document.execCommand(
+                "copy"
+            );
+
+            statusBox.textContent =
+                "SKU berhasil disalin.";
+
+        }catch(copyError){
+
+            statusBox.textContent =
+                "SKU tidak dapat disalin otomatis.";
+
+        }
+
+
+        textarea.remove();
+
+    }
+
+}
+
+
+/* =========================================
+   DOWNLOAD BARCODE
+========================================= */
+
+function downloadBarcode(){
+
+    const svg =
+        document.getElementById(
+            "barcode"
+        );
+
+
+    if(
+        !svg ||
+        !svg.innerHTML.trim()
+    ){
+
+        statusBox.textContent =
+            "Generate barcode terlebih dahulu.";
+
+        return;
+    }
+
+
+    const serializer =
+        new XMLSerializer();
+
+
+    let source =
+        serializer.serializeToString(
+            svg
+        );
+
+
+    if(
+        !source.includes(
+            "xmlns="
+        )
+    ){
+
+        source =
+            source.replace(
+                "<svg",
+                '<svg xmlns="http://www.w3.org/2000/svg"'
+            );
+
+    }
+
+
+    if(
+        !source.includes(
+            "xmlns:xlink="
+        )
+    ){
+
+        source =
+            source.replace(
+                "<svg",
+                '<svg xmlns:xlink="http://www.w3.org/1999/xlink"'
+            );
+
+    }
+
+
+    const blob =
+        new Blob(
+            [
+                source
+            ],
+            {
+                type:
+                    "image/svg+xml;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        "webtoolskita-barcode.svg";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    setTimeout(
+        function(){
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        },
+        1000
+    );
+
+
+    statusBox.textContent =
+        "Barcode berhasil disimpan.";
+
+}
+
+
+/* =========================================
+   RESET
+========================================= */
+
+function resetGenerator(){
+
+    productName.value =
+        "";
+
+    productCode.value =
+        "";
+
+    category.value =
+        "";
+
+    variant.value =
+        "";
+
+    barcodeValue.value =
+        "";
+
+
+    skuOutput.textContent =
+        "-";
+
+
+    previewName.textContent =
+        "-";
+
+
+    previewCode.textContent =
+        "-";
+
+
+    previewBarcode.textContent =
+        "-";
+
+
+    document
+        .getElementById(
+            "barcode"
+        )
+        .innerHTML =
+        "";
+
+
+    barcodeWrapper.style.display =
+        "none";
+
+
+    barcodeEmpty.style.display =
+        "block";
+
+
+    statusBox.textContent =
+        "";
+
+}
+
+
+/* =========================================
+   LIVE PREVIEW
+========================================= */
+
+productName.addEventListener(
+    "input",
+    updatePreview
+);
+
+productCode.addEventListener(
+    "input",
+    updatePreview
+);
+
+
+/* =========================================
+   ENTER KEY
+========================================= */
+
+barcodeValue.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Enter"
+        ){
+
+            generateBarcode();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

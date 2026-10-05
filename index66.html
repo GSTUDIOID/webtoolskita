@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>ID Card Maker — WebToolsKita</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#0b0712;
+    color:#f5f3ff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    width:min(1250px,94%);
+    margin:25px auto 50px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    background:#111827;
+    color:#fff;
+    padding:28px;
+    border-radius:20px;
+    margin-bottom:22px;
+    border:1px solid #4c1d95;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+}
+
+.header h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+.header p{
+    margin:0;
+    color:#c4b5fd;
+}
+
+/* =========================
+   BOX
+========================= */
+
+.box{
+    background:#120c1c;
+    border:1px solid #3b1d5d;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:22px;
+    box-shadow:0 8px 28px rgba(0,0,0,.4);
+}
+
+.box h2{
+    margin:0 0 18px;
+    color:#f3e8ff;
+}
+
+/* =========================
+   TEMPLATE
+   WARNA TEMPLATE TETAP
+========================= */
+
+.template-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+}
+
+.template{
+    border:2px solid #3b1d5d;
+    border-radius:14px;
+    padding:10px;
+    cursor:pointer;
+    transition:.2s;
+    background:#0b0712;
+}
+
+.template:hover{
+    transform:translateY(-2px);
+}
+
+.template.active{
+    border-color:#a855f7;
+    box-shadow:0 0 12px rgba(168,85,247,.2);
+}
+
+.template-preview{
+    height:100px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:bold;
+    font-size:13px;
+}
+
+/* WARNA ASLI TEMPLATE TIDAK DIUBAH */
+
+.bank{
+    background:linear-gradient(135deg,#172554,#2563eb);
+}
+
+.work{
+    background:linear-gradient(135deg,#111827,#4b5563);
+}
+
+.identity{
+    background:linear-gradient(135deg,#064e3b,#10b981);
+}
+
+.member{
+    background:linear-gradient(135deg,#581c87,#9333ea);
+}
+
+.template-name{
+    text-align:center;
+    margin-top:9px;
+    font-weight:bold;
+    color:#e9d5ff;
+}
+
+/* =========================
+   EDITOR
+========================= */
+
+.editor-grid{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:24px;
+}
+
+.controls{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.control{
+    border:1px solid #3b1d5d;
+    border-radius:14px;
+    padding:15px;
+    background:#0d0913;
+}
+
+.control h3{
+    margin:0 0 12px;
+    font-size:16px;
+    color:#e9d5ff;
+}
+
+/* =========================
+   INPUT
+========================= */
+
+input[type=text],
+input[type=number],
+textarea,
+select{
+    width:100%;
+    padding:10px;
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    outline:none;
+    font-family:inherit;
+    background:#08050c;
+    color:#fff;
+}
+
+input[type=text]:focus,
+input[type=number]:focus,
+textarea:focus,
+select:focus{
+    border-color:#a855f7;
+    box-shadow:0 0 0 2px rgba(168,85,247,.12);
+}
+
+input[type=text]::placeholder,
+input[type=number]::placeholder,
+textarea::placeholder{
+    color:#81758f;
+}
+
+textarea{
+    min-height:80px;
+    resize:vertical;
+}
+
+input[type=range]{
+    width:100%;
+    accent-color:#9333ea;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+button{
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    padding:11px 15px;
+    background:#111827;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+button.success{
+    background:#7e22ce;
+    border-color:#a855f7;
+}
+
+button.danger{
+    background:#450a4f;
+    border-color:#86198f;
+}
+
+button.secondary{
+    background:#374151;
+}
+
+button.active{
+    background:#7e22ce;
+    border-color:#c084fc;
+    outline:3px solid rgba(168,85,247,.18);
+}
+
+/* =========================
+   SIDE BUTTONS
+========================= */
+
+.side-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.side-buttons button{
+    flex:1;
+}
+
+/* =========================
+   CARD AREA
+========================= */
+
+.card-area{
+    background:#0a0710;
+    border:1px solid #3b1d5d;
+    border-radius:18px;
+    padding:20px;
+    min-height:560px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+}
+
+.card-wrapper{
+    width:min(100%,700px);
+}
+
+.id-card{
+    position:relative;
+    width:100%;
+    aspect-ratio:1.586/1;
+    border-radius:20px;
+    overflow:hidden;
+    color:#fff;
+    box-shadow:0 20px 45px rgba(0,0,0,.55);
+    user-select:none;
+}
+
+/* =========================
+   TEMPLATE KARTU
+   WARNA TETAP
+========================= */
+
+.id-card.bank{
+    background:
+    radial-gradient(circle at 90% 15%,rgba(255,255,255,.2),transparent 25%),
+    linear-gradient(135deg,#172554,#2563eb);
+
+    /* GARIS HITAM KHUSUS BANK */
+    border:4px solid #050505;
+}
+
+.id-card.work{
+    background:
+    linear-gradient(135deg,#111827,#4b5563);
+}
+
+.id-card.identity{
+    background:
+    linear-gradient(135deg,#064e3b,#10b981);
+}
+
+.id-card.member{
+    background:
+    linear-gradient(135deg,#581c87,#9333ea);
+}
+
+.card-decoration{
+    position:absolute;
+    width:240px;
+    height:240px;
+    right:-110px;
+    bottom:-120px;
+    border-radius:50%;
+    background:rgba(255,255,255,.09);
+    pointer-events:none;
+}
+
+.card-side{
+    position:absolute;
+    inset:0;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* =========================
+   DRAG OBJECT
+========================= */
+
+.drag-object{
+    position:absolute;
+    cursor:move;
+    touch-action:none;
+    z-index:10;
+}
+
+.drag-object.selected{
+    outline:1px dashed rgba(255,255,255,.95);
+}
+
+/* =========================
+   FRONT HEADER
+========================= */
+
+.brand-text{
+    left:25px;
+    top:22px;
+    font-size:13px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+.title-text{
+    left:25px;
+    top:45px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* =========================
+   PHOTO
+========================= */
+
+.photo-frame{
+    left:25px;
+    top:95px;
+    width:130px;
+    height:165px;
+    border-radius:10px;
+    overflow:hidden;
+    border:2px solid rgba(255,255,255,.8);
+    background:rgba(255,255,255,.1);
+}
+
+.photo-frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+
+.photo-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:12px;
+    opacity:.7;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.card-text{
+    padding:3px 6px;
+    border-radius:5px;
+    white-space:nowrap;
+}
+
+.name-text{
+    left:180px;
+    top:100px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.number-text{
+    left:180px;
+    top:145px;
+    font-size:13px;
+}
+
+.position-text{
+    left:180px;
+    top:170px;
+    font-size:13px;
+}
+
+.custom-text{
+    left:180px;
+    top:195px;
+    font-size:13px;
+}
+
+/* =========================
+   SIGNATURE
+========================= */
+
+.signature-object{
+    left:180px;
+    top:225px;
+    width:130px;
+    height:55px;
+    display:none;
+}
+
+.signature-object img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+/* =========================
+   BACK
+========================= */
+
+.back-title{
+    left:25px;
+    top:25px;
+    font-size:21px;
+    font-weight:bold;
+}
+
+.back-info{
+    left:25px;
+    top:75px;
+    width:80%;
+    white-space:pre-wrap;
+    font-size:13px;
+    line-height:1.7;
+}
+
+.back-custom-text{
+    left:25px;
+    top:190px;
+    font-size:14px;
+}
+
+.side-label{
+    position:absolute;
+    right:22px;
+    bottom:17px;
+    font-size:10px;
+    opacity:.55;
+    z-index:20;
+    pointer-events:none;
+}
+
+/* =========================
+   TEXT LIST
+========================= */
+
+.text-list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    max-height:220px;
+    overflow:auto;
+    margin-top:10px;
+}
+
+.text-row{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+.text-row span{
+    flex:1;
+    padding:8px;
+    border:1px solid #3b1d5d;
+    border-radius:8px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    cursor:pointer;
+    background:#08050c;
+    color:#e9d5ff;
+}
+
+.text-row button{
+    padding:7px 10px;
+}
+
+/* =========================
+   SIGNATURE CANVAS
+========================= */
+
+.signature-area{
+    border:2px dashed #6b21a8;
+    border-radius:12px;
+    overflow:hidden;
+    background:#fff;
+}
+
+#signatureCanvas{
+    display:block;
+    width:100%;
+    height:230px;
+    touch-action:none;
+    cursor:crosshair;
+}
+
+.status{
+    min-height:20px;
+    margin-top:10px;
+    font-weight:bold;
+    color:#d8b4fe;
+}
+
+.help{
+    color:#a78bfa;
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* =========================
+   FILE INPUT
+========================= */
+
+input[type=file]{
+    color:#d8b4fe;
+}
+
+input[type=file]::file-selector-button{
+    border:1px solid #4c1d95;
+    border-radius:8px;
+    padding:9px 12px;
+    margin-right:10px;
+    background:#111827;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+input[type=file]::file-selector-button:hover{
+    background:#4c1d95;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+    width:9px;
+    height:9px;
+}
+
+::-webkit-scrollbar-track{
+    background:#08050c;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#4c1d95;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#9333ea;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+    .template-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .editor-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:600px){
+
+    .template-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .header h1{
+        font-size:24px;
+    }
+
+    .card-area{
+        padding:5px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <h1>ID Card Maker</h1>
+    <p>Buat kartu digital dengan foto, teks, dan tanda tangan yang dapat dipindahkan.</p>
+</div>
+
+<div class="box">
+
+<h2>Pilih Desain Kartu</h2>
+
+<div class="template-grid">
+
+<div class="template active"
+     onclick="selectTemplate('bank',this)">
+    <div class="template-preview bank">
+        BANK STYLE
+    </div>
+    <div class="template-name">
+        Kartu Bank
+    </div>
+</div>
+
+<div class="template"
+     onclick="selectTemplate('work',this)">
+    <div class="template-preview work">
+        WORK ID
+    </div>
+    <div class="template-name">
+        Kartu Kerja
+    </div>
+</div>
+
+<div class="template"
+     onclick="selectTemplate('identity',this)">
+    <div class="template-preview identity">
+        IDENTITY
+    </div>
+    <div class="template-name">
+        Kartu Identitas
+    </div>
+</div>
+
+<div class="template"
+     onclick="selectTemplate('member',this)">
+    <div class="template-preview member">
+        MEMBER
+    </div>
+    <div class="template-name">
+        Kartu Member
+    </div>
+</div>
+
+</div>
+
+</div>
+
+<div class="box">
+
+<h2>Editor ID Card</h2>
+
+<div class="editor-grid">
+
+<div class="controls">
+
+<div class="control">
+
+<h3>Sisi Kartu</h3>
+
+<div class="side-buttons">
+
+<button
+    id="frontButton"
+    class="active"
+    onclick="showSide('front')">
+    DEPAN
+</button>
+
+<button
+    id="backButton"
+    onclick="showSide('back')">
+    BELAKANG
+</button>
+
+</div>
+
+</div>
+
+<div class="control">
+
+<h3>Foto</h3>
+
+<input
+    type="file"
+    id="photoInput"
+    accept="image/*">
+
+<br><br>
+
+<div class="buttons">
+
+<button
+    class="danger"
+    onclick="removePhoto()">
+    Hapus Foto
+</button>
+
+</div>
+
+<p class="help">
+Foto dapat di-grab dan digeser langsung pada kartu.
+</p>
+
+</div>
+
+<div class="control">
+
+<h3>Judul Kartu</h3>
+
+<input
+    type="text"
+    id="brandInput"
+    placeholder="WEBTOOLSKITA"
+    value="WEBTOOLSKITA">
+
+<br><br>
+
+<input
+    type="text"
+    id="titleInput"
+    placeholder="DIGITAL CARD"
+    value="DIGITAL CARD">
+
+</div>
+
+<div class="control">
+
+<h3>Informasi Utama</h3>
+
+<input
+    type="text"
+    id="nameInput"
+    placeholder="Nama">
+
+<br><br>
+
+<input
+    type="text"
+    id="numberInput"
+    placeholder="Nomor ID / Nomor Kartu">
+
+<br><br>
+
+<input
+    type="text"
+    id="positionInput"
+    placeholder="Jabatan / Keterangan">
+
+<br><br>
+
+<textarea
+    id="customTextInput"
+    placeholder="Informasi tambahan"></textarea>
+
+</div>
+
+<div class="control">
+
+<h3>Add Text</h3>
+
+<input
+    type="text"
+    id="newTextInput"
+    placeholder="Tulis teks baru...">
+
+<br><br>
+
+<div class="buttons">
+
+<button
+    class="success"
+    onclick="addText()">
+    + Add Text
+</button>
+
+<button
+    class="danger"
+    onclick="deleteSelectedText()">
+    Hapus Text
+</button>
+
+</div>
+
+<p class="help">
+Pilih teks pada kartu lalu geser.
+Teks yang dipilih dapat dihapus.
+</p>
+
+<div
+    id="textList"
+    class="text-list">
+</div>
+
+</div>
+
+<div class="control">
+
+<h3>Posisi Objek</h3>
+
+<div class="buttons">
+
+<button onclick="moveSelected(-5,0)">
+    ←
+</button>
+
+<button onclick="moveSelected(5,0)">
+    →
+</button>
+
+<button onclick="moveSelected(0,-5)">
+    ↑
+</button>
+
+<button onclick="moveSelected(0,5)">
+    ↓
+</button>
+
+</div>
+
+</div>
+
+<div class="control">
+
+<h3>Ukuran Foto</h3>
+
+<input
+    type="range"
+    id="photoScale"
+    min="0.5"
+    max="2"
+    step="0.05"
+    value="1">
+
+</div>
+
+<div class="control">
+
+<h3>Ukuran Tanda Tangan</h3>
+
+<input
+    type="range"
+    id="signatureScale"
+    min="0.3"
+    max="2"
+    step="0.05"
+    value="1">
+
+<br><br>
+
+<button
+    class="danger"
+    onclick="removeSignatureFromCard()">
+    Hapus Tanda Tangan
+</button>
+
+</div>
+
+</div>
+
+<div class="card-area">
+
+<div class="card-wrapper">
+
+<div
+    id="idCard"
+    class="id-card bank">
+
+<div class="card-decoration"></div>
+
+<div
+    id="frontSide"
+    class="card-side">
+
+<div
+    id="brandText"
+    class="drag-object brand-text">
+    WEBTOOLSKITA
+</div>
+
+<div
+    id="titleText"
+    class="drag-object title-text">
+    DIGITAL CARD
+</div>
+
+<div
+    id="photoFrame"
+    class="drag-object photo-frame">
+
+    <div
+        id="photoPlaceholder"
+        class="photo-placeholder">
+        FOTO
+    </div>
+
+    <img
+        id="photoImage"
+        alt="Foto ID">
+</div>
+
+<div
+    id="nameText"
+    class="drag-object card-text name-text">
+    Nama Anda
+</div>
+
+<div
+    id="numberText"
+    class="drag-object card-text number-text">
+    Nomor ID
+</div>
+
+<div
+    id="positionText"
+    class="drag-object card-text position-text">
+    Jabatan
+</div>
+
+<div
+    id="customText"
+    class="drag-object card-text custom-text">
+    Informasi
+</div>
+
+<div
+    id="signatureObject"
+    class="drag-object signature-object">
+
+    <img
+        id="signatureImage"
+        alt="Tanda tangan">
+
+</div>
+
+<div class="side-label">
+    DEPAN
+</div>
+
+</div>
+
+<div
+    id="backSide"
+    class="card-side hidden">
+
+<div
+    id="backTitle"
+    class="drag-object back-title">
+    INFORMASI KARTU
+</div>
+
+<div
+    id="backInfo"
+    class="drag-object back-info">
+Kartu ini dibuat menggunakan
+WebToolsKita ID Card Maker.
+
+Informasi pemilik:
+Nama Anda
+
+Nomor ID:
+Nomor ID
+</div>
+
+<div
+    id="backCustomText"
+    class="drag-object back-custom-text">
+Informasi Tambahan
+</div>
+
+<div class="side-label">
+    BELAKANG
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="box">
+
+<h2>Tanda Tangan Digital</h2>
+
+<div class="signature-area">
+
+<canvas id="signatureCanvas"></canvas>
+
+</div>
+
+<div class="buttons" style="margin-top:12px;">
+
+<button
+    class="danger"
+    onclick="clearSignature()">
+    Hapus
+</button>
+
+<button
+    class="success"
+    onclick="saveSignature()">
+    Simpan PNG
+</button>
+
+<button
+    onclick="sendSignatureToCard()">
+    Kirim ke ID Card
+</button>
+
+</div>
+
+<div
+    id="signatureStatus"
+    class="status">
+</div>
+
+</div>
+
+<div class="box">
+
+<h2>Selesai</h2>
+
+<p class="help">
+Setelah selesai mengatur kartu, gunakan tombol di bawah untuk menyimpan desain kartu.
+</p>
+
+<button
+    class="success"
+    onclick="saveCard()">
+    Simpan ID Card
+</button>
+
+<div
+    id="cardStatus"
+    class="status">
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let currentTemplate = "bank";
+let currentSide = "front";
+
+let selectedElement = null;
+
+let textCounter = 0;
+
+let signatureExists = false;
+
+let photoScaleValue = 1;
+let signatureScaleValue = 1;
+
+
+function selectTemplate(template,element){
+
+    currentTemplate = template;
+
+    document
+        .querySelectorAll(".template")
+        .forEach(item=>{
+            item.classList.remove("active");
+        });
+
+    element.classList.add("active");
+
+    const card =
+        document.getElementById("idCard");
+
+    card.classList.remove(
+        "bank",
+        "work",
+        "identity",
+        "member"
+    );
+
+    card.classList.add(template);
+}
+
+
+function showSide(side){
+
+    currentSide = side;
+
+    document
+        .getElementById("frontSide")
+        .classList.toggle(
+            "hidden",
+            side !== "front"
+        );
+
+    document
+        .getElementById("backSide")
+        .classList.toggle(
+            "hidden",
+            side !== "back"
+        );
+
+    document
+        .getElementById("frontButton")
+        .classList.toggle(
+            "active",
+            side === "front"
+        );
+
+    document
+        .getElementById("backButton")
+        .classList.toggle(
+            "active",
+            side === "back"
+        );
+
+    clearSelection();
+
+    refreshTextList();
+}
+
+
+document
+    .getElementById("photoInput")
+    .addEventListener(
+        "change",
+        function(){
+
+            const file = this.files[0];
+
+            if(!file) return;
+
+            if(!file.type.startsWith("image/")){
+
+                alert(
+                    "File harus berupa gambar."
+                );
+
+                this.value = "";
+
+                return;
+            }
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function(event){
+
+                    const image =
+                        document
+                        .getElementById(
+                            "photoImage"
+                        );
+
+                    image.src =
+                        event.target.result;
+
+                    image.style.display =
+                        "block";
+
+                    document
+                        .getElementById(
+                            "photoPlaceholder"
+                        )
+                        .style.display =
+                        "none";
+
+                    selectElement(
+                        document
+                        .getElementById(
+                            "photoFrame"
+                        )
+                    );
+                };
+
+            reader.readAsDataURL(file);
+        }
+    );
+
+
+function removePhoto(){
+
+    const image =
+        document.getElementById(
+            "photoImage"
+        );
+
+    image.src = "";
+
+    image.style.display = "none";
+
+    document
+        .getElementById(
+            "photoPlaceholder"
+        )
+        .style.display = "flex";
+
+    document
+        .getElementById(
+            "photoInput"
+        ).value = "";
+}
+
+
+document
+    .getElementById("photoScale")
+    .addEventListener(
+        "input",
+        function(){
+
+            photoScaleValue =
+                parseFloat(this.value);
+
+            const photo =
+                document
+                .getElementById(
+                    "photoFrame"
+                );
+
+            photo.style.transform =
+                "scale(" +
+                photoScaleValue +
+                ")";
+        }
+    );
+
+
+function updateBasicText(){
+
+    const brand =
+        document
+        .getElementById(
+            "brandInput"
+        ).value;
+
+    const title =
+        document
+        .getElementById(
+            "titleInput"
+        ).value;
+
+    const name =
+        document
+        .getElementById(
+            "nameInput"
+        ).value;
+
+    const number =
+        document
+        .getElementById(
+            "numberInput"
+        ).value;
+
+    const position =
+        document
+        .getElementById(
+            "positionInput"
+        ).value;
+
+    const custom =
+        document
+        .getElementById(
+            "customTextInput"
+        ).value;
+
+
+    document
+        .getElementById(
+            "brandText"
+        ).textContent =
+        brand || "WEBTOOLSKITA";
+
+
+    document
+        .getElementById(
+            "titleText"
+        ).textContent =
+        title || "DIGITAL CARD";
+
+
+    document
+        .getElementById(
+            "nameText"
+        ).textContent =
+        name || "Nama Anda";
+
+
+    document
+        .getElementById(
+            "numberText"
+        ).textContent =
+        number || "Nomor ID";
+
+
+    document
+        .getElementById(
+            "positionText"
+        ).textContent =
+        position || "Jabatan";
+
+
+    document
+        .getElementById(
+            "customText"
+        ).textContent =
+        custom || "Informasi";
+
+
+    document
+        .getElementById(
+            "backInfo"
+        ).textContent =
+        "Kartu ini dibuat menggunakan\n" +
+        "WebToolsKita ID Card Maker.\n\n" +
+        "Informasi pemilik:\n" +
+        (name || "Nama Anda") +
+        "\n\nNomor ID:\n" +
+        (number || "Nomor ID");
+}
+
+
+[
+    "brandInput",
+    "titleInput",
+    "nameInput",
+    "numberInput",
+    "positionInput",
+    "customTextInput"
+].forEach(id=>{
+
+    document
+        .getElementById(id)
+        .addEventListener(
+            "input",
+            updateBasicText
+        );
+});
+
+
+function makeDraggable(element){
+
+    let dragging = false;
+
+    let startX = 0;
+    let startY = 0;
+
+    let originalX = 0;
+    let originalY = 0;
+
+
+    element.addEventListener(
+        "pointerdown",
+        function(event){
+
+            dragging = true;
+
+            selectElement(element);
+
+            startX =
+                event.clientX;
+
+            startY =
+                event.clientY;
+
+
+            originalX =
+                parseFloat(
+                    element.dataset.x ||
+                    element.offsetLeft
+                );
+
+            originalY =
+                parseFloat(
+                    element.dataset.y ||
+                    element.offsetTop
+                );
+
+
+            element.dataset.x =
+                originalX;
+
+            element.dataset.y =
+                originalY;
+
+
+            element.setPointerCapture(
+                event.pointerId
+            );
+
+            event.preventDefault();
+        }
+    );
+
+
+    element.addEventListener(
+        "pointermove",
+        function(event){
+
+            if(!dragging) return;
+
+            const card =
+                document
+                .getElementById(
+                    "idCard"
+                );
+
+            const rect =
+                card.getBoundingClientRect();
+
+
+            const deltaX =
+                event.clientX -
+                startX;
+
+            const deltaY =
+                event.clientY -
+                startY;
+
+
+            const scaleX =
+                card.offsetWidth /
+                rect.width;
+
+            const scaleY =
+                card.offsetHeight /
+                rect.height;
+
+
+            const newX =
+                originalX +
+                deltaX *
+                scaleX;
+
+            const newY =
+                originalY +
+                deltaY *
+                scaleY;
+
+
+            element.dataset.x =
+                newX;
+
+            element.dataset.y =
+                newY;
+
+
+            element.style.left =
+                newX + "px";
+
+            element.style.top =
+                newY + "px";
+        }
+    );
+
+
+    element.addEventListener(
+        "pointerup",
+        function(){
+
+            dragging = false;
+        }
+    );
+
+
+    element.addEventListener(
+        "pointercancel",
+        function(){
+
+            dragging = false;
+        }
+    );
+}
+
+
+[
+    "brandText",
+    "titleText",
+    "photoFrame",
+    "nameText",
+    "numberText",
+    "positionText",
+    "customText",
+    "signatureObject",
+    "backTitle",
+    "backInfo",
+    "backCustomText"
+].forEach(id=>{
+
+    makeDraggable(
+        document.getElementById(id)
+    );
+});
+
+
+function selectElement(element){
+
+    document
+        .querySelectorAll(
+            ".drag-object"
+        )
+        .forEach(item=>{
+            item.classList.remove(
+                "selected"
+            );
+        });
+
+    selectedElement =
+        element;
+
+    if(element){
+
+        element.classList.add(
+            "selected"
+        );
+    }
+}
+
+
+function clearSelection(){
+
+    document
+        .querySelectorAll(
+            ".drag-object"
+        )
+        .forEach(item=>{
+            item.classList.remove(
+                "selected"
+            );
+        });
+
+    selectedElement = null;
+}
+
+
+function moveSelected(dx,dy){
+
+    if(!selectedElement){
+
+        alert(
+            "Pilih foto atau teks pada kartu."
+        );
+
+        return;
+    }
+
+
+    const x =
+        parseFloat(
+            selectedElement.dataset.x ||
+            selectedElement.offsetLeft
+        );
+
+    const y =
+        parseFloat(
+            selectedElement.dataset.y ||
+            selectedElement.offsetTop
+        );
+
+
+    const newX =
+        x + dx;
+
+    const newY =
+        y + dy;
+
+
+    selectedElement.dataset.x =
+        newX;
+
+    selectedElement.dataset.y =
+        newY;
+
+
+    selectedElement.style.left =
+        newX + "px";
+
+    selectedElement.style.top =
+        newY + "px";
+}
+
+
+function addText(){
+
+    const input =
+        document.getElementById(
+            "newTextInput"
+        );
+
+    const value =
+        input.value.trim();
+
+
+    if(!value){
+
+        alert(
+            "Masukkan teks terlebih dahulu."
+        );
+
+        return;
+    }
+
+
+    textCounter++;
+
+
+    const text =
+        document.createElement(
+            "div"
+        );
+
+    text.className =
+        "drag-object card-text";
+
+
+    text.textContent =
+        value;
+
+
+    text.dataset.textId =
+        "text-" +
+        textCounter;
+
+
+    text.dataset.x =
+        "40";
+
+    text.dataset.y =
+        currentSide === "front"
+            ? "285"
+            : "260";
+
+
+    text.style.left =
+        text.dataset.x +
+        "px";
+
+    text.style.top =
+        text.dataset.y +
+        "px";
+
+
+    if(currentSide === "front"){
+
+        document
+            .getElementById(
+                "frontSide"
+            )
+            .appendChild(text);
+
+    }else{
+
+        document
+            .getElementById(
+                "backSide"
+            )
+            .appendChild(text);
+    }
+
+
+    makeDraggable(text);
+
+    selectElement(text);
+
+    input.value = "";
+
+    refreshTextList();
+}
+
+
+function deleteSelectedText(){
+
+    if(!selectedElement){
+
+        alert(
+            "Pilih teks yang ingin dihapus."
+        );
+
+        return;
+    }
+
+
+    if(
+        selectedElement.id ===
+        "photoFrame" ||
+        selectedElement.id ===
+        "signatureObject"
+    ){
+
+        alert(
+            "Objek ini bukan teks."
+        );
+
+        return;
+    }
+
+
+    const protectedIds = [
+        "brandText",
+        "titleText",
+        "nameText",
+        "numberText",
+        "positionText",
+        "customText",
+        "backTitle",
+        "backInfo",
+        "backCustomText"
+    ];
+
+
+    if(
+        protectedIds.includes(
+            selectedElement.id
+        )
+    ){
+
+        alert(
+            "Teks utama tidak dapat dihapus dari sini."
+        );
+
+        return;
+    }
+
+
+    selectedElement.remove();
+
+    selectedElement = null;
+
+    refreshTextList();
+}
+
+
+function refreshTextList(){
+
+    const list =
+        document.getElementById(
+            "textList"
+        );
+
+    list.innerHTML = "";
+
+
+    const activeSide =
+        currentSide === "front"
+            ? document.getElementById(
+                "frontSide"
+              )
+            : document.getElementById(
+                "backSide"
+              );
+
+
+    activeSide
+        .querySelectorAll(
+            ".drag-object"
+        )
+        .forEach(element=>{
+
+            if(
+                !element.dataset.textId
+            ){
+                return;
+            }
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "text-row";
+
+
+            const span =
+                document.createElement(
+                    "span"
+                );
+
+            span.textContent =
+                element.textContent;
+
+
+            span.onclick =
+                ()=>{
+                    selectElement(
+                        element
+                    );
+                };
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+            deleteButton.textContent =
+                "Hapus";
+
+            deleteButton.className =
+                "danger";
+
+
+            deleteButton.onclick =
+                ()=>{
+                    selectElement(
+                        element
+                    );
+
+                    deleteSelectedText();
+                };
+
+
+            row.appendChild(span);
+
+            row.appendChild(
+                deleteButton
+            );
+
+            list.appendChild(row);
+        });
+}
+
+
+/* ==================================================
+   SIGNATURE
+================================================== */
+
+const signatureCanvas =
+    document.getElementById(
+        "signatureCanvas"
+    );
+
+const signatureCtx =
+    signatureCanvas.getContext(
+        "2d"
+    );
+
+
+let signatureDrawing = false;
+
+
+function resizeSignatureCanvas(){
+
+    const rect =
+        signatureCanvas.getBoundingClientRect();
+
+    const old =
+        document.createElement(
+            "canvas"
+        );
+
+
+    old.width =
+        signatureCanvas.width;
+
+    old.height =
+        signatureCanvas.height;
+
+
+    if(
+        signatureCanvas.width &&
+        signatureCanvas.height
+    ){
+
+        old
+            .getContext("2d")
+            .drawImage(
+                signatureCanvas,
+                0,
+                0
+            );
+    }
+
+
+    signatureCanvas.width =
+        rect.width;
+
+    signatureCanvas.height =
+        rect.height;
+
+
+    signatureCtx.clearRect(
+        0,
+        0,
+        signatureCanvas.width,
+        signatureCanvas.height
+    );
+
+
+    if(
+        old.width &&
+        old.height
+    ){
+
+        signatureCtx.drawImage(
+            old,
+            0,
+            0,
+            old.width,
+            old.height,
+            0,
+            0,
+            signatureCanvas.width,
+            signatureCanvas.height
+        );
+    }
+
+
+    signatureCtx.lineWidth = 3;
+    signatureCtx.lineCap = "round";
+    signatureCtx.lineJoin = "round";
+}
+
+
+resizeSignatureCanvas();
+
+
+window.addEventListener(
+    "resize",
+    resizeSignatureCanvas
+);
+
+
+function getSignaturePosition(event){
+
+    const rect =
+        signatureCanvas
+        .getBoundingClientRect();
+
+
+    return {
+        x:
+            event.clientX -
+            rect.left,
+
+        y:
+            event.clientY -
+            rect.top
+    };
+}
+
+
+signatureCanvas.addEventListener(
+    "pointerdown",
+    function(event){
+
+        signatureDrawing = true;
+
+        signatureExists = true;
+
+
+        const pos =
+            getSignaturePosition(
+                event
+            );
+
+
+        signatureCtx.beginPath();
+
+        signatureCtx.moveTo(
+            pos.x,
+            pos.y
+        );
+
+
+        signatureCanvas.setPointerCapture(
+            event.pointerId
+        );
+    }
+);
+
+
+signatureCanvas.addEventListener(
+    "pointermove",
+    function(event){
+
+        if(!signatureDrawing){
+            return;
+        }
+
+
+        const pos =
+            getSignaturePosition(
+                event
+            );
+
+
+        signatureCtx.lineTo(
+            pos.x,
+            pos.y
+        );
+
+        signatureCtx.stroke();
+    }
+);
+
+
+signatureCanvas.addEventListener(
+    "pointerup",
+    function(){
+
+        signatureDrawing = false;
+    }
+);
+
+
+signatureCanvas.addEventListener(
+    "pointercancel",
+    function(){
+
+        signatureDrawing = false;
+    }
+);
+
+
+function clearSignature(){
+
+    signatureCtx.clearRect(
+        0,
+        0,
+        signatureCanvas.width,
+        signatureCanvas.height
+    );
+
+
+    signatureExists = false;
+
+
+    document
+        .getElementById(
+            "signatureStatus"
+        )
+        .textContent =
+        "Tanda tangan dihapus.";
+}
+
+
+function saveSignature(){
+
+    if(!signatureExists){
+
+        document
+            .getElementById(
+                "signatureStatus"
+            )
+            .textContent =
+            "Buat tanda tangan terlebih dahulu.";
+
+        return;
+    }
+
+
+    const data =
+        signatureCanvas.toDataURL(
+            "image/png"
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+    link.href = data;
+
+    link.download =
+        "digital-signature.png";
+
+    link.click();
+
+
+    document
+        .getElementById(
+            "signatureStatus"
+        )
+        .textContent =
+        "Tanda tangan berhasil disimpan sebagai PNG.";
+}
+
+
+function sendSignatureToCard(){
+
+    if(!signatureExists){
+
+        document
+            .getElementById(
+                "signatureStatus"
+            )
+            .textContent =
+            "Buat tanda tangan terlebih dahulu.";
+
+        return;
+    }
+
+
+    const data =
+        signatureCanvas.toDataURL(
+            "image/png"
+        );
+
+
+    const image =
+        document.getElementById(
+            "signatureImage"
+        );
+
+
+    image.src =
+        data;
+
+
+    document
+        .getElementById(
+            "signatureObject"
+        )
+        .style.display =
+        "block";
+
+
+    selectElement(
+        document.getElementById(
+            "signatureObject"
+        )
+    );
+
+
+    document
+        .getElementById(
+            "signatureStatus"
+        )
+        .textContent =
+        "Tanda tangan berhasil dikirim ke ID Card.";
+}
+
+
+document
+    .getElementById(
+        "signatureScale"
+    )
+    .addEventListener(
+        "input",
+        function(){
+
+            signatureScaleValue =
+                parseFloat(
+                    this.value
+                );
+
+
+            const object =
+                document
+                .getElementById(
+                    "signatureObject"
+                );
+
+
+            object.style.transform =
+                "scale(" +
+                signatureScaleValue +
+                ")";
+        }
+    );
+
+
+function removeSignatureFromCard(){
+
+    const object =
+        document
+        .getElementById(
+            "signatureObject"
+        );
+
+
+    object.style.display =
+        "none";
+
+
+    object.style.transform =
+        "scale(1)";
+
+
+    document
+        .getElementById(
+            "signatureScale"
+        ).value = "1";
+
+
+    clearSelection();
+}
+
+
+function saveCard(){
+
+    document
+        .getElementById(
+            "cardStatus"
+        )
+        .textContent =
+        "ID Card siap disimpan.";
+}
+
+
+updateBasicText();
+
+refreshTextList();
+
+</script>
+
+</body>
+</html>

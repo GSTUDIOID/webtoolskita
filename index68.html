@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Markdown → HTML Converter — WebToolsKita</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:
+        radial-gradient(
+            circle at top,
+            #24103d 0%,
+            #0b0712 38%,
+            #050308 100%
+        );
+    color:#f5f3ff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    width:min(1200px,94%);
+    margin:25px auto 50px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #160b24,
+            #3b0764
+        );
+    border:1px solid #4c1d95;
+    border-radius:20px;
+    padding:28px;
+    margin-bottom:22px;
+    box-shadow:0 12px 35px rgba(0,0,0,.45);
+}
+
+.header h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+.header p{
+    margin:0;
+    color:#d8b4fe;
+}
+
+/* =========================
+   BOX
+========================= */
+
+.box{
+    background:
+        linear-gradient(
+            145deg,
+            #120c1c,
+            #0b0711
+        );
+    border:1px solid #3b1d5d;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:22px;
+    box-shadow:0 8px 28px rgba(0,0,0,.4);
+}
+
+.box h2{
+    margin:0 0 18px;
+    color:#f3e8ff;
+}
+
+/* =========================
+   FILE AREA
+========================= */
+
+.file-area{
+    border:2px dashed #6b21a8;
+    border-radius:16px;
+    padding:30px;
+    text-align:center;
+    background:
+        radial-gradient(
+            circle at center,
+            #1a0c27,
+            #09060d
+        );
+    transition:.2s;
+}
+
+.file-area:hover{
+    border-color:#a855f7;
+    background:#12091b;
+}
+
+.file-title{
+    font-size:20px;
+    font-weight:bold;
+    color:#f3e8ff;
+    margin-bottom:8px;
+}
+
+.file-info{
+    color:#a78bfa;
+    font-size:13px;
+    margin-bottom:18px;
+}
+
+input[type=file]{
+    width:100%;
+    color:#d8b4fe;
+}
+
+input[type=file]::file-selector-button{
+    border:1px solid #4c1d95;
+    border-radius:8px;
+    padding:10px 14px;
+    margin-right:10px;
+    background:#111827;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+input[type=file]::file-selector-button:hover{
+    background:#4c1d95;
+}
+
+/* =========================
+   EDITOR GRID
+========================= */
+
+.editor-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.panel{
+    background:#0d0913;
+    border:1px solid #3b1d5d;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.panel-header{
+    padding:13px 16px;
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #21102f
+        );
+    border-bottom:1px solid #3b1d5d;
+    color:#e9d5ff;
+    font-weight:bold;
+}
+
+textarea,
+pre{
+    margin:0;
+    width:100%;
+    min-height:480px;
+    border:0;
+    outline:none;
+    padding:18px;
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+    font-size:14px;
+    line-height:1.6;
+}
+
+textarea{
+    resize:vertical;
+    background:#08050c;
+    color:#f5f3ff;
+}
+
+textarea::placeholder{
+    color:#81758f;
+}
+
+pre{
+    background:#08050c;
+    color:#e9d5ff;
+    white-space:pre-wrap;
+    word-break:break-word;
+    overflow:auto;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+}
+
+button{
+    border:1px solid #4c1d95;
+    border-radius:9px;
+    padding:11px 16px;
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #1b1025
+        );
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #3b0764,
+            #6b21a8
+        );
+    border-color:#a855f7;
+}
+
+button.success{
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    border-color:#a855f7;
+}
+
+button.success:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #7e22ce,
+            #a855f7
+        );
+}
+
+button.danger{
+    background:
+        linear-gradient(
+            135deg,
+            #350b43,
+            #581c87
+        );
+    border-color:#86198f;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+    margin-top:12px;
+    min-height:20px;
+    color:#d8b4fe;
+    font-weight:bold;
+}
+
+.file-name{
+    margin-top:12px;
+    color:#c084fc;
+    font-size:13px;
+}
+
+/* =========================
+   OUTPUT
+========================= */
+
+.output-box{
+    background:#0d0913;
+    border:1px solid #3b1d5d;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.output-header{
+    padding:13px 16px;
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #21102f
+        );
+    border-bottom:1px solid #3b1d5d;
+    color:#e9d5ff;
+    font-weight:bold;
+}
+
+#htmlOutput{
+    min-height:350px;
+}
+
+/* =========================
+   HELP
+========================= */
+
+.help{
+    color:#a78bfa;
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+    width:9px;
+    height:9px;
+}
+
+::-webkit-scrollbar-track{
+    background:#08050c;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#4c1d95;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#9333ea;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:800px){
+
+    .editor-grid{
+        grid-template-columns:1fr;
+    }
+
+    textarea,
+    pre{
+        min-height:350px;
+    }
+
+}
+
+@media(max-width:600px){
+
+    .container{
+        width:94%;
+    }
+
+    .header{
+        padding:22px;
+    }
+
+    .header h1{
+        font-size:24px;
+    }
+
+    .box{
+        padding:16px;
+    }
+
+    .file-area{
+        padding:22px 15px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>Markdown → HTML Converter</h1>
+
+        <p>
+            Upload file Markdown (.md), proses, dan hasilkan file HTML.
+        </p>
+
+    </div>
+
+
+    <!-- UPLOAD -->
+
+    <div class="box">
+
+        <h2>Upload Markdown</h2>
+
+        <div class="file-area">
+
+            <div class="file-title">
+                Pilih File Markdown
+            </div>
+
+            <div class="file-info">
+                File yang digunakan harus berekstensi .md
+            </div>
+
+            <input
+                type="file"
+                id="markdownFile"
+                accept=".md,text/markdown,text/plain">
+
+            <div
+                id="fileName"
+                class="file-name">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- EDITOR -->
+
+    <div class="box">
+
+        <h2>Markdown Editor</h2>
+
+        <div class="editor-grid">
+
+            <!-- MARKDOWN -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    Markdown
+                </div>
+
+                <textarea
+                    id="markdownInput"
+                    placeholder="Isi Markdown akan muncul di sini..."></textarea>
+
+            </div>
+
+
+            <!-- HTML -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    HTML
+                </div>
+
+                <pre id="htmlOutput"></pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROCESS -->
+
+    <div class="box">
+
+        <h2>Process</h2>
+
+        <div class="buttons">
+
+            <button
+                class="success"
+                onclick="processMarkdown()">
+                Proses Markdown
+            </button>
+
+        </div>
+
+        <div
+            id="status"
+            class="status">
+        </div>
+
+    </div>
+
+
+    <!-- OUTPUT -->
+
+    <div class="box">
+
+        <h2>Output HTML</h2>
+
+        <div class="output-box">
+
+            <div class="output-header">
+                Hasil HTML
+            </div>
+
+            <pre id="finalOutput"></pre>
+
+        </div>
+
+        <br>
+
+        <div class="buttons">
+
+            <button
+                class="success"
+                onclick="saveHTML()">
+                Simpan HTML
+            </button>
+
+        </div>
+
+        <div class="help">
+            Hasil akan disimpan sebagai file HTML melalui browser.
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const markdownFile =
+    document.getElementById(
+        "markdownFile"
+    );
+
+const markdownInput =
+    document.getElementById(
+        "markdownInput"
+    );
+
+const htmlOutput =
+    document.getElementById(
+        "htmlOutput"
+    );
+
+const finalOutput =
+    document.getElementById(
+        "finalOutput"
+    );
+
+const fileName =
+    document.getElementById(
+        "fileName"
+    );
+
+const statusBox =
+    document.getElementById(
+        "status"
+    );
+
+
+let currentFileName =
+    "converted";
+
+
+/* =========================================
+   UPLOAD MARKDOWN
+========================================= */
+
+markdownFile.addEventListener(
+    "change",
+    function(){
+
+        const file =
+            this.files[0];
+
+        if(!file){
+            return;
+        }
+
+
+        if(
+            !file.name
+                .toLowerCase()
+                .endsWith(".md")
+        ){
+
+            statusBox.textContent =
+                "File harus berekstensi .md.";
+
+            markdownFile.value =
+                "";
+
+            return;
+        }
+
+
+        currentFileName =
+            file.name
+                .replace(
+                    /\.md$/i,
+                    ""
+                );
+
+
+        fileName.textContent =
+            "File: " +
+            file.name;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(event){
+
+                markdownInput.value =
+                    event.target.result;
+
+
+                statusBox.textContent =
+                    "File Markdown berhasil dimuat.";
+
+            };
+
+
+        reader.onerror =
+            function(){
+
+                statusBox.textContent =
+                    "Gagal membaca file Markdown.";
+
+            };
+
+
+        reader.readAsText(
+            file
+        );
+
+    }
+);
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(value){
+
+    return value
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================
+   INLINE MARKDOWN
+========================================= */
+
+function parseInline(text){
+
+    let result =
+        escapeHtml(
+            text
+        );
+
+
+    /* CODE */
+
+    result =
+        result.replace(
+            /`([^`]+)`/g,
+            "<code>$1</code>"
+        );
+
+
+    /* IMAGE */
+
+    result =
+        result.replace(
+            /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
+            function(
+                match,
+                alt,
+                url,
+                title
+            ){
+
+                const titlePart =
+                    title
+                    ? ' title="' +
+                      title +
+                      '"'
+                    : "";
+
+                return (
+                    '<img src="' +
+                    url +
+                    '" alt="' +
+                    alt +
+                    '"' +
+                    titlePart +
+                    ">"
+                );
+
+            }
+        );
+
+
+    /* LINK */
+
+    result =
+        result.replace(
+            /\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
+            function(
+                match,
+                label,
+                url,
+                title
+            ){
+
+                const titlePart =
+                    title
+                    ? ' title="' +
+                      title +
+                      '"'
+                    : "";
+
+                return (
+                    '<a href="' +
+                    url +
+                    '"' +
+                    titlePart +
+                    ">" +
+                    label +
+                    "</a>"
+                );
+
+            }
+        );
+
+
+    /* BOLD + ITALIC */
+
+    result =
+        result.replace(
+            /\*\*\*([^*]+)\*\*\*/g,
+            "<strong><em>$1</em></strong>"
+        );
+
+    result =
+        result.replace(
+            /___([^_]+)___/g,
+            "<strong><em>$1</em></strong>"
+        );
+
+
+    /* BOLD */
+
+    result =
+        result.replace(
+            /\*\*([^*]+)\*\*/g,
+            "<strong>$1</strong>"
+        );
+
+    result =
+        result.replace(
+            /__([^_]+)__/g,
+            "<strong>$1</strong>"
+        );
+
+
+    /* ITALIC */
+
+    result =
+        result.replace(
+            /(?<!\*)\*([^*]+)\*(?!\*)/g,
+            "<em>$1</em>"
+        );
+
+    result =
+        result.replace(
+            /(?<!_)_([^_]+)_(?!_)/g,
+            "<em>$1</em>"
+        );
+
+
+    /* STRIKETHROUGH */
+
+    result =
+        result.replace(
+            /~~([^~]+)~~/g,
+            "<del>$1</del>"
+        );
+
+
+    /* AUTOLINK */
+
+    result =
+        result.replace(
+            /(^|[\s(])(https?:\/\/[^\s<]+)/g,
+            '$1<a href="$2">$2</a>'
+        );
+
+
+    return result;
+
+}
+
+
+/* =========================================
+   MARKDOWN → HTML
+========================================= */
+
+function markdownToHTML(markdown){
+
+    const lines =
+        markdown
+            .replace(
+                /\r\n/g,
+                "\n"
+            )
+            .replace(
+                /\r/g,
+                "\n"
+            )
+            .split("\n");
+
+
+    const output = [];
+
+    let paragraph = [];
+
+    let inCodeBlock = false;
+
+    let codeLanguage = "";
+
+    let codeLines = [];
+
+    let unorderedList = false;
+
+    let orderedList = false;
+
+    let blockquote = false;
+
+
+    function flushParagraph(){
+
+        if(
+            paragraph.length === 0
+        ){
+            return;
+        }
+
+
+        const content =
+            paragraph.join(" ").trim();
+
+
+        if(content){
+
+            output.push(
+                "<p>" +
+                parseInline(
+                    content
+                ) +
+                "</p>"
+            );
+
+        }
+
+
+        paragraph = [];
+
+    }
+
+
+    function closeLists(){
+
+        if(unorderedList){
+
+            output.push(
+                "</ul>"
+            );
+
+            unorderedList =
+                false;
+
+        }
+
+
+        if(orderedList){
+
+            output.push(
+                "</ol>"
+            );
+
+            orderedList =
+                false;
+
+        }
+
+    }
+
+
+    function closeBlockquote(){
+
+        if(blockquote){
+
+            output.push(
+                "</blockquote>"
+            );
+
+            blockquote =
+                false;
+
+        }
+
+    }
+
+
+    for(
+        let i = 0;
+        i < lines.length;
+        i++
+    ){
+
+        const line =
+            lines[i];
+
+
+        /* CODE BLOCK */
+
+        if(
+            line.trim().startsWith("```")
+        ){
+
+            if(!inCodeBlock){
+
+                flushParagraph();
+
+                closeLists();
+
+                closeBlockquote();
+
+                inCodeBlock =
+                    true;
+
+                codeLanguage =
+                    line
+                        .trim()
+                        .slice(3)
+                        .trim();
+
+                codeLines = [];
+
+            }else{
+
+                const languageClass =
+                    codeLanguage
+                    ? ' class="language-' +
+                      escapeHtml(
+                          codeLanguage
+                      ) +
+                      '"'
+                    : "";
+
+                output.push(
+                    "<pre><code" +
+                    languageClass +
+                    ">" +
+                    escapeHtml(
+                        codeLines.join("\n")
+                    ) +
+                    "</code></pre>"
+                );
+
+                inCodeBlock =
+                    false;
+
+                codeLanguage =
+                    "";
+
+                codeLines = [];
+
+            }
+
+            continue;
+
+        }
+
+
+        if(inCodeBlock){
+
+            codeLines.push(
+                line
+            );
+
+            continue;
+
+        }
+
+
+        /* HORIZONTAL RULE */
+
+        if(
+            /^\s*(\*\s*\*\s*\*|-{3,}|_{3,})\s*$/
+                .test(line)
+        ){
+
+            flushParagraph();
+
+            closeLists();
+
+            closeBlockquote();
+
+            output.push(
+                "<hr>"
+            );
+
+            continue;
+
+        }
+
+
+        /* HEADING */
+
+        const heading =
+            line.match(
+                /^\s*(#{1,6})\s+(.+?)\s*#*\s*$/
+            );
+
+
+        if(heading){
+
+            flushParagraph();
+
+            closeLists();
+
+            closeBlockquote();
+
+            const level =
+                heading[1].length;
+
+            output.push(
+                "<h" +
+                level +
+                ">" +
+                parseInline(
+                    heading[2]
+                ) +
+                "</h" +
+                level +
+                ">"
+            );
+
+            continue;
+
+        }
+
+
+        /* BLOCKQUOTE */
+
+        const quote =
+            line.match(
+                /^\s*>\s?(.*)$/
+            );
+
+
+        if(quote){
+
+            flushParagraph();
+
+            closeLists();
+
+
+            if(!blockquote){
+
+                output.push(
+                    "<blockquote>"
+                );
+
+                blockquote =
+                    true;
+
+            }
+
+
+            output.push(
+                "<p>" +
+                parseInline(
+                    quote[1]
+                ) +
+                "</p>"
+            );
+
+            continue;
+
+        }
+
+
+        closeBlockquote();
+
+
+        /* UNORDERED LIST */
+
+        const unordered =
+            line.match(
+                /^\s*[-*+]\s+(.+)$/
+            );
+
+
+        if(unordered){
+
+            flushParagraph();
+
+
+            if(orderedList){
+
+                output.push(
+                    "</ol>"
+                );
+
+                orderedList =
+                    false;
+
+            }
+
+
+            if(!unorderedList){
+
+                output.push(
+                    "<ul>"
+                );
+
+                unorderedList =
+                    true;
+
+            }
+
+
+            output.push(
+                "<li>" +
+                parseInline(
+                    unordered[1]
+                ) +
+                "</li>"
+            );
+
+            continue;
+
+        }
+
+
+        /* ORDERED LIST */
+
+        const ordered =
+            line.match(
+                /^\s*\d+\.\s+(.+)$/
+            );
+
+
+        if(ordered){
+
+            flushParagraph();
+
+
+            if(unorderedList){
+
+                output.push(
+                    "</ul>"
+                );
+
+                unorderedList =
+                    false;
+
+            }
+
+
+            if(!orderedList){
+
+                output.push(
+                    "<ol>"
+                );
+
+                orderedList =
+                    true;
+
+            }
+
+
+            output.push(
+                "<li>" +
+                parseInline(
+                    ordered[1]
+                ) +
+                "</li>"
+            );
+
+            continue;
+
+        }
+
+
+        closeLists();
+
+
+        /* EMPTY LINE */
+
+        if(
+            line.trim() === ""
+        ){
+
+            flushParagraph();
+
+            continue;
+
+        }
+
+
+        /* NORMAL TEXT */
+
+        paragraph.push(
+            line.trim()
+        );
+
+    }
+
+
+    if(inCodeBlock){
+
+        output.push(
+            "<pre><code>" +
+            escapeHtml(
+                codeLines.join("\n")
+            ) +
+            "</code></pre>"
+        );
+
+    }
+
+
+    flushParagraph();
+
+    closeLists();
+
+    closeBlockquote();
+
+
+    return output.join(
+        "\n"
+    );
+
+}
+
+
+/* =========================================
+   PROCESS
+========================================= */
+
+function processMarkdown(){
+
+    const markdown =
+        markdownInput.value;
+
+
+    if(
+        !markdown.trim()
+    ){
+
+        statusBox.textContent =
+            "Tidak ada Markdown yang diproses.";
+
+        htmlOutput.textContent =
+            "";
+
+        finalOutput.textContent =
+            "";
+
+        return;
+    }
+
+
+    const result =
+        markdownToHTML(
+            markdown
+        );
+
+
+    htmlOutput.textContent =
+        result;
+
+
+    finalOutput.textContent =
+        result;
+
+
+    statusBox.textContent =
+        "Markdown berhasil diproses menjadi HTML.";
+
+}
+
+
+/* =========================================
+   SAVE HTML
+========================================= */
+
+function saveHTML(){
+
+    const html =
+        finalOutput.textContent;
+
+
+    if(!html.trim()){
+
+        statusBox.textContent =
+            "Proses Markdown terlebih dahulu.";
+
+        return;
+
+    }
+
+
+    const fullHTML =
+`<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(currentFileName)}</title>
+</head>
+<body>
+${html}
+</body>
+</html>`;
+
+
+    const blob =
+        new Blob(
+            [
+                fullHTML
+            ],
+            {
+                type:
+                    "text/html;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        currentFileName +
+        ".html";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    setTimeout(
+        function(){
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        },
+        1000
+    );
+
+
+    statusBox.textContent =
+        "File HTML berhasil dibuat.";
+
+}
+
+</script>
+
+</body>
+</html>

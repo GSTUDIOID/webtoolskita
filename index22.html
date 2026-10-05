@@ -1,219 +1,1848 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Database - WebToolsKita</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#050507;--panel:#0d0b12;--panel2:#12101a;--line:#282231;--purple:#8b5cf6;--purple2:#c084fc;--muted:#91899d;--green:#4ade80;--red:#f87171}
-body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:#fff;background:radial-gradient(circle at 10% 0%,rgba(124,58,237,.2),transparent 32%),radial-gradient(circle at 90% 15%,rgba(168,85,247,.09),transparent 28%),var(--bg);padding:28px 15px 42px}
-.container{max-width:1100px;width:100%;margin:auto}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
-.title-wrap h1{font-size:30px;margin-bottom:7px}.subtitle{color:var(--muted);font-size:13px}
-.admin-badge{padding:9px 14px;border-radius:999px;background:rgba(124,58,237,.11);border:1px solid rgba(168,85,247,.32);color:#d8b4fe;font-size:11px;font-weight:bold;white-space:nowrap}
-.status{display:none;margin-bottom:18px;padding:13px 15px;border-radius:12px;font-size:12px;line-height:1.55}
-.status.show{display:block}.status.success{background:#0b2114;border:1px solid #166534;color:#86efac}.status.error{background:#291010;border:1px solid #7f1d1d;color:#fca5a5}.status.info{background:#17112a;border:1px solid #4c1d95;color:#c4b5fd}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:18px}
-.stat{background:rgba(13,13,15,.9);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
-.stat-icon{font-size:23px;margin-bottom:10px}.stat-number{font-size:25px;font-weight:bold;margin-bottom:5px}.stat-label{font-size:11px;color:#8e8798}
-.section{background:rgba(11,10,14,.92);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 12px 35px rgba(0,0,0,.22)}
-.section h2{font-size:18px;margin-bottom:16px}.section-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-top:-8px;margin-bottom:16px}
-.database-header{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:17px;background:var(--panel2);border:1px solid #33253f;border-radius:14px}
-.database-info{display:flex;align-items:center;gap:13px;min-width:0}.database-icon{width:48px;height:48px;border-radius:13px;background:#1b1230;border:1px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.database-info h3{font-size:15px;margin-bottom:5px}.database-info p{font-size:11px;color:#777;overflow-wrap:anywhere}
-.badge{padding:7px 10px;border-radius:999px;font-size:10px;font-weight:bold;white-space:nowrap}.online{background:#102417;border:1px solid #166534;color:var(--green)}.offline{background:#291313;border:1px solid #7f1d1d;color:var(--red)}
-.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
-button{cursor:pointer;border:1px solid #333;background:#171717;color:#fff;border-radius:10px;padding:10px 13px;font-size:12px;transition:.2s}
-button:hover{background:#241238;border-color:#7c3aed;transform:translateY(-1px)}button:disabled{opacity:.5;cursor:not-allowed;transform:none}.primary{background:#4c1d95;border-color:#6d28d9}.primary:hover{background:#5b21b6}
-.tables{display:flex;flex-direction:column;gap:10px}.table-card{display:flex;justify-content:space-between;align-items:center;gap:15px;background:#111014;border:1px solid #27242c;border-radius:13px;padding:15px}
-.table-left{display:flex;align-items:center;gap:12px;min-width:0}.table-icon{font-size:21px}.table-name{font-weight:bold;font-size:13px;margin-bottom:4px}.table-description{font-size:11px;color:#777;line-height:1.4}
-.table-actions{display:flex;gap:7px;flex-shrink:0}
-.data-panel{display:none;margin-top:16px;border:1px solid #292929;border-radius:13px;overflow:hidden}.data-panel.show{display:block}
-.data-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#151019;border-bottom:1px solid #292929}.data-header strong{color:#c084fc;font-size:12px}.data-count{color:#777;font-size:10px}
-.data-scroll{max-height:420px;overflow:auto}.data-scroll::-webkit-scrollbar{width:8px;height:8px}.data-scroll::-webkit-scrollbar-thumb{background:#4c1d95;border-radius:10px}
-table{width:100%;border-collapse:collapse}th,td{padding:11px;text-align:left;border-bottom:1px solid #222;font-size:11px;white-space:nowrap}th{background:#151019;color:#c084fc;position:sticky;top:0;z-index:1}td{background:#0e0e0e;color:#aaa}
-.schema-wrapper{overflow-x:auto}.schema th,.schema td{padding:11px}.schema td{white-space:normal}.code{font-family:Consolas,monospace;color:#c084fc}
-.info{background:#0e0e0e;border:1px dashed #39323f;border-radius:13px;padding:15px;color:#888;font-size:11px;line-height:1.7;margin-bottom:18px}.info strong{color:#bda8d0}
-.empty{padding:25px;text-align:center;color:#777;font-size:12px}
-.back{width:100%;padding:13px;font-size:13px;background:#121015}
-@media(max-width:700px){.topbar{flex-direction:column;align-items:flex-start}.stats{grid-template-columns:1fr}.database-header{align-items:flex-start;flex-direction:column}.table-card{align-items:flex-start;flex-direction:column}.table-actions{width:100%}.table-actions button{flex:1}.actions button{flex:1}}
-</style>
-</head>
-<body>
-<div class="container">
-<div class="topbar">
-<div class="title-wrap"><h1>🗄️ Admin Database</h1><div class="subtitle">Monitoring database WebToolsKita</div></div>
-<div class="admin-badge">🛡️ ADMINISTRATOR</div>
-</div>
 
-<div id="status" class="status"></div>
-
-<div class="stats">
-<div class="stat"><div class="stat-icon">🗃️</div><div id="totalTables" class="stat-number">—</div><div class="stat-label">Total Tabel</div></div>
-<div class="stat"><div class="stat-icon">👤</div><div id="totalUsers" class="stat-number">—</div><div class="stat-label">Total User</div></div>
-<div class="stat"><div class="stat-icon">💾</div><div id="databaseStatus" class="stat-number">—</div><div class="stat-label">Database Status</div></div>
-</div>
-
-<div class="section">
-<h2>🔌 Database Connection</h2>
-<div class="database-header">
-<div class="database-info"><div class="database-icon">🗄️</div><div><h3>WebToolsKita SQLite Database</h3><p id="databaseDescription">Memeriksa koneksi database...</p></div></div>
-<div id="databaseBadge" class="badge online">● CHECKING</div>
-</div>
-<div class="actions"><button id="refreshButton" class="primary">🔄 Refresh Database</button></div>
-</div>
-
-<div class="section">
-<h2>📋 Database Tables</h2>
-<p class="section-desc">Daftar tabel yang ditampilkan oleh dashboard database saat ini.</p>
-<div class="tables">
-<div class="table-card"><div class="table-left"><div class="table-icon">👤</div><div><div class="table-name">users</div><div class="table-description">Data pengguna dan status akun</div></div></div><div class="table-actions"><button onclick="viewUsers()">👁️ Lihat Data</button><button onclick="tableInfo('users')">ℹ️ Info</button></div></div>
-<div class="table-card"><div class="table-left"><div class="table-icon">🔢</div><div><div class="table-name">sqlite_sequence</div><div class="table-description">Sistem internal SQLite untuk autoincrement</div></div></div><div class="table-actions"><button onclick="tableInfo('sqlite_sequence')">ℹ️ Info</button></div></div>
-</div>
-
-<div id="userDataPanel" class="data-panel">
-<div class="data-header"><strong>👤 Data Users</strong><span id="userDataCount" class="data-count">—</span></div>
-<div class="data-scroll"><table><thead><tr><th>ID</th><th>Nama</th><th>Email</th><th>VIP</th><th>Dibuat</th></tr></thead><tbody id="usersTableBody"></tbody></table></div>
-</div>
-</div>
-
-<div class="section">
-<h2>👤 Struktur Tabel Users</h2>
-<p class="section-desc">Schema yang digunakan sebagai referensi tampilan Admin Database.</p>
-<div class="schema-wrapper"><table class="schema"><thead><tr><th>Field</th><th>Type</th><th>Keterangan</th></tr></thead><tbody>
-<tr><td class="code">id</td><td>INTEGER</td><td>ID internal user</td></tr>
-<tr><td class="code">google_uid</td><td>TEXT</td><td>UID Firebase / Google</td></tr>
-<tr><td class="code">name</td><td>TEXT</td><td>Nama pengguna</td></tr>
-<tr><td class="code">email</td><td>TEXT</td><td>Email pengguna</td></tr>
-<tr><td class="code">photo_url</td><td>TEXT</td><td>URL foto profil</td></tr>
-<tr><td class="code">vip_status</td><td>TEXT</td><td>Status VIP user</td></tr>
-<tr><td class="code">vip_start</td><td>DATETIME</td><td>Waktu mulai VIP</td></tr>
-<tr><td class="code">vip_expired</td><td>DATETIME</td><td>Waktu berakhir VIP</td></tr>
-<tr><td class="code">payment_status</td><td>TEXT</td><td>Status pembayaran</td></tr>
-<tr><td class="code">payment_id</td><td>TEXT</td><td>ID transaksi pembayaran</td></tr>
-<tr><td class="code">created_at</td><td>DATETIME</td><td>Waktu akun dibuat</td></tr>
-</tbody></table></div>
-</div>
-
-<div class="section">
-<h2>⚙️ Database Management</h2>
-<div class="tables">
-<div class="table-card"><div class="table-left"><div class="table-icon">🔄</div><div><div class="table-name">Refresh Database</div><div class="table-description">Mengambil statistik terbaru dari server</div></div></div><button onclick="loadDatabase()">🔄 Refresh</button></div>
-<div class="table-card"><div class="table-left"><div class="table-icon">👥</div><div><div class="table-name">Refresh Users</div><div class="table-description">Mengambil daftar user terbaru</div></div></div><button onclick="loadUsers()">👥 Muat User</button></div>
-<div class="table-card"><div class="table-left"><div class="table-icon">🛡️</div><div><div class="table-name">Database Protection</div><div class="table-description">Operasi perubahan database dilakukan melalui backend</div></div></div><button onclick="showProtectionInfo()">ℹ️ Info</button></div>
-</div>
-</div>
-
-<div class="info">ℹ️ <strong>Catatan keamanan:</strong><br>
-Halaman Admin Database digunakan untuk monitoring dan membaca informasi database. Operasi sensitif seperti mengubah atau menghapus data tidak dilakukan langsung dari browser.<br><br>
-Semua operasi database yang memiliki hak istimewa harus melalui backend dan pemeriksaan administrator.<br><br>
-<strong>Status database pada dashboard harus berasal dari pemeriksaan backend, bukan sekadar indikator frontend.</strong>
-</div>
-
-<button class="back" onclick="location.href='index18.html'">← Kembali ke Admin Dashboard</button>
-</div>
+<title>Website Update Manager — WebToolsKita</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b0f14;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 30px 15px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #9ca3af;
+    font-size: 15px;
+}
+
+.box {
+    background: #111820;
+    border: 1px solid #26313d;
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.box h2 {
+    font-size: 21px;
+    margin-bottom: 15px;
+}
+
+.info {
+    color: #9ca3af;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.file-input {
+    width: 100%;
+    padding: 18px;
+    border: 1px dashed #405064;
+    border-radius: 10px;
+    background: #0b0f14;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.green {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.orange {
+    background: #d97706;
+    color: #ffffff;
+}
+
+.gray {
+    background: #4b5563;
+    color: #ffffff;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0b0f14;
+    border: 1px solid #293543;
+    border-radius: 9px;
+    padding: 12px;
+}
+
+.status-badge {
+    min-width: 85px;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.modified {
+    background: #78350f;
+    color: #fbbf24;
+}
+
+.new {
+    background: #14532d;
+    color: #4ade80;
+}
+
+.deleted {
+    background: #7f1d1d;
+    color: #f87171;
+}
+
+.clean {
+    background: #374151;
+    color: #d1d5db;
+}
+
+.file-name {
+    flex: 1;
+    word-break: break-word;
+}
+
+.git-status {
+    background: #05080c;
+    border: 1px solid #293543;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    color: #d1d5db;
+}
+
+.commit-area {
+    margin-top: 15px;
+}
+
+.commit-input {
+    width: 100%;
+    background: #0b0f14;
+    color: #ffffff;
+    border: 1px solid #344150;
+    border-radius: 8px;
+    padding: 12px;
+    outline: none;
+}
+
+.commit-input:focus {
+    border-color: #5b9cff;
+}
+
+.log {
+    margin-top: 15px;
+    min-height: 22px;
+    color: #9ca3af;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.warning {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #291c08;
+    border: 1px solid #6b4b14;
+    color: #fbbf24;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.success-box {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #08210f;
+    border: 1px solid #166534;
+    color: #86efac;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.error-box {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #290b0b;
+    border: 1px solid #7f1d1d;
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.connection-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.connection-card {
+    background: #0b0f14;
+    border: 1px solid #293543;
+    border-radius: 9px;
+    padding: 12px;
+}
+
+.connection-label {
+    color: #6b7280;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+.connection-value {
+    color: #ffffff;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    word-break: break-word;
+}
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 20px 10px;
+    }
+
+    .header h1 {
+        font-size: 25px;
+    }
+
+    .status-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .status-badge {
+        min-width: auto;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .buttons button {
+        width: 100%;
+    }
+
+    .connection-info {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Website Update Manager</h1>
+
+        <p>
+            File Scanner + Git/GitHub Update Manager
+        </p>
+
+    </div>
+
+
+    <!-- AUTH STATUS -->
+
+    <div
+        id="authLog"
+        class="log"
+        style="margin-bottom:20px;"
+    ></div>
+
+
+    <!-- FILE SCANNER -->
+
+    <div class="box">
+
+        <h2>File Scanner</h2>
+
+        <div class="info">
+            Pilih file website dari komputer untuk memeriksa
+            file yang akan kamu periksa sebelum proses update.
+            Status Git sebenarnya diambil langsung dari repository.
+        </div>
+
+        <input
+            id="fileInput"
+            class="file-input"
+            type="file"
+            multiple
+        >
+
+        <div class="buttons">
+
+            <button
+                id="scanBtn"
+                class="primary"
+            >
+                Scan File
+            </button>
+
+            <button
+                id="clearBtn"
+                class="gray"
+            >
+                Clear
+            </button>
+
+        </div>
+
+        <div
+            id="scannerLog"
+            class="log"
+        ></div>
+
+    </div>
+
+
+    <!-- FILE STATUS -->
+
+    <div class="box">
+
+        <h2>File Status</h2>
+
+        <div
+            id="statusList"
+            class="status-list"
+        >
+
+            <div class="status-item">
+
+                <span class="status-badge clean">
+                    INFO
+                </span>
+
+                <span class="file-name">
+                    Belum ada file yang discan.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- GIT STATUS -->
+
+    <div class="box">
+
+        <h2>Git Status</h2>
+
+        <div class="info">
+            Status berikut berasal langsung dari repository
+            Git lokal WebToolsKita.
+        </div>
+
+        <div
+            id="gitStatus"
+            class="git-status"
+        >Belum mengambil Git Status.</div>
+
+        <div class="buttons">
+
+            <button
+                id="gitStatusBtn"
+                class="green"
+            >
+                Git Status
+            </button>
+
+            <button
+                id="branchBtn"
+                class="gray"
+            >
+                Branch
+            </button>
+
+            <button
+                id="remoteBtn"
+                class="gray"
+            >
+                Remote
+            </button>
+
+        </div>
+
+        <div
+            id="gitStatusLog"
+            class="log"
+        ></div>
+
+    </div>
+
+
+    <!-- GIT / GITHUB -->
+
+    <div class="box">
+
+        <h2>Git / GitHub</h2>
+
+        <div class="info">
+            GitHub digunakan sebagai repository pusat
+            untuk menyimpan perubahan kode website.
+            Operasi Git dijalankan oleh backend lokal
+            WebToolsKita.
+        </div>
+
+        <div class="connection-info">
+
+            <div class="connection-card">
+
+                <div class="connection-label">
+                    BRANCH
+                </div>
+
+                <div
+                    id="branchValue"
+                    class="connection-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="connection-card">
+
+                <div class="connection-label">
+                    REMOTE
+                </div>
+
+                <div
+                    id="remoteValue"
+                    class="connection-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="connection-card">
+
+                <div class="connection-label">
+                    SERVER
+                </div>
+
+                <div class="connection-value">
+                    localhost:3000
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="commit-area">
+
+            <input
+                id="commitMessage"
+                class="commit-input"
+                type="text"
+                maxlength="200"
+                placeholder="Tulis pesan commit..."
+            >
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                id="addBtn"
+                class="primary"
+            >
+                Git Add
+            </button>
+
+            <button
+                id="commitBtn"
+                class="orange"
+            >
+                Commit
+            </button>
+
+            <button
+                id="pushBtn"
+                class="green"
+            >
+                Push ke GitHub
+            </button>
+
+            <button
+                id="syncBtn"
+                class="green"
+            >
+                Add + Commit + Push
+            </button>
+
+        </div>
+
+
+        <div
+            id="gitLog"
+            class="log"
+        ></div>
+
+        <div class="warning">
+            Git dijalankan oleh server lokal WebToolsKita.
+            Endpoint Git dilindungi autentikasi Firebase
+            dan pemeriksaan administrator.
+        </div>
+
+    </div>
+
+
+    <!-- DEPLOYMENT INFO -->
+
+    <div class="box">
+
+        <h2>Deployment</h2>
+
+        <div class="info">
+            Setelah kode berhasil disimpan ke GitHub,
+            deployment ke Vercel, Railway, atau hosting/domain
+            lainnya dilakukan secara terpisah.
+        </div>
+
+        <div class="success-box">
+            GitHub adalah repository pusat.
+            Deployment tidak dilakukan otomatis oleh Tool 15.
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
-const firebaseConfig={
- apiKey:"AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
- authDomain:"webtoolskita.firebaseapp.com",
- projectId:"webtoolskita",
- storageBucket:"webtoolskita.firebasestorage.app",
- messagingSenderId:"593680487717",
- appId:"1:593680487717:web:33ef7a4bc9be02f99276cc",
- measurementId:"G-YVEJ90678G"
+
+/* =====================================================
+   FIREBASE CONFIG
+   ===================================================== */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
+
 };
+
+
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const statusBox=document.getElementById("status");
-const refreshButton=document.getElementById("refreshButton");
 
-function showStatus(message,type="info"){statusBox.textContent=message;statusBox.className="status show "+type}
-function formatNumber(v){const n=Number(v);return Number.isFinite(n)?n.toLocaleString("id-ID"):"—"}
-function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-async function getToken(){const user=auth.currentUser;if(!user)throw new Error("Sesi administrator tidak ditemukan.");return await user.getIdToken(true)}
+const auth =
+    firebase.auth();
 
-async function verifyAdmin(){
- const user=auth.currentUser;
- if(!user){location.href="index18.html";return false}
- try{
-  const token=await getToken();
-  const response=await fetch("/api/admin/test",{headers:{Authorization:"Bearer "+token}});
-  if(response.status===401||response.status===403){location.href="index18.html";return false}
-  if(!response.ok)throw new Error("Verifikasi administrator gagal.");
-  return true;
- }catch(error){console.error(error);showStatus(error.message||"Gagal memverifikasi administrator.","error");return false}
+
+/* =====================================================
+   ELEMENTS
+   ===================================================== */
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const scanBtn =
+    document.getElementById("scanBtn");
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+const statusList =
+    document.getElementById("statusList");
+
+const gitStatus =
+    document.getElementById("gitStatus");
+
+const gitStatusBtn =
+    document.getElementById("gitStatusBtn");
+
+const branchBtn =
+    document.getElementById("branchBtn");
+
+const remoteBtn =
+    document.getElementById("remoteBtn");
+
+const commitMessage =
+    document.getElementById("commitMessage");
+
+const addBtn =
+    document.getElementById("addBtn");
+
+const commitBtn =
+    document.getElementById("commitBtn");
+
+const pushBtn =
+    document.getElementById("pushBtn");
+
+const syncBtn =
+    document.getElementById("syncBtn");
+
+const scannerLog =
+    document.getElementById("scannerLog");
+
+const gitLog =
+    document.getElementById("gitLog");
+
+const gitStatusLog =
+    document.getElementById("gitStatusLog");
+
+const authLog =
+    document.getElementById("authLog");
+
+const branchValue =
+    document.getElementById("branchValue");
+
+const remoteValue =
+    document.getElementById("remoteValue");
+
+
+let scannedFiles = [];
+
+let adminVerified = false;
+
+
+/* =====================================================
+   STATUS MESSAGE
+   ===================================================== */
+
+function showLog(element, message, type = "info") {
+
+    element.className = "log";
+
+    element.textContent =
+        message || "";
+
+    if (type === "success") {
+
+        element.className =
+            "success-box";
+
+    }
+
+    else if (type === "error") {
+
+        element.className =
+            "error-box";
+
+    }
+
 }
 
-async function loadDatabase(){
- refreshButton.disabled=true;refreshButton.textContent="⏳ Memuat...";
- try{
-  const token=await getToken();
-  const response=await fetch("/api/database",{headers:{Authorization:"Bearer "+token}});
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.message||"Gagal mengambil informasi database.");
-  const database=data.database||data.data||data;
-  const tableCount=database.tableCount??database.tablesCount??(Array.isArray(database.tables)?database.tables.length:null);
-  const status=database.status||database.databaseStatus||data.status||"ONLINE";
-  document.getElementById("totalTables").textContent=tableCount!==null?formatNumber(tableCount):"—";
-  document.getElementById("databaseStatus").textContent=String(status).toUpperCase();
-  document.getElementById("databaseDescription").textContent=database.path?"SQLite • "+database.path:"Database lokal server WebToolsKita";
-  const badge=document.getElementById("databaseBadge");
-  const online=["online","connected","ok"].includes(String(status).toLowerCase());
-  badge.className="badge "+(online?"online":"offline");
-  badge.textContent="● "+String(status).toUpperCase();
-  showStatus("Informasi database berhasil diperbarui.","success");
- }catch(error){
-  console.error(error);
-  document.getElementById("databaseStatus").textContent="ERROR";
-  const badge=document.getElementById("databaseBadge");badge.className="badge offline";badge.textContent="● ERROR";
-  showStatus(error.message||"Gagal membaca database.","error");
- }finally{refreshButton.disabled=false;refreshButton.textContent="🔄 Refresh Database"}
+
+/* =====================================================
+   FIREBASE TOKEN
+   ===================================================== */
+
+async function getToken() {
+
+    const user =
+        auth.currentUser;
+
+    if (!user) {
+
+        throw new Error(
+            "Sesi administrator tidak ditemukan."
+        );
+
+    }
+
+    return await user.getIdToken(true);
+
 }
 
-async function loadUsers(){
- try{
-  const token=await getToken();
-  const response=await fetch("/api/users",{headers:{Authorization:"Bearer "+token}});
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.message||"Gagal mengambil data user.");
-  let users=data.users||data.data||data.rows||data;
-  if(!Array.isArray(users))users=[];
-  document.getElementById("totalUsers").textContent=formatNumber(users.length);
-  renderUsers(users);
-  showStatus("Data user berhasil diperbarui.","success");
- }catch(error){console.error(error);showStatus(error.message||"Gagal mengambil data user.","error")}
+
+/* =====================================================
+   VERIFY ADMIN
+   ===================================================== */
+
+async function verifyAdmin() {
+
+    const user =
+        auth.currentUser;
+
+    if (!user) {
+
+        location.href =
+            "index18.html";
+
+        return false;
+
+    }
+
+
+    try {
+
+        const token =
+            await getToken();
+
+
+        const response =
+            await fetch(
+                "/api/admin/test",
+                {
+                    headers: {
+                        Authorization:
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            location.href =
+                "index18.html";
+
+            return false;
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Verifikasi administrator gagal."
+            );
+
+        }
+
+
+        adminVerified = true;
+
+
+        showLog(
+            authLog,
+            "Administrator berhasil diverifikasi.",
+            "success"
+        );
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        showLog(
+            authLog,
+            error.message ||
+            "Gagal memverifikasi administrator.",
+            "error"
+        );
+
+        return false;
+
+    }
+
 }
 
-function renderUsers(users){
- const body=document.getElementById("usersTableBody"),panel=document.getElementById("userDataPanel"),count=document.getElementById("userDataCount");
- body.innerHTML="";count.textContent=formatNumber(users.length)+" user";panel.classList.add("show");
- if(!users.length){body.innerHTML='<tr><td colspan="5" class="empty">Belum ada data user yang dikembalikan backend.</td></tr>';return}
- users.forEach(user=>{
-  const row=document.createElement("tr");
-  const id=user.id??user.uid??"—",name=user.name??user.displayName??"—",email=user.email??"—",vip=user.vip_status??user.vipStatus??user.vip??"—",created=user.created_at??user.createdAt??"—";
-  row.innerHTML=`<td>${escapeHtml(id)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(email)}</td><td>${escapeHtml(vip)}</td><td>${escapeHtml(created)}</td>`;
-  body.appendChild(row);
- });
+
+/* =====================================================
+   GIT API REQUEST
+   ===================================================== */
+
+async function gitRequest(
+    url,
+    options = {}
+) {
+
+    if (!adminVerified) {
+
+        const verified =
+            await verifyAdmin();
+
+        if (!verified) {
+
+            throw new Error(
+                "Akses administrator tidak tersedia."
+            );
+
+        }
+
+    }
+
+
+    const token =
+        await getToken();
+
+
+    const headers = {
+
+        ...(options.headers || {}),
+
+        Authorization:
+            "Bearer " + token
+
+    };
+
+
+    if (
+        options.body &&
+        typeof options.body === "object"
+    ) {
+
+        headers["Content-Type"] =
+            "application/json";
+
+        options.body =
+            JSON.stringify(
+                options.body
+            );
+
+    }
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                ...options,
+                headers
+            }
+        );
+
+
+    const data =
+        await response
+            .json()
+            .catch(
+                () => ({})
+            );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            data.stderr ||
+            data.error ||
+            "Git API gagal dijalankan."
+        );
+
+    }
+
+
+    return data;
+
 }
-async function viewUsers(){const panel=document.getElementById("userDataPanel");if(panel.classList.contains("show")){panel.classList.remove("show");return}await loadUsers()}
-function tableInfo(name){
- if(name==="users"){showStatus("Tabel users berisi data akun pengguna, UID Firebase/Google, email, status VIP, informasi pembayaran, dan timestamp sesuai schema dashboard.","info");return}
- if(name==="sqlite_sequence"){showStatus("sqlite_sequence adalah tabel internal SQLite untuk AUTOINCREMENT. Jangan mengubah tabel ini secara manual.","info");return}
- showStatus("Informasi tabel tidak tersedia.","info")
+
+
+/* =====================================================
+   FILE SCANNER
+   ===================================================== */
+
+scanBtn.addEventListener(
+    "click",
+    function () {
+
+        const files =
+            Array.from(
+                fileInput.files
+            );
+
+
+        if (
+            files.length === 0
+        ) {
+
+            showLog(
+                scannerLog,
+                "Belum ada file yang dipilih.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        scannedFiles =
+            files.map(
+                function (file) {
+
+                    return {
+
+                        name:
+                            file.name,
+
+                        size:
+                            file.size,
+
+                        type:
+                            file.type
+
+                    };
+
+                }
+            );
+
+
+        renderStatus();
+
+
+        showLog(
+            scannerLog,
+            files.length +
+            " file berhasil discan.",
+            "success"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   RENDER FILE STATUS
+   ===================================================== */
+
+function renderStatus() {
+
+    statusList.innerHTML =
+        "";
+
+
+    if (
+        scannedFiles.length === 0
+    ) {
+
+        statusList.innerHTML = `
+
+            <div class="status-item">
+
+                <span class="status-badge clean">
+                    INFO
+                </span>
+
+                <span class="file-name">
+                    Belum ada file yang discan.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    scannedFiles.forEach(
+        function (file) {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "status-item";
+
+
+            const badge =
+                document.createElement(
+                    "span"
+                );
+
+
+            badge.className =
+                "status-badge new";
+
+
+            badge.textContent =
+                "SCANNED";
+
+
+            const name =
+                document.createElement(
+                    "span"
+                );
+
+
+            name.className =
+                "file-name";
+
+
+            name.textContent =
+                file.name;
+
+
+            item.appendChild(
+                badge
+            );
+
+
+            item.appendChild(
+                name
+            );
+
+
+            statusList.appendChild(
+                item
+            );
+
+        }
+    );
+
 }
-function showProtectionInfo(){showStatus("Operasi perubahan database sengaja tidak diberikan dari frontend. Perubahan sensitif harus melalui backend dengan validasi dan autentikasi administrator.","info")}
-refreshButton.addEventListener("click",async()=>{await loadDatabase();await loadUsers()});
-auth.onAuthStateChanged(async user=>{
- if(!user){location.href="index18.html";return}
- const allowed=await verifyAdmin();
- if(!allowed)return;
- await loadDatabase();
- await loadUsers();
-});
+
+
+/* =====================================================
+   REAL GIT STATUS
+   ===================================================== */
+
+async function loadGitStatus() {
+
+    gitStatusBtn.disabled =
+        true;
+
+
+    showLog(
+        gitStatusLog,
+        "Mengambil Git Status..."
+    );
+
+
+    try {
+
+        const data =
+            await gitRequest(
+                "/api/git/status"
+            );
+
+
+        gitStatus.textContent =
+            data.stdout ||
+            "Working tree bersih.";
+
+
+        showLog(
+            gitStatusLog,
+            data.success
+                ? "Git Status berhasil diambil."
+                : (
+                    data.stderr ||
+                    "Git Status gagal."
+                ),
+            data.success
+                ? "success"
+                : "error"
+        );
+
+
+        return data;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        gitStatus.textContent =
+            error.message;
+
+
+        showLog(
+            gitStatusLog,
+            error.message,
+            "error"
+        );
+
+    }
+
+    finally {
+
+        gitStatusBtn.disabled =
+            false;
+
+    }
+
+}
+
+
+gitStatusBtn.addEventListener(
+    "click",
+    loadGitStatus
+);
+
+
+/* =====================================================
+   BRANCH
+   ===================================================== */
+
+async function loadBranch() {
+
+    branchBtn.disabled =
+        true;
+
+
+    try {
+
+        const data =
+            await gitRequest(
+                "/api/git/branch"
+            );
+
+
+        branchValue.textContent =
+            data.stdout.trim() ||
+            "—";
+
+
+        showLog(
+            gitStatusLog,
+            "Git branch berhasil dibaca.",
+            "success"
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        branchValue.textContent =
+            "ERROR";
+
+
+        showLog(
+            gitStatusLog,
+            error.message,
+            "error"
+        );
+
+    }
+
+    finally {
+
+        branchBtn.disabled =
+            false;
+
+    }
+
+}
+
+
+branchBtn.addEventListener(
+    "click",
+    loadBranch
+);
+
+
+/* =====================================================
+   REMOTE
+   ===================================================== */
+
+async function loadRemote() {
+
+    remoteBtn.disabled =
+        true;
+
+
+    try {
+
+        const data =
+            await gitRequest(
+                "/api/git/remote"
+            );
+
+
+        remoteValue.textContent =
+            data.stdout.trim() ||
+            "—";
+
+
+        showLog(
+            gitStatusLog,
+            "Git remote berhasil dibaca.",
+            "success"
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        remoteValue.textContent =
+            "ERROR";
+
+
+        showLog(
+            gitStatusLog,
+            error.message,
+            "error"
+        );
+
+    }
+
+    finally {
+
+        remoteBtn.disabled =
+            false;
+
+    }
+
+}
+
+
+remoteBtn.addEventListener(
+    "click",
+    loadRemote
+);
+
+
+/* =====================================================
+   GIT ADD
+   ===================================================== */
+
+addBtn.addEventListener(
+    "click",
+    async function () {
+
+        addBtn.disabled =
+            true;
+
+
+        showLog(
+            gitLog,
+            "Menjalankan git add -A..."
+        );
+
+
+        try {
+
+            const data =
+                await gitRequest(
+                    "/api/git/add",
+                    {
+                        method:
+                            "POST"
+                    }
+                );
+
+
+            if (
+                data.success
+            ) {
+
+                showLog(
+                    gitLog,
+                    "Git Add berhasil dijalankan.",
+                    "success"
+                );
+
+                await loadGitStatus();
+
+            }
+
+            else {
+
+                throw new Error(
+                    data.stderr ||
+                    "Git Add gagal."
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            showLog(
+                gitLog,
+                error.message,
+                "error"
+            );
+
+        }
+
+        finally {
+
+            addBtn.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   COMMIT
+   ===================================================== */
+
+commitBtn.addEventListener(
+    "click",
+    async function () {
+
+        const message =
+            commitMessage.value.trim();
+
+
+        if (!message) {
+
+            showLog(
+                gitLog,
+                "Pesan commit belum diisi.",
+                "error"
+            );
+
+            commitMessage.focus();
+
+            return;
+
+        }
+
+
+        commitBtn.disabled =
+            true;
+
+
+        showLog(
+            gitLog,
+            "Menjalankan git commit..."
+        );
+
+
+        try {
+
+            const data =
+                await gitRequest(
+                    "/api/git/commit",
+                    {
+                        method:
+                            "POST",
+
+                        body: {
+                            message:
+                                message
+                        }
+
+                    }
+                );
+
+
+            if (
+                data.success
+            ) {
+
+                showLog(
+                    gitLog,
+                    (
+                        data.stdout ||
+                        "Commit berhasil dibuat."
+                    ),
+                    "success"
+                );
+
+
+                commitMessage.value =
+                    "";
+
+
+                await loadGitStatus();
+
+            }
+
+            else {
+
+                throw new Error(
+                    data.stderr ||
+                    "Git Commit gagal."
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            showLog(
+                gitLog,
+                error.message,
+                "error"
+            );
+
+        }
+
+        finally {
+
+            commitBtn.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PUSH
+   ===================================================== */
+
+pushBtn.addEventListener(
+    "click",
+    async function () {
+
+        const confirmed =
+            confirm(
+                "Jalankan git push ke GitHub sekarang?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        pushBtn.disabled =
+            true;
+
+
+        showLog(
+            gitLog,
+            "Menjalankan git push..."
+        );
+
+
+        try {
+
+            const data =
+                await gitRequest(
+                    "/api/git/push",
+                    {
+                        method:
+                            "POST"
+                    }
+                );
+
+
+            if (
+                data.success
+            ) {
+
+                showLog(
+                    gitLog,
+                    (
+                        data.stdout ||
+                        "Push ke GitHub berhasil."
+                    ),
+                    "success"
+                );
+
+
+                await loadGitStatus();
+
+            }
+
+            else {
+
+                throw new Error(
+                    data.stderr ||
+                    "Git Push gagal."
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            showLog(
+                gitLog,
+                error.message,
+                "error"
+            );
+
+        }
+
+        finally {
+
+            pushBtn.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ADD + COMMIT + PUSH
+   ===================================================== */
+
+syncBtn.addEventListener(
+    "click",
+    async function () {
+
+        const message =
+            commitMessage.value.trim();
+
+
+        if (!message) {
+
+            showLog(
+                gitLog,
+                "Pesan commit belum diisi.",
+                "error"
+            );
+
+            commitMessage.focus();
+
+            return;
+
+        }
+
+
+        const confirmed =
+            confirm(
+                "Jalankan Git Add + Commit + Push ke GitHub?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        syncBtn.disabled =
+            true;
+
+
+        showLog(
+            gitLog,
+            "Menjalankan Git Add + Commit + Push..."
+        );
+
+
+        try {
+
+            const data =
+                await gitRequest(
+                    "/api/git/sync",
+                    {
+                        method:
+                            "POST",
+
+                        body: {
+                            message:
+                                message
+                        }
+
+                    }
+                );
+
+
+            if (
+                data.success
+            ) {
+
+                let output =
+                    "SYNC BERHASIL\n\n";
+
+
+                if (
+                    data.add &&
+                    data.add.stdout
+                ) {
+
+                    output +=
+                        data.add.stdout;
+
+                }
+
+
+                if (
+                    data.commit &&
+                    data.commit.stdout
+                ) {
+
+                    output +=
+                        "\n" +
+                        data.commit.stdout;
+
+                }
+
+
+                if (
+                    data.push &&
+                    data.push.stdout
+                ) {
+
+                    output +=
+                        "\n" +
+                        data.push.stdout;
+
+                }
+
+
+                showLog(
+                    gitLog,
+                    output,
+                    "success"
+                );
+
+
+                commitMessage.value =
+                    "";
+
+
+                await loadGitStatus();
+
+            }
+
+            else {
+
+                let output =
+                    "SYNC GAGAL";
+
+
+                if (
+                    data.step
+                ) {
+
+                    output +=
+                        "\nStep: " +
+                        data.step;
+
+                }
+
+
+                const failed =
+                    data[
+                        data.step
+                    ];
+
+
+                if (
+                    failed &&
+                    failed.stderr
+                ) {
+
+                    output +=
+                        "\n\n" +
+                        failed.stderr;
+
+                }
+
+
+                throw new Error(
+                    output
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            showLog(
+                gitLog,
+                error.message,
+                "error"
+            );
+
+        }
+
+        finally {
+
+            syncBtn.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CLEAR SCANNER
+   ===================================================== */
+
+clearBtn.addEventListener(
+    "click",
+    function () {
+
+        fileInput.value =
+            "";
+
+        scannedFiles =
+            [];
+
+        renderStatus();
+
+        scannerLog.textContent =
+            "";
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL STATE
+   ===================================================== */
+
+renderStatus();
+
+
+/* =====================================================
+   AUTH STATE
+   ===================================================== */
+
+auth.onAuthStateChanged(
+    async function (user) {
+
+        if (!user) {
+
+            location.href =
+                "index18.html";
+
+            return;
+
+        }
+
+
+        const allowed =
+            await verifyAdmin();
+
+
+        if (!allowed) {
+
+            return;
+
+        }
+
+
+        await loadGitStatus();
+
+        await loadBranch();
+
+        await loadRemote();
+
+    }
+);
+
 </script>
+
 </body>
 </html>

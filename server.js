@@ -16,6 +16,7 @@ const https = require("https");
 const tls = require("tls");
 const net = require("net");
 const os = require("os");
+const git = require("./git");
 
 const {
     initializeApp,
@@ -4474,6 +4475,242 @@ app.post(
 );
 
 // =====================================================
+// GIT / GITHUB API
+// =====================================================
+
+app.get(
+    "/api/git/status",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await git.gitStatus();
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT STATUS ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal mengambil Git status."
+            });
+        }
+    }
+);
+
+
+app.get(
+    "/api/git/branch",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await git.gitBranch();
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT BRANCH ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal mengambil Git branch."
+            });
+        }
+    }
+);
+
+
+app.get(
+    "/api/git/remote",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await git.gitRemote();
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT REMOTE ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal mengambil Git remote."
+            });
+        }
+    }
+);
+
+
+app.post(
+    "/api/git/add",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await git.gitAdd();
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT ADD ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal menjalankan Git add."
+            });
+        }
+    }
+);
+
+
+app.post(
+    "/api/git/commit",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const message =
+                req.body &&
+                req.body.message;
+
+            if (
+                typeof message !== "string" ||
+                !message.trim()
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Commit message wajib diisi."
+                });
+            }
+
+            const result =
+                await git.gitCommit(message);
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT COMMIT ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal menjalankan Git commit."
+            });
+        }
+    }
+);
+
+
+app.post(
+    "/api/git/push",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await git.gitPush();
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT PUSH ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal menjalankan Git push."
+            });
+        }
+    }
+);
+
+
+app.post(
+    "/api/git/sync",
+    verifyFirebaseToken,
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const message =
+                req.body &&
+                req.body.message;
+
+            if (
+                typeof message !== "string" ||
+                !message.trim()
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Commit message wajib diisi."
+                });
+            }
+
+            const result =
+                await git.gitSync(message);
+
+            res.json(result);
+
+        } catch (error) {
+
+            console.error(
+                "GIT SYNC ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Gagal menjalankan Git sync."
+            });
+        }
+    }
+);
+
+// =====================================================
 // 404 API
 // =====================================================
 
@@ -4535,10 +4772,6 @@ function shutdown(signal) {
 }
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
-
-// =====================================================
-// START SERVER
-// =====================================================
 
 // =====================================================
 // START SERVER

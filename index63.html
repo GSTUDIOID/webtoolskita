@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Universal Bootable USB & ISO Hash Checker — WebToolsKita</title>
+
+<meta
+    name="description"
+    content="Universal Bootable USB dengan konsep Rufus, Ventoy, dan ISO Hash Checker untuk MD5 dan SHA-256."
+>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#0b1020;
+    color:#ffffff;
+}
+
+.container{
+    width:100%;
+    max-width:1120px;
+    margin:0 auto;
+    padding:30px 20px 60px;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    margin:0 0 10px;
+    font-size:32px;
+}
+
+.header p{
+    margin:0;
+    color:#aab4cc;
+    line-height:1.6;
+}
+
+.card{
+    background:#121a2d;
+    border:1px solid #293653;
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,.18);
+}
+
+.card h2{
+    margin:0 0 10px;
+    font-size:22px;
+}
+
+.card-description{
+    color:#aab4cc;
+    line-height:1.6;
+    margin-bottom:18px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:15px;
+}
+
+.field{
+    margin-top:16px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:bold;
+}
+
+select,
+input[type="text"]{
+    width:100%;
+    padding:12px 13px;
+    border-radius:9px;
+    border:1px solid #35415d;
+    background:#18223a;
+    color:#ffffff;
+    outline:none;
+}
+
+select:focus,
+input[type="text"]:focus{
+    border-color:#6ea8fe;
+}
+
+input[type="file"]{
+    max-width:100%;
+    margin-top:15px;
+    color:#c5cee2;
+}
+
+.drop-zone{
+    border:2px dashed #394867;
+    border-radius:14px;
+    padding:35px 20px;
+    text-align:center;
+    color:#aab4cc;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover{
+    border-color:#6ea8fe;
+    background:#17213a;
+}
+
+.drop-zone strong{
+    color:#ffffff;
+    font-size:16px;
+}
+
+.button-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-weight:bold;
+    background:#6ea8fe;
+    color:#07101e;
+    transition:.2s ease;
+}
+
+button:hover{
+    filter:brightness(1.1);
+    transform:translateY(-1px);
+}
+
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.status{
+    margin-top:15px;
+    padding:14px;
+    background:#18223a;
+    border-radius:9px;
+    color:#c5cee2;
+    line-height:1.7;
+    word-break:break-word;
+}
+
+.hash-box{
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    font-family:Consolas,"Courier New",monospace;
+    font-size:13px;
+    word-break:break-all;
+}
+
+.file-info{
+    margin-top:15px;
+    padding:13px;
+    background:#10182a;
+    border-radius:9px;
+    color:#b9c4da;
+    line-height:1.7;
+}
+
+.file-list{
+    margin-top:15px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.file-item{
+    padding:11px 13px;
+    background:#18223a;
+    border-radius:8px;
+    color:#c5cee2;
+    word-break:break-word;
+}
+
+.progress-wrap{
+    display:none;
+    margin-top:15px;
+}
+
+.progress-wrap.active{
+    display:block;
+}
+
+.progress-label{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:7px;
+    color:#aab4cc;
+    font-size:13px;
+}
+
+.progress{
+    width:100%;
+    height:10px;
+    overflow:hidden;
+    border-radius:20px;
+    background:#26324c;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    border-radius:20px;
+    background:#6ea8fe;
+    transition:width:.15s linear;
+}
+
+.success{
+    color:#65d69c;
+    font-weight:bold;
+}
+
+.error{
+    color:#ff7777;
+    font-weight:bold;
+}
+
+.warning{
+    margin-top:18px;
+    padding:14px;
+    border-left:4px solid #e6bd63;
+    background:#292315;
+    color:#e6d49f;
+    border-radius:7px;
+    line-height:1.6;
+}
+
+.info{
+    margin-top:18px;
+    padding:14px;
+    border-left:4px solid #6ea8fe;
+    background:#16243d;
+    color:#c5cee2;
+    border-radius:7px;
+    line-height:1.6;
+}
+
+.footer{
+    text-align:center;
+    color:#74819c;
+    font-size:13px;
+    margin-top:30px;
+}
+
+@media(max-width:700px){
+
+    .container{
+        padding:20px 14px 45px;
+    }
+
+    .header h1{
+        font-size:25px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .card{
+        padding:17px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="header">
+
+    <h1>
+        Universal Bootable USB
+    </h1>
+
+    <p>
+        Rufus + Ventoy + ISO Hash Checker
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     1. ISO → USB
+====================================================== -->
+
+<section class="card">
+
+    <h2>
+        1. ISO → USB
+    </h2>
+
+    <div class="card-description">
+
+        Pilih file ISO, tentukan partition scheme dan boot mode
+        sebelum menyiapkan konfigurasi bootable USB.
+
+        <br><br>
+
+        <strong>
+            Batas ukuran ISO: 250 MB
+        </strong>
+
+    </div>
+
+
+    <div
+        class="drop-zone"
+        id="isoDrop"
+    >
+
+        <strong>
+            Drop file ISO di sini
+        </strong>
+
+        <br>
+
+        atau pilih file ISO
+
+        <br>
+
+        <input
+            type="file"
+            id="isoFile"
+            accept=".iso,application/octet-stream"
+        >
+
+    </div>
+
+
+    <div
+        class="file-info"
+        id="isoInfo"
+    >
+        Belum ada ISO yang dipilih.
+    </div>
+
+
+    <div class="grid">
+
+        <div class="field">
+
+            <label for="partitionScheme">
+                Partition Scheme
+            </label>
+
+            <select id="partitionScheme">
+
+                <option value="GPT">
+                    GPT
+                </option>
+
+                <option value="MBR">
+                    MBR
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="bootMode">
+                Boot Mode
+            </label>
+
+            <select id="bootMode">
+
+                <option value="UEFI">
+                    UEFI
+                </option>
+
+                <option value="BIOS">
+                    BIOS
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            type="button"
+            id="prepareUSB"
+        >
+            Prepare Bootable USB
+        </button>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="usbStatus"
+    >
+        Belum ada konfigurasi bootable USB.
+    </div>
+
+
+    <div class="warning">
+
+        <strong>Catatan browser:</strong>
+
+        browser biasa tidak mempunyai akses langsung untuk
+        memformat USB dan menulis image ISO mentah ke perangkat
+        USB seperti aplikasi desktop Rufus atau Ventoy.
+
+        Bagian ini menyiapkan dan menampilkan konfigurasi,
+        tetapi tidak berpura-pura melakukan proses write USB
+        yang sebenarnya.
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     2. MULTIPLE ISO
+====================================================== -->
+
+<section class="card">
+
+    <h2>
+        2. Multiple ISO — Ventoy Style
+    </h2>
+
+    <div class="card-description">
+
+        Pilih beberapa file ISO sekaligus untuk melihat daftar
+        ISO yang akan digunakan pada konsep USB multi-ISO.
+
+        <br><br>
+
+        <strong>
+            Batas ukuran setiap ISO: 250 MB
+        </strong>
+
+    </div>
+
+
+    <div
+        class="drop-zone"
+        id="multiDrop"
+    >
+
+        <strong>
+            Drop beberapa file ISO
+        </strong>
+
+        <br>
+
+        atau pilih beberapa ISO
+
+        <br>
+
+        <input
+            type="file"
+            id="multiIso"
+            accept=".iso,application/octet-stream"
+            multiple
+        >
+
+    </div>
+
+
+    <div
+        class="file-list"
+        id="multiList"
+    >
+
+        <div class="file-item">
+            Belum ada ISO.
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     3. ISO HASH CHECKER
+====================================================== -->
+
+<section class="card">
+
+    <h2>
+        3. ISO Hash Checker
+    </h2>
+
+    <div class="card-description">
+
+        Hitung MD5 dan SHA-256 dari file ISO secara langsung
+        di browser, kemudian bandingkan dengan checksum resmi.
+
+        <br><br>
+
+        <strong>
+            Batas ukuran ISO: 250 MB
+        </strong>
+
+    </div>
+
+
+    <div
+        class="drop-zone"
+        id="hashDrop"
+    >
+
+        <strong>
+            Drop ISO untuk menghitung hash
+        </strong>
+
+        <br>
+
+        atau pilih file ISO
+
+        <br>
+
+        <input
+            type="file"
+            id="hashFile"
+            accept=".iso,application/octet-stream"
+        >
+
+    </div>
+
+
+    <div
+        class="file-info"
+        id="hashFileInfo"
+    >
+        Belum ada ISO untuk hash checker.
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            type="button"
+            id="calculateHash"
+        >
+            Calculate MD5 & SHA-256
+        </button>
+
+    </div>
+
+
+    <div
+        class="progress-wrap"
+        id="hashProgressWrap"
+    >
+
+        <div class="progress-label">
+
+            <span id="hashProgressText">
+                Memproses...
+            </span>
+
+            <span id="hashProgressPercent">
+                0%
+            </span>
+
+        </div>
+
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                id="hashProgressBar"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="field">
+
+            <label>
+                MD5
+            </label>
+
+            <div
+                class="status hash-box"
+                id="md5Result"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                SHA-256
+            </label>
+
+            <div
+                class="status hash-box"
+                id="sha256Result"
+            >
+                —
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="field">
+
+        <label for="officialHash">
+            Official Checksum
+        </label>
+
+        <input
+            type="text"
+            id="officialHash"
+            autocomplete="off"
+            placeholder="Masukkan MD5 atau SHA-256 resmi"
+        >
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            type="button"
+            id="compareHash"
+        >
+            Compare Checksum
+        </button>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="compareResult"
+    >
+        Belum ada perbandingan.
+    </div>
+
+
+    <div class="warning">
+
+        <strong>Penting:</strong>
+
+        checksum yang cocok hanya menunjukkan bahwa file
+        sesuai dengan checksum yang dibandingkan.
+
+        Itu <strong>bukan bukti bahwa ISO bebas malware</strong>.
+
+    </div>
+
+</section>
+
+
+<div class="footer">
+
+    WebToolsKita — Universal Bootable USB & ISO Hash Checker
+
+</div>
+
+</div>
+
+
+
+<script>
+
+/* ============================================================
+   FILE SIZE LIMIT
+============================================================ */
+
+const MAX_FILE_SIZE =
+    250 * 1024 * 1024;
+
+
+/* ============================================================
+   GENERAL HELPERS
+============================================================ */
+
+function formatBytes(bytes){
+
+    if(bytes === 0){
+        return "0 Bytes";
+    }
+
+    const units = [
+        "Bytes",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+    ];
+
+    const i =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+    return (
+        bytes /
+        Math.pow(1024,i)
+    ).toFixed(2)
+    + " "
+    + units[i];
+
+}
+
+
+function isFileWithinLimit(file){
+
+    return (
+        file &&
+        file.size <= MAX_FILE_SIZE
+    );
+
+}
+
+
+function sizeErrorHTML(){
+
+    return `
+        <span class="error">
+            File terlalu besar.
+        </span>
+        Maksimal ukuran file adalah
+        <strong>250 MB</strong>.
+    `;
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function normalizeHash(value){
+
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g,"");
+
+}
+
+
+
+/* ============================================================
+   ISO → USB
+============================================================ */
+
+let selectedISO = null;
+
+
+const isoFile =
+    document.getElementById(
+        "isoFile"
+    );
+
+
+const isoDrop =
+    document.getElementById(
+        "isoDrop"
+    );
+
+
+const isoInfo =
+    document.getElementById(
+        "isoInfo"
+    );
+
+
+const usbStatus =
+    document.getElementById(
+        "usbStatus"
+    );
+
+
+function showISOInfo(file){
+
+    if(!file){
+
+        isoInfo.textContent =
+            "Belum ada ISO yang dipilih.";
+
+        return;
+
+    }
+
+
+    isoInfo.innerHTML =
+        "<strong>File:</strong> "
+        + escapeHTML(file.name)
+        + "<br>"
+        + "<strong>Ukuran:</strong> "
+        + formatBytes(file.size)
+        + "<br>"
+        + "<strong>Batas:</strong> 250 MB";
+
+}
+
+
+function setSelectedISO(file){
+
+    if(!file){
+        return false;
+    }
+
+
+    if(!isFileWithinLimit(file)){
+
+        selectedISO = null;
+
+        isoInfo.innerHTML =
+            sizeErrorHTML();
+
+        usbStatus.innerHTML =
+            sizeErrorHTML();
+
+        return false;
+
+    }
+
+
+    selectedISO =
+        file;
+
+
+    showISOInfo(
+        selectedISO
+    );
+
+
+    usbStatus.innerHTML =
+        '<span class="success">'
+        + "ISO siap digunakan untuk konfigurasi."
+        + "</span>";
+
+
+    return true;
+
+}
+
+
+isoFile.addEventListener(
+    "change",
+    function(){
+
+        if(!this.files.length){
+            return;
+        }
+
+        setSelectedISO(
+            this.files[0]
+        );
+
+    }
+);
+
+
+document
+    .getElementById(
+        "prepareUSB"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            if(!selectedISO){
+
+                usbStatus.innerHTML =
+                    '<span class="error">'
+                    + "Pilih ISO dengan ukuran maksimal 250 MB."
+                    + "</span>";
+
+                return;
+
+            }
+
+
+            const scheme =
+                document
+                    .getElementById(
+                        "partitionScheme"
+                    )
+                    .value;
+
+
+            const boot =
+                document
+                    .getElementById(
+                        "bootMode"
+                    )
+                    .value;
+
+
+            usbStatus.innerHTML =
+
+                "<strong>Konfigurasi siap:</strong><br>"
+                + "ISO: "
+                + escapeHTML(
+                    selectedISO.name
+                )
+                + "<br>"
+                + "Ukuran: "
+                + formatBytes(
+                    selectedISO.size
+                )
+                + "<br>"
+                + "Partition Scheme: "
+                + scheme
+                + "<br>"
+                + "Boot Mode: "
+                + boot
+                + "<br><br>"
+                + '<span class="error">'
+                + "Browser tidak dapat melakukan "
+                + "format/write USB mentah seperti "
+                + "aplikasi desktop Rufus/Ventoy."
+                + "</span>";
+
+        }
+    );
+
+
+
+/* ============================================================
+   MULTIPLE ISO
+============================================================ */
+
+const multiIso =
+    document.getElementById(
+        "multiIso"
+    );
+
+
+const multiList =
+    document.getElementById(
+        "multiList"
+    );
+
+
+function renderMultipleISO(files){
+
+    multiList.innerHTML = "";
+
+
+    if(!files.length){
+
+        multiList.innerHTML =
+            '<div class="file-item">'
+            + "Belum ada ISO."
+            + "</div>";
+
+        return;
+
+    }
+
+
+    Array
+        .from(files)
+        .forEach(
+            function(file,index){
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "file-item";
+
+
+                if(
+                    !isFileWithinLimit(
+                        file
+                    )
+                ){
+
+                    item.innerHTML =
+                        "<strong>"
+                        + (index + 1)
+                        + ".</strong> "
+                        + escapeHTML(
+                            file.name
+                        )
+                        + " — "
+                        + formatBytes(
+                            file.size
+                        )
+                        + " — "
+                        + '<span class="error">'
+                        + "DITOLAK: > 250 MB"
+                        + "</span>";
+
+                }
+                else{
+
+                    item.innerHTML =
+                        "<strong>"
+                        + (index + 1)
+                        + ".</strong> "
+                        + escapeHTML(
+                            file.name
+                        )
+                        + " — "
+                        + formatBytes(
+                            file.size
+                        )
+                        + " — "
+                        + '<span class="success">'
+                        + "OK"
+                        + "</span>";
+
+                }
+
+
+                multiList.appendChild(
+                    item
+                );
+
+            }
+        );
+
+}
+
+
+multiIso.addEventListener(
+    "change",
+    function(){
+
+        renderMultipleISO(
+            this.files
+        );
+
+    }
+);
+
+
+
+/* ============================================================
+   SHA-256
+============================================================ */
+
+async function calculateSHA256(
+    buffer
+){
+
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            buffer
+        );
+
+
+    return Array
+        .from(
+            new Uint8Array(
+                hash
+            )
+        )
+        .map(
+            function(byte){
+
+                return byte
+                    .toString(16)
+                    .padStart(2,"0");
+
+            }
+        )
+        .join("");
+
+}
+
+
+
+/* ============================================================
+   MD5
+============================================================ */
+
+function md5(buffer){
+
+    const bytes =
+        new Uint8Array(
+            buffer
+        );
+
+
+    const originalLength =
+        bytes.length;
+
+
+    const bitLength =
+        originalLength * 8;
+
+
+    const paddingLength =
+        (
+            (
+                56 -
+                (
+                    (originalLength + 1) %
+                    64
+                )
+            ) + 64
+        ) % 64;
+
+
+    const totalLength =
+        originalLength
+        + 1
+        + paddingLength
+        + 8;
+
+
+    const data =
+        new Uint8Array(
+            totalLength
+        );
+
+
+    data.set(bytes);
+
+
+    data[originalLength] =
+        0x80;
+
+
+    let lengthValue =
+        bitLength;
+
+
+    for(
+        let i = 0;
+        i < 8;
+        i++
+    ){
+
+        data[
+            totalLength - 8 + i
+        ] =
+            lengthValue & 0xff;
+
+
+        lengthValue =
+            Math.floor(
+                lengthValue / 256
+            );
+
+    }
+
+
+    let a0 =
+        0x67452301;
+
+
+    let b0 =
+        0xefcdab89;
+
+
+    let c0 =
+        0x98badcfe;
+
+
+    let d0 =
+        0x10325476;
+
+
+    const K =
+        new Uint32Array(
+            64
+        );
+
+
+    for(
+        let i = 0;
+        i < 64;
+        i++
+    ){
+
+        K[i] =
+            Math.floor(
+                Math.abs(
+                    Math.sin(i + 1)
+                ) *
+                4294967296
+            ) >>> 0;
+
+    }
+
+
+    const S = [
+
+        7,12,17,22,
+        7,12,17,22,
+        7,12,17,22,
+        7,12,17,22,
+
+        5,9,14,20,
+        5,9,14,20,
+        5,9,14,20,
+        5,9,14,20,
+
+        4,11,16,23,
+        4,11,16,23,
+        4,11,16,23,
+        4,11,16,23,
+
+        6,10,15,21,
+        6,10,15,21,
+        6,10,15,21,
+        6,10,15,21
+
+    ];
+
+
+    function leftRotate(
+        value,
+        amount
+    ){
+
+        return (
+            (value << amount)
+            |
+            (value >>> (32 - amount))
+        ) >>> 0;
+
+    }
+
+
+    for(
+        let offset = 0;
+        offset < data.length;
+        offset += 64
+    ){
+
+        const M =
+            new Uint32Array(
+                16
+            );
+
+
+        for(
+            let i = 0;
+            i < 16;
+            i++
+        ){
+
+            const index =
+                offset +
+                (i * 4);
+
+
+            M[i] =
+                (
+                    data[index]
+                    |
+                    (
+                        data[index + 1]
+                        << 8
+                    )
+                    |
+                    (
+                        data[index + 2]
+                        << 16
+                    )
+                    |
+                    (
+                        data[index + 3]
+                        << 24
+                    )
+                ) >>> 0;
+
+        }
+
+
+        let A =
+            a0;
+
+
+        let B =
+            b0;
+
+
+        let C =
+            c0;
+
+
+        let D =
+            d0;
+
+
+        for(
+            let i = 0;
+            i < 64;
+            i++
+        ){
+
+            let F;
+            let g;
+
+
+            if(i < 16){
+
+                F =
+                    (B & C)
+                    |
+                    ((~B) & D);
+
+                g = i;
+
+            }
+            else if(i < 32){
+
+                F =
+                    (D & B)
+                    |
+                    ((~D) & C);
+
+                g =
+                    (5 * i + 1) % 16;
+
+            }
+            else if(i < 48){
+
+                F =
+                    B ^ C ^ D;
+
+                g =
+                    (3 * i + 5) % 16;
+
+            }
+            else{
+
+                F =
+                    C ^ (B | (~D));
+
+                g =
+                    (7 * i) % 16;
+
+            }
+
+
+            const temp =
+                D;
+
+
+            const sum =
+                (
+                    A
+                    + F
+                    + K[i]
+                    + M[g]
+                ) >>> 0;
+
+
+            D =
+                C;
+
+
+            C =
+                B;
+
+
+            B =
+                (
+                    B +
+                    leftRotate(
+                        sum,
+                        S[i]
+                    )
+                ) >>> 0;
+
+
+            A =
+                temp;
+
+        }
+
+
+        a0 =
+            (a0 + A) >>> 0;
+
+
+        b0 =
+            (b0 + B) >>> 0;
+
+
+        c0 =
+            (c0 + C) >>> 0;
+
+
+        d0 =
+            (d0 + D) >>> 0;
+
+    }
+
+
+    function wordToHexLE(
+        word
+    ){
+
+        return [
+
+            word & 0xff,
+
+            (word >>> 8) & 0xff,
+
+            (word >>> 16) & 0xff,
+
+            (word >>> 24) & 0xff
+
+        ]
+        .map(
+            function(value){
+
+                return value
+                    .toString(16)
+                    .padStart(2,"0");
+
+            }
+        )
+        .join("");
+
+    }
+
+
+    return (
+        wordToHexLE(a0)
+        + wordToHexLE(b0)
+        + wordToHexLE(c0)
+        + wordToHexLE(d0)
+    );
+
+}
+
+
+
+/* ============================================================
+   HASH CHECKER
+============================================================ */
+
+let hashFile = null;
+
+
+const hashInput =
+    document.getElementById(
+        "hashFile"
+    );
+
+
+const hashFileInfo =
+    document.getElementById(
+        "hashFileInfo"
+    );
+
+
+const calculateHashButton =
+    document.getElementById(
+        "calculateHash"
+    );
+
+
+const md5Result =
+    document.getElementById(
+        "md5Result"
+    );
+
+
+const sha256Result =
+    document.getElementById(
+        "sha256Result"
+    );
+
+
+const hashProgressWrap =
+    document.getElementById(
+        "hashProgressWrap"
+    );
+
+
+const hashProgressBar =
+    document.getElementById(
+        "hashProgressBar"
+    );
+
+
+const hashProgressText =
+    document.getElementById(
+        "hashProgressText"
+    );
+
+
+const hashProgressPercent =
+    document.getElementById(
+        "hashProgressPercent"
+    );
+
+
+function setProgress(
+    percent,
+    text
+){
+
+    hashProgressBar.style.width =
+        percent + "%";
+
+
+    hashProgressPercent.textContent =
+        Math.round(percent)
+        + "%";
+
+
+    hashProgressText.textContent =
+        text;
+
+}
+
+
+function showHashFileInfo(file){
+
+    if(!file){
+
+        hashFileInfo.textContent =
+            "Belum ada ISO untuk hash checker.";
+
+        return;
+
+    }
+
+
+    hashFileInfo.innerHTML =
+        "<strong>File:</strong> "
+        + escapeHTML(
+            file.name
+        )
+        + "<br>"
+        + "<strong>Ukuran:</strong> "
+        + formatBytes(
+            file.size
+        )
+        + "<br>"
+        + "<strong>Batas:</strong> 250 MB";
+
+}
+
+
+function setHashFile(file){
+
+    if(!file){
+        return false;
+    }
+
+
+    if(
+        !isFileWithinLimit(
+            file
+        )
+    ){
+
+        hashFile = null;
+
+
+        hashFileInfo.innerHTML =
+            sizeErrorHTML();
+
+
+        md5Result.textContent =
+            "—";
+
+
+        sha256Result.textContent =
+            "—";
+
+
+        return false;
+
+    }
+
+
+    hashFile =
+        file;
+
+
+    showHashFileInfo(
+        hashFile
+    );
+
+
+    md5Result.textContent =
+        "—";
+
+
+    sha256Result.textContent =
+        "—";
+
+
+    return true;
+
+}
+
+
+hashInput.addEventListener(
+    "change",
+    function(){
+
+        if(!this.files.length){
+            return;
+        }
+
+
+        setHashFile(
+            this.files[0]
+        );
+
+    }
+);
+
+
+async function calculateHashes(
+    file
+){
+
+    setProgress(
+        10,
+        "Membaca file ISO..."
+    );
+
+
+    const buffer =
+        await file.arrayBuffer();
+
+
+    setProgress(
+        45,
+        "Menghitung MD5..."
+    );
+
+
+    const md5Hash =
+        md5(
+            buffer
+        );
+
+
+    setProgress(
+        70,
+        "Menghitung SHA-256..."
+    );
+
+
+    const sha256Hash =
+        await calculateSHA256(
+            buffer
+        );
+
+
+    setProgress(
+        100,
+        "Hash selesai dihitung."
+    );
+
+
+    return {
+        md5: md5Hash,
+        sha256: sha256Hash
+    };
+
+}
+
+
+calculateHashButton.addEventListener(
+    "click",
+    async function(){
+
+        if(!hashFile){
+
+            alert(
+                "Pilih ISO dengan ukuran maksimal 250 MB terlebih dahulu."
+            );
+
+            return;
+
+        }
+
+
+        calculateHashButton.disabled =
+            true;
+
+
+        md5Result.textContent =
+            "Menghitung...";
+
+
+        sha256Result.textContent =
+            "Menghitung...";
+
+
+        hashProgressWrap
+            .classList
+            .add("active");
+
+
+        try{
+
+            const result =
+                await calculateHashes(
+                    hashFile
+                );
+
+
+            md5Result.textContent =
+                result.md5;
+
+
+            sha256Result.textContent =
+                result.sha256;
+
+
+            setProgress(
+                100,
+                "MD5 dan SHA-256 selesai."
+            );
+
+        }
+        catch(error){
+
+            console.error(
+                error
+            );
+
+
+            md5Result.innerHTML =
+                '<span class="error">'
+                + "Gagal menghitung MD5."
+                + "</span>";
+
+
+            sha256Result.innerHTML =
+                '<span class="error">'
+                + "Gagal menghitung SHA-256."
+                + "</span>";
+
+
+            setProgress(
+                0,
+                "Proses gagal."
+            );
+
+        }
+        finally{
+
+            calculateHashButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+
+/* ============================================================
+   CHECKSUM COMPARISON
+============================================================ */
+
+document
+    .getElementById(
+        "compareHash"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            const official =
+                normalizeHash(
+                    document
+                        .getElementById(
+                            "officialHash"
+                        )
+                        .value
+                );
+
+
+            const md5Value =
+                normalizeHash(
+                    md5Result.textContent
+                );
+
+
+            const sha256Value =
+                normalizeHash(
+                    sha256Result.textContent
+                );
+
+
+            const compareResult =
+                document.getElementById(
+                    "compareResult"
+                );
+
+
+            if(!official){
+
+                compareResult.innerHTML =
+                    '<span class="error">'
+                    + "Masukkan checksum resmi terlebih dahulu."
+                    + "</span>";
+
+                return;
+
+            }
+
+
+            const md5Match =
+                official === md5Value;
+
+
+            const sha256Match =
+                official === sha256Value;
+
+
+            if(md5Match){
+
+                compareResult.innerHTML =
+                    '<span class="success">'
+                    + "Checksum cocok dengan MD5."
+                    + "</span>";
+
+                return;
+
+            }
+
+
+            if(sha256Match){
+
+                compareResult.innerHTML =
+                    '<span class="success">'
+                    + "Checksum cocok dengan SHA-256."
+                    + "</span>";
+
+                return;
+
+            }
+
+
+            compareResult.innerHTML =
+                '<span class="error">'
+                + "Checksum tidak cocok dengan MD5 maupun SHA-256."
+                + "</span>";
+
+        }
+    );
+
+
+
+/* ============================================================
+   DRAG & DROP
+============================================================ */
+
+function setupDropZone(
+    zone,
+    callback
+){
+
+    [
+        "dragenter",
+        "dragover"
+    ]
+    .forEach(
+        function(eventName){
+
+            zone.addEventListener(
+                eventName,
+                function(event){
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    zone.classList.add(
+                        "dragover"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    [
+        "dragleave",
+        "drop"
+    ]
+    .forEach(
+        function(eventName){
+
+            zone.addEventListener(
+                eventName,
+                function(event){
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    zone.classList.remove(
+                        "dragover"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    zone.addEventListener(
+        "drop",
+        function(event){
+
+            const files =
+                event
+                    .dataTransfer
+                    .files;
+
+
+            if(files.length){
+
+                callback(
+                    files
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+setupDropZone(
+    isoDrop,
+    function(files){
+
+        if(!files.length){
+            return;
+        }
+
+
+        setSelectedISO(
+            files[0]
+        );
+
+    }
+);
+
+
+setupDropZone(
+    multiDrop,
+    function(files){
+
+        renderMultipleISO(
+            files
+        );
+
+    }
+);
+
+
+setupDropZone(
+    hashDrop,
+    function(files){
+
+        if(!files.length){
+            return;
+        }
+
+
+        setHashFile(
+            files[0]
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>

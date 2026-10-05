@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Website Update Manager — WebToolsKita</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#0b0f14;
+    color:#fff;
+    min-height:100vh;
+    padding:30px 15px;
+}
+
+.container{
+    width:100%;
+    max-width:1000px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+.header p{
+    color:#9ca3af;
+    font-size:15px;
+}
+
+.box{
+    background:#111820;
+    border:1px solid #26313d;
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:20px;
+}
+
+.box h2{
+    font-size:21px;
+    margin-bottom:15px;
+}
+
+.info{
+    color:#9ca3af;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:15px;
+}
+
+.file-input{
+    width:100%;
+    padding:18px;
+    border:1px dashed #405064;
+    border-radius:10px;
+    background:#0b0f14;
+    color:#fff;
+    cursor:pointer;
+}
+
+button{
+    border:none;
+    border-radius:8px;
+    padding:10px 15px;
+    font-size:14px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    opacity:.85;
+}
+
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.primary{
+    background:#2563eb;
+    color:#fff;
+}
+
+.green{
+    background:#16a34a;
+    color:#fff;
+}
+
+.orange{
+    background:#d97706;
+    color:#fff;
+}
+
+.gray{
+    background:#4b5563;
+    color:#fff;
+}
+
+.buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:15px;
+}
+
+.status-list{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.status-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#0b0f14;
+    border:1px solid #293543;
+    border-radius:9px;
+    padding:12px;
+}
+
+.status-badge{
+    min-width:85px;
+    text-align:center;
+    padding:5px 8px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.info-badge{
+    background:#374151;
+    color:#d1d5db;
+}
+
+.scanned-badge{
+    background:#14532d;
+    color:#4ade80;
+}
+
+.file-name{
+    flex:1;
+    word-break:break-word;
+}
+
+.git-status{
+    background:#05080c;
+    border:1px solid #293543;
+    border-radius:10px;
+    padding:15px;
+    font-family:Consolas,monospace;
+    font-size:13px;
+    line-height:1.7;
+    white-space:pre-wrap;
+    overflow-x:auto;
+    color:#d1d5db;
+    min-height:100px;
+}
+
+.commit-area{
+    margin-top:15px;
+}
+
+.commit-input{
+    width:100%;
+    background:#0b0f14;
+    color:#fff;
+    border:1px solid #344150;
+    border-radius:8px;
+    padding:12px;
+    outline:none;
+}
+
+.commit-input:focus{
+    border-color:#5b9cff;
+}
+
+.log{
+    margin-top:15px;
+    min-height:22px;
+    color:#9ca3af;
+    font-size:14px;
+    line-height:1.5;
+    white-space:pre-wrap;
+}
+
+.connection{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:15px;
+}
+
+.connection-item{
+    background:#0b0f14;
+    border:1px solid #293543;
+    border-radius:9px;
+    padding:12px;
+}
+
+.connection-label{
+    color:#6b7280;
+    font-size:11px;
+    margin-bottom:6px;
+}
+
+.connection-value{
+    color:#fff;
+    font-family:Consolas,monospace;
+    font-size:12px;
+    word-break:break-word;
+}
+
+.success{
+    color:#4ade80;
+}
+
+.error{
+    color:#f87171;
+}
+
+.warning{
+    margin-top:15px;
+    padding:12px;
+    border-radius:8px;
+    background:#291c08;
+    border:1px solid #6b4b14;
+    color:#fbbf24;
+    font-size:13px;
+    line-height:1.5;
+}
+
+@media(max-width:700px){
+
+    body{
+        padding:20px 10px;
+    }
+
+    .header h1{
+        font-size:25px;
+    }
+
+    .status-item{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .buttons{
+        flex-direction:column;
+    }
+
+    .buttons button{
+        width:100%;
+    }
+
+    .connection{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Website Update Manager</h1>
+
+        <p>
+            File Scanner + Git/GitHub Update Manager
+        </p>
+
+    </div>
+
+
+    <!-- ADMIN -->
+
+    <div class="box">
+
+        <h2>Administrator</h2>
+
+        <div
+            id="authStatus"
+            class="log"
+        >
+            Memeriksa sesi administrator...
+        </div>
+
+    </div>
+
+
+    <!-- FILE SCANNER -->
+
+    <div class="box">
+
+        <h2>File Scanner</h2>
+
+        <div class="info">
+            Pilih file website dari komputer.
+            File akan ditampilkan di daftar pemeriksaan
+            sebelum operasi Git dilakukan.
+        </div>
+
+        <input
+            id="fileInput"
+            class="file-input"
+            type="file"
+            multiple
+        >
+
+        <div class="buttons">
+
+            <button
+                id="scanButton"
+                class="primary"
+            >
+                Scan File
+            </button>
+
+            <button
+                id="clearButton"
+                class="gray"
+            >
+                Clear
+            </button>
+
+        </div>
+
+        <div
+            id="scannerMessage"
+            class="log"
+        ></div>
+
+    </div>
+
+
+    <!-- FILE STATUS -->
+
+    <div class="box">
+
+        <h2>File Status</h2>
+
+        <div
+            id="fileStatus"
+            class="status-list"
+        >
+
+            <div class="status-item">
+
+                <span class="status-badge info-badge">
+                    INFO
+                </span>
+
+                <span class="file-name">
+                    Belum ada file yang diperiksa.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- REAL GIT -->
+
+    <div class="box">
+
+        <h2>Git Status</h2>
+
+        <div class="info">
+            Data di bawah diambil langsung dari
+            repository Git lokal WebToolsKita.
+        </div>
+
+        <div
+            id="gitOutput"
+            class="git-status"
+        >Menunggu pemeriksaan Git...</div>
+
+        <div class="buttons">
+
+            <button
+                id="statusButton"
+                class="green"
+            >
+                Git Status
+            </button>
+
+            <button
+                id="branchButton"
+                class="gray"
+            >
+                Branch
+            </button>
+
+            <button
+                id="remoteButton"
+                class="gray"
+            >
+                Remote
+            </button>
+
+        </div>
+
+        <div
+            id="gitStatusMessage"
+            class="log"
+        ></div>
+
+    </div>
+
+
+    <!-- GITHUB -->
+
+    <div class="box">
+
+        <h2>Git / GitHub</h2>
+
+        <div class="info">
+            Gunakan bagian ini untuk menjalankan operasi
+            Git melalui server lokal WebToolsKita.
+        </div>
+
+
+        <div class="connection">
+
+            <div class="connection-item">
+
+                <div class="connection-label">
+                    CURRENT BRANCH
+                </div>
+
+                <div
+                    id="branchText"
+                    class="connection-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="connection-item">
+
+                <div class="connection-label">
+                    GITHUB REMOTE
+                </div>
+
+                <div
+                    id="remoteText"
+                    class="connection-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="commit-area">
+
+            <input
+                id="commitInput"
+                class="commit-input"
+                type="text"
+                maxlength="200"
+                placeholder="Tulis pesan commit..."
+            >
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                id="addButton"
+                class="primary"
+            >
+                Git Add
+            </button>
+
+            <button
+                id="commitButton"
+                class="orange"
+            >
+                Commit
+            </button>
+
+            <button
+                id="pushButton"
+                class="green"
+            >
+                Push ke GitHub
+            </button>
+
+            <button
+                id="syncButton"
+                class="green"
+            >
+                Add + Commit + Push
+            </button>
+
+        </div>
+
+
+        <div
+            id="gitMessage"
+            class="log"
+        ></div>
+
+        <div class="warning">
+            Semua operasi Git pada halaman ini dikirim
+            ke backend WebToolsKita dan dilindungi
+            autentikasi administrator Firebase.
+        </div>
+
+    </div>
+
+
+    <!-- DEPLOYMENT -->
+
+    <div class="box">
+
+        <h2>Deployment</h2>
+
+        <div class="info">
+            GitHub tetap menjadi repository pusat.
+            Deployment ke Vercel, Railway, atau hosting
+            lainnya dilakukan secara terpisah.
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   FIREBASE
+   ===================================================== */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth =
+    firebase.auth();
+
+
+/* =====================================================
+   ELEMENT
+   ===================================================== */
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const scanButton =
+    document.getElementById("scanButton");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+const fileStatus =
+    document.getElementById("fileStatus");
+
+const scannerMessage =
+    document.getElementById("scannerMessage");
+
+const authStatus =
+    document.getElementById("authStatus");
+
+const gitOutput =
+    document.getElementById("gitOutput");
+
+const statusButton =
+    document.getElementById("statusButton");
+
+const branchButton =
+    document.getElementById("branchButton");
+
+const remoteButton =
+    document.getElementById("remoteButton");
+
+const gitStatusMessage =
+    document.getElementById("gitStatusMessage");
+
+const branchText =
+    document.getElementById("branchText");
+
+const remoteText =
+    document.getElementById("remoteText");
+
+const commitInput =
+    document.getElementById("commitInput");
+
+const addButton =
+    document.getElementById("addButton");
+
+const commitButton =
+    document.getElementById("commitButton");
+
+const pushButton =
+    document.getElementById("pushButton");
+
+const syncButton =
+    document.getElementById("syncButton");
+
+const gitMessage =
+    document.getElementById("gitMessage");
+
+
+let adminVerified = false;
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+function message(
+    element,
+    text,
+    type = "info"
+){
+
+    element.textContent =
+        text || "";
+
+    element.className =
+        "log";
+
+    if(type === "success"){
+        element.classList.add("success");
+    }
+
+    if(type === "error"){
+        element.classList.add("error");
+    }
+
+}
+
+
+/* =====================================================
+   FIREBASE TOKEN
+   ===================================================== */
+
+async function getToken(){
+
+    const user =
+        auth.currentUser;
+
+    if(!user){
+
+        throw new Error(
+            "Sesi administrator tidak ditemukan."
+        );
+
+    }
+
+    return await user.getIdToken(true);
+
+}
+
+
+/* =====================================================
+   ADMIN CHECK
+   ===================================================== */
+
+async function verifyAdmin(){
+
+    const user =
+        auth.currentUser;
+
+    if(!user){
+
+        location.href =
+            "index18.html";
+
+        return false;
+
+    }
+
+
+    try{
+
+        const token =
+            await getToken();
+
+
+        const response =
+            await fetch(
+                "/api/admin/test",
+                {
+                    headers:{
+                        Authorization:
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if(
+            response.status === 401 ||
+            response.status === 403
+        ){
+
+            location.href =
+                "index18.html";
+
+            return false;
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Verifikasi administrator gagal."
+            );
+
+        }
+
+
+        adminVerified = true;
+
+
+        message(
+            authStatus,
+            "Administrator terverifikasi. Git Manager siap digunakan.",
+            "success"
+        );
+
+
+        return true;
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        message(
+            authStatus,
+            error.message ||
+            "Gagal memverifikasi administrator.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   API REQUEST
+   ===================================================== */
+
+async function api(
+    url,
+    options = {}
+){
+
+    if(!adminVerified){
+
+        const allowed =
+            await verifyAdmin();
+
+        if(!allowed){
+
+            throw new Error(
+                "Akses administrator tidak tersedia."
+            );
+
+        }
+
+    }
+
+
+    const token =
+        await getToken();
+
+
+    const headers =
+        Object.assign(
+            {},
+            options.headers || {},
+            {
+                Authorization:
+                    "Bearer " + token
+            }
+        );
+
+
+    if(options.body){
+
+        headers["Content-Type"] =
+            "application/json";
+
+    }
+
+
+    const response =
+        await fetch(
+            url,
+            Object.assign(
+                {},
+                options,
+                {
+                    headers
+                }
+            )
+        );
+
+
+    const data =
+        await response
+            .json()
+            .catch(
+                () => ({})
+            );
+
+
+    if(!response.ok){
+
+        throw new Error(
+            data.message ||
+            data.stderr ||
+            "Request gagal."
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =====================================================
+   REAL GIT STATUS
+   ===================================================== */
+
+async function getGitStatus(){
+
+    statusButton.disabled =
+        true;
+
+    message(
+        gitStatusMessage,
+        "Mengambil Git Status..."
+    );
+
+
+    try{
+
+        const data =
+            await api(
+                "/api/git/status"
+            );
+
+
+        gitOutput.textContent =
+            (
+                data.stdout ||
+                data.stderr ||
+                "Working tree bersih."
+            ).trim();
+
+
+        message(
+            gitStatusMessage,
+            "Git Status berhasil diambil dari repository lokal.",
+            "success"
+        );
+
+    }
+    catch(error){
+
+        gitOutput.textContent =
+            error.message;
+
+        message(
+            gitStatusMessage,
+            error.message,
+            "error"
+        );
+
+    }
+    finally{
+
+        statusButton.disabled =
+            false;
+
+    }
+
+}
+
+
+statusButton.addEventListener(
+    "click",
+    getGitStatus
+);
+
+
+/* =====================================================
+   BRANCH
+   ===================================================== */
+
+async function getBranch(){
+
+    branchButton.disabled =
+        true;
+
+    try{
+
+        const data =
+            await api(
+                "/api/git/branch"
+            );
+
+
+        branchText.textContent =
+            data.stdout.trim() ||
+            "—";
+
+
+        message(
+            gitStatusMessage,
+            "Branch berhasil dibaca.",
+            "success"
+        );
+
+    }
+    catch(error){
+
+        branchText.textContent =
+            "ERROR";
+
+        message(
+            gitStatusMessage,
+            error.message,
+            "error"
+        );
+
+    }
+    finally{
+
+        branchButton.disabled =
+            false;
+
+    }
+
+}
+
+
+branchButton.addEventListener(
+    "click",
+    getBranch
+);
+
+
+/* =====================================================
+   REMOTE
+   ===================================================== */
+
+async function getRemote(){
+
+    remoteButton.disabled =
+        true;
+
+    try{
+
+        const data =
+            await api(
+                "/api/git/remote"
+            );
+
+
+        remoteText.textContent =
+            data.stdout.trim() ||
+            "—";
+
+
+        message(
+            gitStatusMessage,
+            "Remote Git berhasil dibaca.",
+            "success"
+        );
+
+    }
+    catch(error){
+
+        remoteText.textContent =
+            "ERROR";
+
+        message(
+            gitStatusMessage,
+            error.message,
+            "error"
+        );
+
+    }
+    finally{
+
+        remoteButton.disabled =
+            false;
+
+    }
+
+}
+
+
+remoteButton.addEventListener(
+    "click",
+    getRemote
+);
+
+
+/* =====================================================
+   FILE SCANNER
+   ===================================================== */
+
+scanButton.addEventListener(
+    "click",
+    function(){
+
+        const files =
+            Array.from(
+                fileInput.files
+            );
+
+
+        if(!files.length){
+
+            message(
+                scannerMessage,
+                "Belum ada file yang dipilih.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        fileStatus.innerHTML =
+            "";
+
+
+        files.forEach(
+            function(file){
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "status-item";
+
+
+                const badge =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                badge.className =
+                    "status-badge scanned-badge";
+
+                badge.textContent =
+                    "SCANNED";
+
+
+                const name =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                name.className =
+                    "file-name";
+
+                name.textContent =
+                    file.name;
+
+
+                row.appendChild(
+                    badge
+                );
+
+                row.appendChild(
+                    name
+                );
+
+
+                fileStatus.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        message(
+            scannerMessage,
+            files.length +
+            " file berhasil diperiksa.",
+            "success"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   GIT ADD
+   ===================================================== */
+
+addButton.addEventListener(
+    "click",
+    async function(){
+
+        addButton.disabled =
+            true;
+
+
+        message(
+            gitMessage,
+            "Menjalankan Git Add..."
+        );
+
+
+        try{
+
+            const data =
+                await api(
+                    "/api/git/add",
+                    {
+                        method:
+                            "POST"
+                    }
+                );
+
+
+            if(!data.success){
+
+                throw new Error(
+                    data.stderr ||
+                    "Git Add gagal."
+                );
+
+            }
+
+
+            message(
+                gitMessage,
+                data.stdout ||
+                "Git Add berhasil.",
+                "success"
+            );
+
+
+            await getGitStatus();
+
+        }
+        catch(error){
+
+            message(
+                gitMessage,
+                error.message,
+                "error"
+            );
+
+        }
+        finally{
+
+            addButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   COMMIT
+   ===================================================== */
+
+commitButton.addEventListener(
+    "click",
+    async function(){
+
+        const commitMessage =
+            commitInput.value.trim();
+
+
+        if(!commitMessage){
+
+            message(
+                gitMessage,
+                "Pesan commit wajib diisi.",
+                "error"
+            );
+
+            commitInput.focus();
+
+            return;
+
+        }
+
+
+        commitButton.disabled =
+            true;
+
+
+        message(
+            gitMessage,
+            "Menjalankan Git Commit..."
+        );
+
+
+        try{
+
+            const data =
+                await api(
+                    "/api/git/commit",
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                        JSON.stringify({
+                            message:
+                                commitMessage
+                        })
+
+                    }
+                );
+
+
+            if(!data.success){
+
+                throw new Error(
+                    data.stderr ||
+                    "Git Commit gagal."
+                );
+
+            }
+
+
+            message(
+                gitMessage,
+                data.stdout ||
+                "Commit berhasil dibuat.",
+                "success"
+            );
+
+
+            commitInput.value =
+                "";
+
+
+            await getGitStatus();
+
+        }
+        catch(error){
+
+            message(
+                gitMessage,
+                error.message,
+                "error"
+            );
+
+        }
+        finally{
+
+            commitButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PUSH
+   ===================================================== */
+
+pushButton.addEventListener(
+    "click",
+    async function(){
+
+        if(
+            !confirm(
+                "Yakin ingin Push ke GitHub?"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        pushButton.disabled =
+            true;
+
+
+        message(
+            gitMessage,
+            "Menjalankan Git Push..."
+        );
+
+
+        try{
+
+            const data =
+                await api(
+                    "/api/git/push",
+                    {
+                        method:
+                            "POST"
+                    }
+                );
+
+
+            if(!data.success){
+
+                throw new Error(
+                    data.stderr ||
+                    "Git Push gagal."
+                );
+
+            }
+
+
+            message(
+                gitMessage,
+                data.stdout ||
+                "Push ke GitHub berhasil.",
+                "success"
+            );
+
+
+            await getGitStatus();
+
+        }
+        catch(error){
+
+            message(
+                gitMessage,
+                error.message,
+                "error"
+            );
+
+        }
+        finally{
+
+            pushButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ADD + COMMIT + PUSH
+   ===================================================== */
+
+syncButton.addEventListener(
+    "click",
+    async function(){
+
+        const commitMessage =
+            commitInput.value.trim();
+
+
+        if(!commitMessage){
+
+            message(
+                gitMessage,
+                "Pesan commit wajib diisi.",
+                "error"
+            );
+
+            commitInput.focus();
+
+            return;
+
+        }
+
+
+        if(
+            !confirm(
+                "Yakin menjalankan Git Add + Commit + Push?"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        syncButton.disabled =
+            true;
+
+
+        message(
+            gitMessage,
+            "Menjalankan Add + Commit + Push..."
+        );
+
+
+        try{
+
+            const data =
+                await api(
+                    "/api/git/sync",
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                            JSON.stringify({
+                                message:
+                                    commitMessage
+                            })
+
+                    }
+                );
+
+
+            if(!data.success){
+
+                const failed =
+                    data[data.step];
+
+
+                throw new Error(
+                    (
+                        failed &&
+                        (
+                            failed.stderr ||
+                            failed.stdout
+                        )
+                    ) ||
+                    "Git Sync gagal pada tahap " +
+                    (data.step || "unknown")
+                );
+
+            }
+
+
+            let output =
+                "Git Add + Commit + Push berhasil.\n\n";
+
+
+            if(
+                data.commit &&
+                data.commit.stdout
+            ){
+
+                output +=
+                    data.commit.stdout;
+
+            }
+
+
+            if(
+                data.push &&
+                data.push.stdout
+            ){
+
+                output +=
+                    "\n" +
+                    data.push.stdout;
+
+            }
+
+
+            message(
+                gitMessage,
+                output,
+                "success"
+            );
+
+
+            commitInput.value =
+                "";
+
+
+            await getGitStatus();
+
+        }
+        catch(error){
+
+            message(
+                gitMessage,
+                error.message,
+                "error"
+            );
+
+        }
+        finally{
+
+            syncButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CLEAR
+   ===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    function(){
+
+        fileInput.value =
+            "";
+
+        fileStatus.innerHTML = `
+
+            <div class="status-item">
+
+                <span class="status-badge info-badge">
+                    INFO
+                </span>
+
+                <span class="file-name">
+                    Belum ada file yang diperiksa.
+                </span>
+
+            </div>
+
+        `;
+
+        scannerMessage.textContent =
+            "";
+
+    }
+);
+
+
+/* =====================================================
+   AUTH STATE
+   ===================================================== */
+
+auth.onAuthStateChanged(
+    async function(user){
+
+        if(!user){
+
+            location.href =
+                "index18.html";
+
+            return;
+
+        }
+
+
+        const allowed =
+            await verifyAdmin();
+
+
+        if(!allowed){
+
+            return;
+
+        }
+
+
+        await getGitStatus();
+
+        await getBranch();
+
+        await getRemote();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

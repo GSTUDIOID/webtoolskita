@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Topup Murah dan Terpecaya — WebToolsKita</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #24103d 0%,
+            #0b0712 40%,
+            #050308 100%
+        );
+
+    color:#f5f3ff;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+.container{
+    width:min(850px,94%);
+    margin:30px auto;
+}
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.card{
+    background:
+        linear-gradient(
+            145deg,
+            #120c1c,
+            #0b0711
+        );
+
+    border:1px solid #4c1d95;
+
+    border-radius:22px;
+
+    padding:35px;
+
+    text-align:center;
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.55),
+        0 0 35px rgba(126,34,206,.10);
+}
+
+/* =========================
+   TITLE
+========================= */
+
+h1{
+    margin:0 0 15px;
+
+    font-size:
+        clamp(
+            26px,
+            5vw,
+            40px
+        );
+
+    color:#f3e8ff;
+}
+
+.description{
+    max-width:700px;
+
+    margin:0 auto;
+
+    color:#d8b4fe;
+
+    font-size:15px;
+
+    line-height:1.7;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.button-area{
+    margin-top:30px;
+}
+
+.topup-button{
+    display:inline-block;
+
+    padding:
+        14px 32px;
+
+    border:
+        1px solid #a855f7;
+
+    border-radius:11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+
+    color:#fff;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    text-decoration:none;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 22px rgba(
+            0,
+            0,
+            0,
+            .35
+        );
+
+    transition:
+        .2s ease;
+}
+
+.topup-button:hover{
+    background:
+        linear-gradient(
+            135deg,
+            #7e22ce,
+            #a855f7
+        );
+
+    border-color:#c084fc;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 28px rgba(
+            126,
+            34,
+            206,
+            .25
+        );
+}
+
+.topup-button:active{
+    transform:
+        translateY(0);
+}
+
+/* =========================
+   SMALL INFO
+========================= */
+
+.info{
+    margin-top:25px;
+
+    padding-top:18px;
+
+    border-top:
+        1px solid #3b1d5d;
+
+    color:#a78bfa;
+
+    font-size:12px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:600px){
+
+    .container{
+        width:94%;
+    }
+
+    .card{
+        padding:25px 18px;
+        border-radius:18px;
+    }
+
+    .description{
+        font-size:14px;
+    }
+
+    .topup-button{
+        width:100%;
+        padding:14px 20px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>
+            Topup Murah dan Terpecaya
+        </h1>
+
+        <p class="description">
+            Mau topup murah, gak ribet, dan terpecaya?
+            Di sini ada web yang 100% terpecaya dan murah
+            serta tidak memakai password pengguna jadi akun
+            anda 100% aman dan bisa milih game dan berapa aja
+            sesuai kebutuhan kalian dalam topup game sepuasnya.
+        </p>
+
+        <div class="button-area">
+
+            <a
+                class="topup-button"
+                href="https://ndxstoreid.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer">
+                TOPUP
+            </a>
+
+        </div>
+
+        <div class="info">
+            Klik tombol TOPUP untuk menuju NDXStoreID.
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
