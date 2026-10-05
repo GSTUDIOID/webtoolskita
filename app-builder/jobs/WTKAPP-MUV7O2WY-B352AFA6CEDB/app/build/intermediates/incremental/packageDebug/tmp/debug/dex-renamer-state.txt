@@ -1,0 +1,7 @@
+#Mon Oct 05 18:57:54 WIB 2026
+base.1=D\:\\webtoolskita\\app-builder\\android-template\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
+path.1=4/classes.dex
+base.0=D\:\\webtoolskita\\app-builder\\android-template\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+path.0=0/classes.dex

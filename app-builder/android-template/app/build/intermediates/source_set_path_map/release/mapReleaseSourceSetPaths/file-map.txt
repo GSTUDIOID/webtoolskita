@@ -1,0 +1,7 @@
+com.webtoolskita.appbuilder.app-pngs-0 D:\webtoolskita\app-builder\android-template\app\build\generated\res\pngs\release
+com.webtoolskita.appbuilder.app-resValues-1 D:\webtoolskita\app-builder\android-template\app\build\generated\res\resValues\release
+com.webtoolskita.appbuilder.app-packageReleaseResources-2 D:\webtoolskita\app-builder\android-template\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.webtoolskita.appbuilder.app-packageReleaseResources-3 D:\webtoolskita\app-builder\android-template\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.webtoolskita.appbuilder.app-release-4 D:\webtoolskita\app-builder\android-template\app\build\intermediates\merged_res\release\mergeReleaseResources
+com.webtoolskita.appbuilder.app-main-5 D:\webtoolskita\app-builder\android-template\app\src\main\res
+com.webtoolskita.appbuilder.app-release-6 D:\webtoolskita\app-builder\android-template\app\src\release\res

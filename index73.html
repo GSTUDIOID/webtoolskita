@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="WebToolsKita Advance Tool #12 — Web → App Builder">
+<title>Web → App Builder — WebToolsKita</title>
+
+<style>
+:root{
+  --bg:#07111f;
+  --bg2:#0b1728;
+  --card:rgba(16,30,50,.82);
+  --card2:rgba(9,20,35,.92);
+  --line:rgba(255,255,255,.10);
+  --text:#f5f7fb;
+  --muted:#9caac0;
+  --blue:#2ca7ff;
+  --cyan:#35e2ff;
+  --purple:#956cff;
+  --pink:#ff5fa2;
+  --green:#31e49a;
+  --yellow:#ffd166;
+  --red:#ff5f75;
+  --shadow:0 25px 70px rgba(0,0,0,.40);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 8% 5%,
+      rgba(44,167,255,.22),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 92% 8%,
+      rgba(149,108,255,.20),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(255,95,162,.10),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #040a12,
+      #09172a 50%,
+      #06101e
+    );
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.container{
+  width:min(1120px,calc(100% - 28px));
+  margin:auto;
+}
+
+header{
+  padding:26px 0 10px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+}
+
+.brand{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.4px;
+}
+
+.back{
+  border:1px solid rgba(53,226,255,.35);
+  color:#fff;
+  background:
+    linear-gradient(
+      135deg,
+      #1685ff,
+      #754eff,
+      #b44fff
+    );
+  padding:10px 17px;
+  border-radius:13px;
+  font-weight:900;
+  box-shadow:
+    0 9px 28px rgba(68,89,255,.25);
+}
+
+.hero{
+  text-align:center;
+  padding:35px 0 24px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(53,226,255,.08);
+  border:1px solid rgba(53,226,255,.22);
+  color:#79edff;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+h1{
+  margin:17px 0 12px;
+  font-size:clamp(35px,6vw,62px);
+  line-height:1;
+}
+
+.gradient{
+  background:
+    linear-gradient(
+      90deg,
+      #fff,
+      #54e8ff,
+      #a578ff,
+      #ff70ae
+    );
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.hero p{
+  max-width:790px;
+  margin:auto;
+  color:var(--muted);
+  font-size:16px;
+  line-height:1.7;
+}
+
+.card{
+  margin:16px 0;
+  padding:22px;
+  border:1px solid var(--line);
+  border-radius:23px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(19,37,61,.88),
+      rgba(7,17,30,.92)
+    );
+
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+}
+
+.card h2{
+  margin:0 0 7px;
+  font-size:20px;
+}
+
+.sub{
+  margin:0 0 18px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+label{
+  display:block;
+  color:#cbd5e4;
+  font-size:13px;
+  font-weight:750;
+  margin-bottom:7px;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  color:#fff;
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:13px;
+  padding:12px 13px;
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  border-color:rgba(53,226,255,.55);
+  box-shadow:
+    0 0 0 3px rgba(53,226,255,.08);
+}
+
+textarea{
+  min-height:105px;
+  resize:vertical;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.primary,
+.secondary,
+.success,
+.pink,
+.danger{
+  border-radius:13px;
+  padding:12px 17px;
+  font-weight:900;
+  color:#fff;
+}
+
+.primary{
+  border:0;
+  background:
+    linear-gradient(
+      135deg,
+      #168aff,
+      #7355ff
+    );
+}
+
+.secondary{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.07);
+}
+
+.success{
+  border:0;
+  background:
+    linear-gradient(
+      135deg,
+      #08b879,
+      #20d696
+    );
+}
+
+.pink{
+  border:0;
+  background:
+    linear-gradient(
+      135deg,
+      #ff4f9b,
+      #8e52ff
+    );
+}
+
+.danger{
+  border:1px solid rgba(255,95,117,.25);
+  background:rgba(255,95,117,.10);
+  color:#ff9baa;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.steps{
+  display:grid;
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+  gap:9px;
+  margin:15px 0 22px;
+}
+
+.step{
+  padding:10px 8px;
+  border-radius:12px;
+  text-align:center;
+  font-size:11px;
+  font-weight:900;
+  color:#8290a4;
+  background:rgba(255,255,255,.045);
+  border:1px solid var(--line);
+}
+
+.step.active{
+  color:#fff;
+  border-color:rgba(53,226,255,.35);
+  background:rgba(53,226,255,.10);
+  box-shadow:
+    0 0 25px rgba(53,226,255,.07);
+}
+
+.status{
+  padding:13px 14px;
+  border-radius:13px;
+  background:rgba(0,0,0,.20);
+  border:1px solid var(--line);
+  color:#b8c4d5;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.filebox{
+  padding:19px;
+  border-radius:16px;
+  text-align:center;
+  color:var(--muted);
+  background:rgba(0,0,0,.14);
+  border:1px dashed rgba(255,255,255,.22);
+}
+
+.filebox strong{
+  display:block;
+  color:#fff;
+  margin-bottom:5px;
+}
+
+.filebox input{
+  margin-top:10px;
+}
+
+.checks{
+  display:grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.check{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:11px 12px;
+  margin:0;
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--line);
+}
+
+.check input{
+  width:auto;
+}
+
+.preview{
+  min-height:300px;
+  overflow:hidden;
+  position:relative;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background:#101b2b;
+}
+
+.phone{
+  width:min(305px,75%);
+  height:350px;
+  margin:20px auto;
+  overflow:hidden;
+
+  border:7px solid #02050a;
+  border-radius:32px;
+
+  background:#f4f7fb;
+  color:#182235;
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.50);
+}
+
+.phoneTop{
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#fff;
+  background:#101722;
+  font-size:10px;
+}
+
+.phoneBody{
+  padding:20px 14px;
+  text-align:center;
+}
+
+.appIcon{
+  width:67px;
+  height:67px;
+  margin:10px auto;
+  display:block;
+  object-fit:cover;
+
+  border-radius:18px;
+  background:#dce5f2;
+}
+
+.appName{
+  margin:7px;
+  font-size:17px;
+  font-weight:900;
+}
+
+.appUrl{
+  color:#718096;
+  font-size:10px;
+  word-break:break-all;
+}
+
+.siteFake{
+  height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-top:20px;
+  border-radius:12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #dcecff,
+      #f7e9ff
+    );
+
+  color:#40506a;
+  font-weight:800;
+}
+
+.notice{
+  padding:15px;
+  border-radius:15px;
+
+  color:#ffe6a1;
+  background:rgba(255,209,102,.07);
+  border:1px solid rgba(255,209,102,.24);
+
+  line-height:1.65;
+  font-size:13px;
+}
+
+.info{
+  padding:14px;
+  border-radius:15px;
+
+  color:#b9ecf7;
+  background:rgba(53,226,255,.055);
+  border:1px solid rgba(53,226,255,.18);
+
+  line-height:1.6;
+  font-size:13px;
+}
+
+.progress{
+  height:10px;
+  margin:14px 0;
+
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+}
+
+.bar{
+  width:0;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #25bfff,
+      #9868ff,
+      #ff62a9
+    );
+
+  transition:width .25s;
+}
+
+.result{
+  display:none;
+}
+
+.result.show{
+  display:block;
+}
+
+.resultBox{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  padding:15px;
+  border-radius:15px;
+
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--line);
+}
+
+.kv{
+  display:grid;
+  grid-template-columns:155px 1fr;
+  gap:0 10px;
+  font-size:13px;
+}
+
+.kv div{
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.muted{
+  color:var(--muted);
+}
+
+footer{
+  padding:25px 0 45px;
+  text-align:center;
+  color:#65748a;
+  font-size:12px;
+}
+
+@media(max-width:760px){
+
+  .grid,
+  .grid3,
+  .checks{
+    grid-template-columns:1fr;
+  }
+
+  .steps{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+
+  .topbar{
+    align-items:flex-start;
+  }
+
+  .kv{
+    grid-template-columns:1fr;
+  }
+
+  .resultBox{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="topbar">
+
+    <div class="brand">
+      ⚡ WebToolsKita
+    </div>
+
+    <button class="back" onclick="goBack()">
+      ← Kembali
+    </button>
+
+  </div>
+</header>
+
+<section class="hero">
+
+  <span class="badge">
+    ADVANCE TOOL #12
+  </span>
+
+  <h1>
+    <span class="gradient">
+      Web → App Builder
+    </span>
+  </h1>
+
+  <p>
+    Ubah sebuah website menjadi konfigurasi aplikasi Android
+    dengan branding, logo, splash screen, pengaturan aplikasi,
+    permission, preview, dan persiapan Google Play.
+  </p>
+
+</section>
+
+<div class="steps">
+
+  <div class="step active" id="s1">
+    ① WEBSITE
+  </div>
+
+  <div class="step" id="s2">
+    ② IDENTITY
+  </div>
+
+  <div class="step" id="s3">
+    ③ BRANDING
+  </div>
+
+  <div class="step" id="s4">
+    ④ SETTINGS
+  </div>
+
+  <div class="step" id="s5">
+    ⑤ PERMISSION
+  </div>
+
+  <div class="step" id="s6">
+    ⑥ PREVIEW
+  </div>
+
+  <div class="step" id="s7">
+    ⑦ BUILD
+  </div>
+
+  <div class="step" id="s8">
+    ⑧ PLAY STORE
+  </div>
+
+</div>
+
+
+<section class="card">
+
+  <h2>
+    🌐 1. Website Analyzer
+  </h2>
+
+  <p class="sub">
+    Masukkan alamat website yang akan dijadikan aplikasi.
+  </p>
+
+  <div class="grid">
+
+    <div>
+
+      <label>
+        Website URL
+      </label>
+
+      <input
+        id="siteUrl"
+        type="url"
+        placeholder="https://example.com"
+      >
+
+    </div>
+
+    <div>
+
+      <label>
+        Preview / Status
+      </label>
+
+      <div
+        class="status"
+        id="siteStatus"
+      >
+        Belum dianalisis.
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    class="row"
+    style="margin-top:14px"
+  >
+
+    <button
+      class="primary"
+      onclick="analyzeSite()"
+    >
+      🔍 Analisis Website
+    </button>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    📱 2. App Identity
+  </h2>
+
+  <p class="sub">
+    Tentukan identitas utama aplikasi Android.
+  </p>
+
+  <div class="grid">
+
+    <div>
+
+      <label>
+        Nama Aplikasi
+      </label>
+
+      <input
+        id="appName"
+        placeholder="My Website App"
+      >
+
+    </div>
+
+    <div>
+
+      <label>
+        Package / Application ID
+      </label>
+
+      <input
+        id="packageName"
+        placeholder="com.example.myapp"
+      >
+
+    </div>
+
+    <div>
+
+      <label>
+        Version Name
+      </label>
+
+      <input
+        id="versionName"
+        value="1.0.0"
+      >
+
+    </div>
+
+    <div>
+
+      <label>
+        Version Code
+      </label>
+
+      <input
+        id="versionCode"
+        type="number"
+        value="1"
+        min="1"
+      >
+
+    </div>
+
+  </div>
+
+  <div style="margin-top:14px">
+
+    <label>
+      Short Description
+    </label>
+
+    <input
+      id="shortDesc"
+      maxlength="80"
+      placeholder="Deskripsi singkat aplikasi"
+    >
+
+  </div>
+
+  <div style="margin-top:14px">
+
+    <label>
+      Full Description
+    </label>
+
+    <textarea
+      id="fullDesc"
+      placeholder="Deskripsi lengkap aplikasi"
+    ></textarea>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    🎨 3. Branding
+  </h2>
+
+  <p class="sub">
+    Gunakan logo dan identitas visual milik user.
+  </p>
+
+  <div class="grid">
+
+    <div class="filebox">
+
+      <strong>
+        🖼️ App Icon / Logo
+      </strong>
+
+      <div class="muted">
+        PNG, JPG, atau WEBP
+      </div>
+
+      <input
+        id="iconFile"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+      >
+
+    </div>
+
+    <div class="filebox">
+
+      <strong>
+        ✨ Splash Image
+      </strong>
+
+      <div class="muted">
+        Gambar pembuka aplikasi
+      </div>
+
+      <input
+        id="splashFile"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+      >
+
+    </div>
+
+  </div>
+
+  <div
+    class="grid3"
+    style="margin-top:14px"
+  >
+
+    <div>
+
+      <label>
+        Primary Color
+      </label>
+
+      <input
+        id="primaryColor"
+        type="color"
+        value="#1689ff"
+      >
+
+    </div>
+
+    <div>
+
+      <label>
+        Background Color
+      </label>
+
+      <input
+        id="bgColor"
+        type="color"
+        value="#07111f"
+      >
+
+    </div>
+
+    <div>
+
+      <label>
+        Status Bar Color
+      </label>
+
+      <input
+        id="statusColor"
+        type="color"
+        value="#07111f"
+      >
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    ⚙️ 4. App Behavior
+  </h2>
+
+  <p class="sub">
+    Tentukan bagaimana website berperilaku ketika menjadi aplikasi.
+  </p>
+
+  <div class="grid">
+
+    <div>
+
+      <label>
+        Orientation
+      </label>
+
+      <select id="orientation">
+
+        <option value="unspecified">
+          Auto
+        </option>
+
+        <option value="portrait">
+          Portrait
+        </option>
+
+        <option value="landscape">
+          Landscape
+        </option>
+
+      </select>
+
+    </div>
+
+    <div>
+
+      <label>
+        External Links
+      </label>
+
+      <select id="externalLinks">
+
+        <option value="browser">
+          Buka di browser
+        </option>
+
+        <option value="app">
+          Tetap di aplikasi
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+  <div
+    class="checks"
+    style="margin-top:14px"
+  >
+
+    <label class="check">
+      <input
+        id="fullscreen"
+        type="checkbox"
+      >
+      Fullscreen
+    </label>
+
+    <label class="check">
+      <input
+        id="statusBar"
+        type="checkbox"
+        checked
+      >
+      Tampilkan Status Bar
+    </label>
+
+    <label class="check">
+      <input
+        id="navBar"
+        type="checkbox"
+        checked
+      >
+      Tampilkan Navigation Bar
+    </label>
+
+    <label class="check">
+      <input
+        id="backButton"
+        type="checkbox"
+        checked
+      >
+      Android Back Button
+    </label>
+
+    <label class="check">
+      <input
+        id="confirmExit"
+        type="checkbox"
+      >
+      Konfirmasi saat keluar
+    </label>
+
+    <label class="check">
+      <input
+        id="loading"
+        type="checkbox"
+        checked
+      >
+      Loading Screen
+    </label>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    🔐 5. Permission Manager
+  </h2>
+
+  <p class="sub">
+    Pilih hanya permission yang benar-benar dibutuhkan aplikasi.
+  </p>
+
+  <div class="checks">
+
+    <label class="check">
+
+      <input
+        id="permInternet"
+        type="checkbox"
+        checked
+        disabled
+      >
+
+      🌐 Internet
+      <span class="muted">
+        (wajib)
+      </span>
+
+    </label>
+
+    <label class="check">
+
+      <input
+        id="permCamera"
+        type="checkbox"
+      >
+
+      📷 Camera
+
+    </label>
+
+    <label class="check">
+
+      <input
+        id="permMic"
+        type="checkbox"
+      >
+
+      🎙️ Microphone
+
+    </label>
+
+    <label class="check">
+
+      <input
+        id="permLocation"
+        type="checkbox"
+      >
+
+      📍 Location
+
+    </label>
+
+    <label class="check">
+
+      <input
+        id="permNotification"
+        type="checkbox"
+      >
+
+      🔔 Notifications
+
+    </label>
+
+    <label class="check">
+
+      <input
+        id="permFiles"
+        type="checkbox"
+      >
+
+      📁 File access
+
+    </label>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    👁️ 6. App Preview
+  </h2>
+
+  <p class="sub">
+    Lihat gambaran aplikasi sebelum masuk tahap build.
+  </p>
+
+  <div class="preview">
+
+    <div
+      class="phone"
+      id="phonePreview"
+    >
+
+      <div class="phoneTop">
+        WebToolsKita Preview
+      </div>
+
+      <div class="phoneBody">
+
+        <img
+          id="previewIcon"
+          class="appIcon"
+          alt="App icon preview"
+        >
+
+        <div
+          class="appName"
+          id="previewName"
+        >
+          My Website App
+        </div>
+
+        <div
+          class="appUrl"
+          id="previewUrl"
+        >
+          https://example.com
+        </div>
+
+        <div class="siteFake">
+          🌐 Website Preview
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    class="row"
+    style="margin-top:14px"
+  >
+
+    <button
+      class="secondary"
+      onclick="updatePreview()"
+    >
+      🔄 Refresh Preview
+    </button>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    📦 7. Build Configuration
+  </h2>
+
+  <p class="sub">
+    Validasi konfigurasi dan siapkan spesifikasi aplikasi Android.
+  </p>
+
+  <div class="notice">
+
+    ⚠️ <strong>Disclaimer:</strong>
+    Situs/alat web ini tidak menjamin 100% bahwa aplikasi
+    yang dihasilkan akan diterima oleh Google Play Store.
+    Penerimaan aplikasi sepenuhnya mengikuti kebijakan,
+    persyaratan, dan proses peninjauan Google Play yang berlaku.
+
+  </div>
+
+  <div
+    class="status"
+    id="buildStatus"
+    style="margin-top:15px"
+  >
+    Belum dilakukan validasi build.
+  </div>
+
+  <div class="progress">
+
+    <div
+      class="bar"
+      id="buildBar"
+    ></div>
+
+  </div>
+
+  <div class="row">
+
+    <button
+      class="primary"
+      onclick="validateBuild()"
+    >
+      🧪 Validasi Build
+    </button>
+
+    <button
+      class="success"
+      id="buildButton"
+      onclick="prepareBuild()"
+    >
+      📦 Siapkan Build
+    </button>
+
+  </div>
+
+  <div
+    id="buildResult"
+    class="result"
+    style="margin-top:15px"
+  ></div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    🚀 8. Google Play Preparation
+  </h2>
+
+  <p class="sub">
+    Checklist persiapan sebelum aplikasi dikirim ke Google Play Console.
+  </p>
+
+  <div
+    id="playChecklist"
+    class="checks"
+  >
+
+    <label class="check">
+
+      <input
+        id="checkName"
+        type="checkbox"
+        disabled
+      >
+
+      App Name
+
+    </label>
+
+    <label class="check">
+
+      <input
+        id="checkIcon"
+        type="checkbox"
+        disabled
+      >
+
+      App Icon
+
+    </label>
+
+    <label class="check">
+
+      <input type="checkbox">
+
+      Screenshots
+
+    </label>
+
+    <label class="check">
+
+      <input type="checkbox">
+
+      Feature Graphic
+
+    </label>
+
+    <label class="check">
+
+      <input type="checkbox">
+
+      Privacy Policy URL
+
+    </label>
+
+    <label class="check">
+
+      <input type="checkbox">
+
+      Data Safety
+
+    </label>
+
+    <label class="check">
+
+      <input type="checkbox">
+
+      Content Rating
+
+    </label>
+
+    <label class="check">
+
+      <input type="checkbox">
+
+      Store Description
+
+    </label>
+
+  </div>
+
+  <div
+    class="info"
+    style="margin-top:15px"
+  >
+
+    💡 AAB adalah format yang umumnya digunakan
+    untuk distribusi aplikasi Android melalui Google Play.
+    WebToolsKita membantu menyiapkan konfigurasi dan
+    proses build yang tersedia, sedangkan keputusan akhir
+    tetap berada pada Google Play.
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <h2>
+    💾 Project Configuration
+  </h2>
+
+  <p class="sub">
+    Simpan konfigurasi aplikasi agar dapat dilanjutkan kembali.
+  </p>
+
+  <div class="row">
+
+    <button
+      class="secondary"
+      onclick="saveProject()"
+    >
+      💾 Siap Konfigurasi
+    </button>
+
+    <label
+      class="secondary"
+      style="
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        cursor:pointer;
+      "
+    >
+
+      📂 Load Project
+
+      <input
+        id="loadProject"
+        type="file"
+        accept="application/json"
+        style="display:none"
+      >
+
+    </label>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  WebToolsKita • Advance Tool #12 • Web → App Builder
+
+</footer>
+
+</div>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let iconData = "";
+let splashData = "";
+let lastBuildConfig = null;
+let currentJobId = null;
+let pollTimer = null;
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function goBack(){
+
+  if(history.length > 1){
+
+    history.back();
+
+  }else{
+
+    window.location.href = "index.html";
+
+  }
+
+}
+
+
+/* =========================
+   URL
+========================= */
+
+function isValidUrl(value){
+
+  try{
+
+    const u = new URL(value);
+
+    return (
+      u.protocol === "http:" ||
+      u.protocol === "https:"
+    );
+
+  }catch(error){
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================
+   PACKAGE VALIDATION
+========================= */
+
+function validPackage(value){
+
+  return /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/
+    .test(value);
+
+}
+
+
+/* =========================
+   WEBSITE ANALYZER
+========================= */
+
+function analyzeSite(){
+
+  const url =
+    $("siteUrl").value.trim();
+
+  if(!isValidUrl(url)){
+
+    $("siteStatus").textContent =
+      "❌ URL tidak valid. Gunakan http:// atau https://";
+
+    setStep(1);
+
+    return;
+
+  }
+
+  const u = new URL(url);
+
+  $("siteStatus").innerHTML =
+    "✅ URL valid • Protocol: <strong>" +
+    escapeHtml(
+      u.protocol
+        .replace(":","")
+        .toUpperCase()
+    ) +
+    "</strong> • Host: <strong>" +
+    escapeHtml(u.host) +
+    "</strong>";
+
+  if(!$("appName").value.trim()){
+
+    $("appName").value =
+      u.hostname
+        .replace(/^www\./,"")
+        .split(".")[0]
+        .replace(/[-_]+/g," ")
+        .replace(
+          /\b\w/g,
+          m => m.toUpperCase()
+        );
+
+  }
+
+  updatePreview();
+
+  setStep(1);
+
+}
+
+
+/* =========================
+   STEP
+========================= */
+
+function setStep(number){
+
+  document
+    .querySelectorAll(".step")
+    .forEach((element,index)=>{
+
+      element.classList.toggle(
+        "active",
+        index === number - 1
+      );
+
+    });
+
+}
+
+
+/* =========================
+   PREVIEW
+========================= */
+
+function updatePreview(){
+
+  const url =
+    $("siteUrl").value.trim() ||
+    "https://example.com";
+
+  $("previewName").textContent =
+    $("appName").value.trim() ||
+    "My Website App";
+
+  $("previewUrl").textContent =
+    url;
+
+  $("phonePreview").style.background =
+    $("bgColor").value;
+
+  if(iconData){
+
+    $("previewIcon").src =
+      iconData;
+
+  }else{
+
+    $("previewIcon").removeAttribute(
+      "src"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   ICON UPLOAD
+========================= */
+
+$("iconFile")
+  .addEventListener(
+    "change",
+    event => {
+
+      const file =
+        event.target.files[0];
+
+      if(!file) return;
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+
+        iconData =
+          reader.result;
+
+        updatePreview();
+
+      };
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+
+/* =========================
+   SPLASH UPLOAD
+========================= */
+
+$("splashFile")
+  .addEventListener(
+    "change",
+    event => {
+
+      const file =
+        event.target.files[0];
+
+      if(!file) return;
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+
+        splashData =
+          reader.result;
+
+      };
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+
+/* =========================
+   LIVE PREVIEW
+========================= */
+
+[
+  "siteUrl",
+  "appName",
+  "bgColor"
+].forEach(id=>{
+
+  $(id).addEventListener(
+    "input",
+    updatePreview
+  );
+
+});
+
+
+/* =========================
+   COLLECT CONFIG
+========================= */
+
+function collectConfig(){
+
+  return {
+
+    website:{
+
+      url:
+        $("siteUrl")
+          .value
+          .trim()
+
+    },
+
+    app:{
+
+      name:
+        $("appName")
+          .value
+          .trim(),
+
+      packageName:
+        $("packageName")
+          .value
+          .trim(),
+
+      versionName:
+        $("versionName")
+          .value
+          .trim(),
+
+      versionCode:
+        Number(
+          $("versionCode").value
+        ),
+
+      shortDescription:
+        $("shortDesc")
+          .value
+          .trim(),
+
+      fullDescription:
+        $("fullDesc")
+          .value
+          .trim()
+
+    },
+
+    branding:{
+
+      iconData:
+        iconData,
+
+      splashData:
+        splashData,
+
+      primaryColor:
+        $("primaryColor").value,
+
+      backgroundColor:
+        $("bgColor").value,
+
+      statusBarColor:
+        $("statusColor").value
+
+    },
+
+    behavior:{
+
+      orientation:
+        $("orientation").value,
+
+      externalLinks:
+        $("externalLinks").value,
+
+      fullscreen:
+        $("fullscreen").checked,
+
+      statusBar:
+        $("statusBar").checked,
+
+      navigationBar:
+        $("navBar").checked,
+
+      backButton:
+        $("backButton").checked,
+
+      confirmExit:
+        $("confirmExit").checked,
+
+      loadingScreen:
+        $("loading").checked
+
+    },
+
+    permissions:{
+
+      internet:true,
+
+      camera:
+        $("permCamera").checked,
+
+      microphone:
+        $("permMic").checked,
+
+      location:
+        $("permLocation").checked,
+
+      notifications:
+        $("permNotification").checked,
+
+      files:
+        $("permFiles").checked
+
+    },
+
+    generatedAt:
+      new Date().toISOString()
+
+  };
+
+}
+
+
+/* =========================
+   VALIDATION
+========================= */
+
+function validateConfig(){
+
+  const config =
+    collectConfig();
+
+  const errors = [];
+
+
+  if(
+    !isValidUrl(
+      config.website.url
+    )
+  ){
+
+    errors.push(
+      "Website URL belum valid."
+    );
+
+  }
+
+
+  if(!config.app.name){
+
+    errors.push(
+      "Nama aplikasi belum diisi."
+    );
+
+  }
+
+
+  if(
+    !validPackage(
+      config.app.packageName
+    )
+  ){
+
+    errors.push(
+      "Package ID tidak valid. Contoh: com.example.myapp"
+    );
+
+  }
+
+
+  if(
+    !/^\d+\.\d+\.\d+$/
+      .test(
+        config.app.versionName
+      )
+  ){
+
+    errors.push(
+      "Version Name sebaiknya memakai format x.y.z."
+    );
+
+  }
+
+
+  if(
+    !Number.isInteger(
+      config.app.versionCode
+    ) ||
+    config.app.versionCode < 1
+  ){
+
+    errors.push(
+      "Version Code harus berupa angka minimal 1."
+    );
+
+  }
+
+
+  if(!iconData){
+
+    errors.push(
+      "App Icon belum diupload."
+    );
+
+  }
+
+
+  return {
+    config,
+    errors
+  };
+
+}
+
+
+/* =========================
+   BACKEND PAYLOAD
+========================= */
+
+function buildPayload(config){
+
+  return {
+
+    websiteUrl:
+      config.website.url,
+
+    appName:
+      config.app.name,
+
+    packageId:
+      config.app.packageName,
+
+    versionName:
+      config.app.versionName,
+
+    versionCode:
+      config.app.versionCode,
+
+    orientation:
+      config.behavior.orientation,
+
+    description:
+      config.app.fullDescription,
+
+    shortDescription:
+      config.app.shortDescription,
+
+    icon:
+      config.branding.iconData,
+
+    splash:
+      config.branding.splashData,
+
+    primaryColor:
+      config.branding.primaryColor,
+
+    backgroundColor:
+      config.branding.backgroundColor,
+
+    statusBarColor:
+      config.branding.statusBarColor,
+
+    externalLinks:
+      config.behavior.externalLinks,
+
+    fullscreen:
+      config.behavior.fullscreen,
+
+    statusBar:
+      config.behavior.statusBar,
+
+    navigationBar:
+      config.behavior.navigationBar,
+
+    backButton:
+      config.behavior.backButton,
+
+    confirmExit:
+      config.behavior.confirmExit,
+
+    loadingScreen:
+      config.behavior.loadingScreen,
+
+    permissions:
+      config.permissions
+
+  };
+
+}
+
+
+/* =========================
+   VALIDATE BUILD
+========================= */
+
+function validateBuild(){
+
+  const {
+    config,
+    errors
+  } =
+    validateConfig();
+
+  const status =
+    $("buildStatus");
+
+  if(errors.length){
+
+    status.innerHTML =
+      "❌ <strong>Build belum siap.</strong><br>" +
+      errors
+        .map(escapeHtml)
+        .join("<br>");
+
+    $("buildBar")
+      .style
+      .width = "0%";
+
+    setStep(7);
+
+    return false;
+
+  }
+
+
+  lastBuildConfig =
+    config;
+
+  status.innerHTML =
+    "✅ <strong>Konfigurasi valid.</strong> " +
+    "Semua data utama sudah siap untuk proses build.";
+
+  $("buildBar")
+    .style
+    .width = "30%";
+
+  $("checkName").checked = true;
+  $("checkIcon").checked = true;
+
+  setStep(7);
+
+  return true;
+
+}
+
+
+/* =========================
+   REAL BUILD
+========================= */
+
+async function prepareBuild(){
+
+  if(!validateBuild()){
+
+    return;
+
+  }
+
+  const buildButton =
+    $("buildButton");
+
+  const buildStatus =
+    $("buildStatus");
+
+  const buildBar =
+    $("buildBar");
+
+  const buildResult =
+    $("buildResult");
+
+
+  if(pollTimer){
+
+    clearTimeout(pollTimer);
+
+    pollTimer = null;
+
+  }
+
+
+  buildButton.disabled = true;
+
+  buildResult.classList.add("show");
+
+  buildResult.innerHTML =
+    `
+    <div class="info">
+      ⏳ Mengirim konfigurasi ke Android Build Engine...
+    </div>
+    `;
+
+  buildBar.style.width =
+    "35%";
+
+
+  try{
+
+    const payload =
+      buildPayload(
+        lastBuildConfig
+      );
+
+
+    const response =
+      await fetch(
+        "/api/app-builder/create",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(payload)
+        }
+      );
+
+
+    const data =
+      await response
+        .json()
+        .catch(
+          () => ({})
+        );
+
+
+    if(
+      !response.ok ||
+      !data.success ||
+      !data.jobId
+    ){
+
+      throw new Error(
+        data.message ||
+        "Gagal membuat build job."
+      );
+
+    }
+
+
+    currentJobId =
+      data.jobId;
+
+
+    buildStatus.innerHTML =
+      `
+      ⏳ <strong>Build dimulai.</strong>
+      Job: ${escapeHtml(currentJobId)}
+      `;
+
+
+    buildResult.innerHTML =
+      `
+      <div class="info">
+        ⏳ Android Build Engine sedang membuat
+        APK Debug dan AAB Release...
+      </div>
+      `;
+
+
+    pollBuildStatus();
+
+
+  }catch(error){
+
+    buildButton.disabled =
+      false;
+
+    buildBar.style.width =
+      "0%";
+
+
+    buildStatus.innerHTML =
+      `
+      ❌ <strong>Build gagal dimulai.</strong><br>
+      ${escapeHtml(error.message)}
+      `;
+
+  }
+
+}
+
+
+/* =========================
+   POLL BUILD STATUS
+========================= */
+
+async function pollBuildStatus(){
+
+  if(!currentJobId){
+
+    return;
+
+  }
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/app-builder/status/" +
+        encodeURIComponent(
+          currentJobId
+        ),
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    const data =
+      await response
+        .json()
+        .catch(
+          () => ({})
+        );
+
+
+    if(
+      !response.ok ||
+      !data.success ||
+      !data.job
+    ){
+
+      throw new Error(
+        data.message ||
+        "Gagal mengambil status build."
+      );
+
+    }
+
+
+    const job =
+      data.job;
+
+
+    const progress =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          Number(job.progress) || 0
+        )
+      );
+
+
+    $("buildBar")
+      .style
+      .width =
+      progress + "%";
+
+
+    $("buildStatus").innerHTML =
+      `
+      ⏳ <strong>
+        ${escapeHtml(
+          job.message ||
+          "Build sedang berjalan."
+        )}
+      </strong>
+      • ${progress}%
+      `;
+
+
+    if(
+      job.status ===
+      "completed"
+    ){
+
+      showBuildResult(
+        job
+      );
+
+      return;
+
+    }
+
+
+    if(
+      job.status ===
+      "failed"
+    ){
+
+      showBuildFailure(
+        job
+      );
+
+      return;
+
+    }
+
+
+    pollTimer =
+      setTimeout(
+        pollBuildStatus,
+        1000
+      );
+
+
+  }catch(error){
+
+    $("buildStatus").innerHTML =
+      `
+      ❌ <strong>
+        Gagal membaca status build.
+      </strong><br>
+      ${escapeHtml(
+        error.message
+      )}
+      `;
+
+    $("buildButton")
+      .disabled =
+      false;
+
+  }
+
+}
+
+
+/* =========================
+   BUILD FAILED
+========================= */
+
+function showBuildFailure(job){
+
+  $("buildStatus").innerHTML =
+    `
+    ❌ <strong>Build gagal.</strong><br>
+    ${escapeHtml(
+      job.error ||
+      job.message ||
+      "Build gagal."
+    )}
+    `;
+
+
+  $("buildResult").innerHTML =
+    `
+    <div class="info">
+      ❌ Android Build Engine tidak berhasil
+      menyelesaikan build.
+    </div>
+    `;
+
+
+  $("buildButton")
+    .disabled =
+    false;
+
+}
+
+
+/* =========================
+   BUILD COMPLETED
+========================= */
+
+function showBuildResult(job){
+
+  const artifact =
+    job.artifact || {};
+
+
+  $("buildBar")
+    .style
+    .width =
+    "100%";
+
+
+  $("buildStatus").innerHTML =
+    `
+    ✅ <strong>
+      ${escapeHtml(
+        job.message ||
+        "APK Debug dan AAB Release berhasil dibuat."
+      )}
+    </strong>
+    `;
+
+
+  const apkStatus =
+    artifact.apk
+      ? "✅ Siap APK"
+      : "❌ APK tidak tersedia";
+
+
+  const aabStatus =
+    artifact.aab
+      ? "✅ Siap AAB"
+      : "❌ AAB tidak tersedia";
+
+
+  $("buildResult").innerHTML =
+    `
+
+    <div class="resultBox">
+
+      <div>
+
+        <strong>
+          📦 ${escapeHtml(
+            lastBuildConfig.app.name
+          )}
+        </strong>
+
+        <div class="muted">
+
+          Version
+          ${escapeHtml(
+            lastBuildConfig.app.versionName
+          )}
+
+          • Android
+
+        </div>
+
+      </div>
+
+      <button
+        class="success"
+        onclick="saveBuildConfig()"
+      >
+        💾 Siap Konfigurasi
+      </button>
+
+    </div>
+
+
+    <div
+      class="kv"
+      style="margin-top:12px"
+    >
+
+      <div>
+        Build Job
+      </div>
+
+      <div>
+        ${escapeHtml(
+          currentJobId || ""
+        )}
+      </div>
+
+
+      <div>
+        APK
+      </div>
+
+      <div>
+        ${apkStatus}
+
+        ${
+          artifact.apkSize
+            ? " • " +
+              formatBytes(
+                artifact.apkSize
+              )
+            : ""
+        }
+      </div>
+
+
+      <div>
+        AAB
+      </div>
+
+      <div>
+        ${aabStatus}
+
+        ${
+          artifact.aabSize
+            ? " • " +
+              formatBytes(
+                artifact.aabSize
+              )
+            : ""
+        }
+      </div>
+
+    </div>
+
+
+    <div
+      class="info"
+      style="margin-top:12px"
+    >
+
+      ℹ️ APK Debug dan AAB Release
+      sudah berhasil disiapkan oleh
+      Android Build Engine.
+
+    </div>
+
+    `;
+
+
+  $("buildButton")
+    .disabled =
+    false;
+
+
+  setStep(8);
+
+}
+
+
+/* =========================
+   FORMAT SIZE
+========================= */
+
+function formatBytes(bytes){
+
+  const value =
+    Number(bytes) || 0;
+
+
+  if(value < 1024){
+
+    return value + " B";
+
+  }
+
+
+  if(value < 1024 * 1024){
+
+    return (
+      value / 1024
+    ).toFixed(1) +
+    " KB";
+
+  }
+
+
+  return (
+    value /
+    (1024 * 1024)
+  ).toFixed(2) +
+  " MB";
+
+}
+
+
+/* =========================
+   SAVE BUILD CONFIG
+========================= */
+
+function saveBuildConfig(){
+
+  if(!lastBuildConfig){
+
+    return;
+
+  }
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          lastBuildConfig,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+  const a =
+    document.createElement("a");
+
+  a.href =
+    url;
+
+  a.download =
+    createFileName(
+      lastBuildConfig.app.name
+    ) +
+    "-config.json";
+
+  a.click();
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* =========================
+   SAVE PROJECT
+========================= */
+
+function saveProject(){
+
+  const config =
+    collectConfig();
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          config,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+  const a =
+    document.createElement("a");
+
+  a.href =
+    url;
+
+  a.download =
+    createFileName(
+      config.app.name ||
+      "webtoolskita-project"
+    ) +
+    ".json";
+
+  a.click();
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* =========================
+   LOAD PROJECT
+========================= */
+
+$("loadProject")
+  .addEventListener(
+    "change",
+    event => {
+
+      const file =
+        event.target.files[0];
+
+      if(!file) return;
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+
+        try{
+
+          const config =
+            JSON.parse(
+              reader.result
+            );
+
+
+          $("siteUrl").value =
+            config.website?.url ||
+            "";
+
+
+          $("appName").value =
+            config.app?.name ||
+            "";
+
+
+          $("packageName").value =
+            config.app?.packageName ||
+            "";
+
+
+          $("versionName").value =
+            config.app?.versionName ||
+            "1.0.0";
+
+
+          $("versionCode").value =
+            config.app?.versionCode ||
+            1;
+
+
+          $("shortDesc").value =
+            config.app?.shortDescription ||
+            "";
+
+
+          $("fullDesc").value =
+            config.app?.fullDescription ||
+            "";
+
+
+          $("primaryColor").value =
+            config.branding?.primaryColor ||
+            "#1689ff";
+
+
+          $("bgColor").value =
+            config.branding?.backgroundColor ||
+            "#07111f";
+
+
+          $("statusColor").value =
+            config.branding?.statusBarColor ||
+            "#07111f";
+
+
+          $("orientation").value =
+            config.behavior?.orientation ||
+            "unspecified";
+
+
+          $("externalLinks").value =
+            config.behavior?.externalLinks ||
+            "browser";
+
+
+          $("fullscreen").checked =
+            !!config.behavior?.fullscreen;
+
+
+          $("statusBar").checked =
+            config.behavior?.statusBar !== false;
+
+
+          $("navBar").checked =
+            config.behavior?.navigationBar !== false;
+
+
+          $("backButton").checked =
+            config.behavior?.backButton !== false;
+
+
+          $("confirmExit").checked =
+            !!config.behavior?.confirmExit;
+
+
+          $("loading").checked =
+            config.behavior?.loadingScreen !== false;
+
+
+          $("permCamera").checked =
+            !!config.permissions?.camera;
+
+
+          $("permMic").checked =
+            !!config.permissions?.microphone;
+
+
+          $("permLocation").checked =
+            !!config.permissions?.location;
+
+
+          $("permNotification").checked =
+            !!config.permissions?.notifications;
+
+
+          $("permFiles").checked =
+            !!config.permissions?.files;
+
+
+          iconData =
+            config.branding?.iconData ||
+            "";
+
+
+          splashData =
+            config.branding?.splashData ||
+            "";
+
+
+          updatePreview();
+
+
+          $("siteStatus").innerHTML =
+            "✅ Project berhasil dimuat.";
+
+
+        }catch(error){
+
+          $("siteStatus").innerHTML =
+            "❌ File project tidak valid.";
+
+        }
+
+      };
+
+      reader.readAsText(file);
+
+    }
+  );
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function createFileName(value){
+
+  return String(
+    value || "webtoolskita"
+  )
+  .replace(
+    /[^a-z0-9_-]+/gi,
+    "-"
+  )
+  .replace(
+    /^-+|-+$/g,
+    ""
+  )
+  .toLowerCase();
+
+}
+
+
+function escapeHtml(value){
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      character => {
+
+        const map = {
+
+          "&":"&amp;",
+          "<":"&lt;",
+          ">":"&gt;",
+          '"':"&quot;",
+          "'":"&#039;"
+
+        };
+
+        return map[character];
+
+      }
+    );
+
+}
+
+
+/* =========================
+   INITIAL
+========================= */
+
+updatePreview();
+
+</script>
+
+</body>
+</html>
