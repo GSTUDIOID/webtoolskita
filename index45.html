@@ -3,160 +3,288 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>iPay — WebToolsKita</title>
+
+<title>WEBHUB - WebToolsKita</title>
+
 <style>
-:root{--bg:#f4f6fb;--card:#fff;--ink:#182033;--muted:#778398;--line:#e5e9f0;--p:#7138f5;--p2:#8b58ff;--soft:#f2edff;--green:#16a273;--yellow:#d69b19;--red:#d9546d}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,Segoe UI,Arial,sans-serif}button,input,select,textarea{font:inherit}.wrap{width:min(1240px,92%);margin:auto}
-header{height:68px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}.nav{height:100%;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}.logo{width:41px;height:41px;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--p2));display:grid;place-items:center;color:#fff;font-weight:900;font-size:19px}.brand b{font-size:19px}.brand small{display:block;color:var(--muted);font-size:9px}.links{display:flex;gap:20px}.links a{font-size:11px;text-decoration:none;color:#667184;font-weight:800}.profile{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;font-size:10px;font-weight:800}
-main{padding:28px 0 45px}.hero{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}.tag{display:inline-block;background:#eee8ff;color:var(--p);padding:6px 10px;border-radius:99px;font-size:9px;font-weight:900;margin-bottom:9px}.hero h1{margin:0;font-size:31px}.hero p{margin:7px 0 0;color:var(--muted);line-height:1.55}.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 13px;font-size:10px;font-weight:850;cursor:pointer}.primary{background:linear-gradient(135deg,var(--p),var(--p2))!important;border:0!important;color:#fff!important}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.stat small{color:var(--muted);font-size:9px}.stat strong{display:block;font-size:21px;margin:7px 0}.stat span{font-size:9px;color:var(--muted)}.green{color:var(--green)!important}
-.dashboard{display:grid;grid-template-columns:1fr 285px;gap:16px;margin-top:16px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden}.head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.head h2{margin:0;font-size:15px}.head small{font-size:10px;color:var(--muted)}.body{padding:18px}
-.wallet{background:linear-gradient(135deg,#271450,#7138f5 70%,#8b58ff);color:#fff;border-radius:14px;padding:18px}.wallet small{opacity:.75}.wallet strong{display:block;font-size:28px;margin:7px 0 14px}.wallet .wrow{display:flex;justify-content:space-between;font-size:10px;opacity:.82}.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.quick button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 6px;font-size:10px;font-weight:850;cursor:pointer}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line)}.tab{border:0;background:#f5f6f9;color:#697489;border-radius:8px;padding:8px 11px;font-size:10px;font-weight:850;cursor:pointer}.tab.active{background:var(--soft);color:var(--p)}.panel{display:none}.panel.active{display:block}
-.methods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.method{border:1px solid var(--line);background:#fff;border-radius:10px;padding:12px;text-align:left;cursor:pointer}.method.active{border-color:#9874f5;background:#f7f3ff}.method b{font-size:11px;display:block}.method span{display:block;color:var(--muted);font-size:9px;margin-top:4px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-top:13px}.field label{display:block;font-size:10px;font-weight:850;color:#4d586b;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #dfe4ec;border-radius:9px;padding:11px;background:#fff;outline:0}.field textarea{min-height:75px;resize:vertical}.amount{font-size:23px!important;font-weight:900}.primary.full{width:100%;padding:12px;font-size:11px;font-weight:900;border-radius:9px;cursor:pointer;margin-top:15px}.notice{background:#f8f9fc;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:9px;color:var(--muted);line-height:1.55;margin-top:12px}
-.featuregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.feature{border:1px solid var(--line);border-radius:11px;padding:14px}.feature b{font-size:12px}.feature p{font-size:10px;color:var(--muted);line-height:1.5;margin:6px 0 11px}.feature button,.service button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 9px;font-size:9px;font-weight:850;cursor:pointer}.qrbox{display:grid;place-items:center;background:#f7f7fa;border:1px dashed #d5dbe5;border-radius:12px;padding:22px;margin-top:13px}.qr{width:145px;height:145px;background:repeating-linear-gradient(45deg,#111 0 4px,#fff 4px 8px);border:10px solid #fff}.qrbox small{color:var(--muted);margin-top:9px;font-size:9px}
-.tx{margin-top:16px}.filters{display:flex;gap:7px}.filters input,.filters select{border:1px solid var(--line);border-radius:8px;padding:8px;font-size:9px;background:#fff}.txrow{display:grid;grid-template-columns:1.5fr .9fr .8fr .8fr .5fr;gap:8px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);font-size:10px}.txrow:last-child{border:0}.txrow small{display:block;color:var(--muted);font-size:9px;margin-top:3px}.status{display:inline-block;padding:5px 7px;border-radius:99px;font-size:8px;font-weight:900}.pending{background:#fff4d7;color:#9b7418}.success{background:#e7f8f1;color:#137d59}.empty{text-align:center;border:1px dashed #d6dce5;border-radius:10px;padding:28px;color:var(--muted);font-size:10px}
-.sideitem{padding:14px 0;border-bottom:1px solid var(--line)}.sideitem:last-child{border:0}.sideitem b{font-size:11px}.sideitem p{font-size:9px;color:var(--muted);line-height:1.5;margin:5px 0 0}.servicegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.service{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px}.service .ico{font-size:19px}.service b{display:block;font-size:11px;margin-top:8px}.service p{font-size:9px;color:var(--muted);line-height:1.5;margin:5px 0 10px}
-footer{border-top:1px solid var(--line);background:#fff;padding:22px 0;color:var(--muted);font-size:9px}.foot{display:flex;justify-content:space-between}.modal{display:none;position:fixed;inset:0;background:#11182766;z-index:100;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modalbox{width:min(540px,100%);background:#fff;border-radius:16px;padding:22px}.close{float:right;border:0;background:none;font-size:21px;color:#7c8798;cursor:pointer}.modalbox h2{margin:0 0 7px}.modalbox p{color:var(--muted);font-size:11px;line-height:1.6}.idbox{background:#f6f7fa;border:1px solid var(--line);border-radius:9px;padding:13px;margin-top:12px}.idbox small{font-size:8px;color:var(--muted)}.idbox b{display:block;color:var(--p);font-size:18px;margin-top:4px}.toast{position:fixed;right:18px;bottom:18px;background:#182033;color:#fff;padding:11px 14px;border-radius:9px;font-size:10px;opacity:0;transform:translateY(8px);transition:.2s;z-index:200}.toast.show{opacity:1;transform:none}
-@media(max-width:950px){.stats{grid-template-columns:repeat(3,1fr)}.dashboard{grid-template-columns:1fr}.servicegrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.links{display:none}.hero{display:block}.actions{margin-top:13px}.stats,.row,.methods,.featuregrid,.servicegrid{grid-template-columns:1fr}.txrow{grid-template-columns:1fr 1fr}}
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(113,56,245,.16),transparent 32%),
+    #080808;
+  color:#fff;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  display:flex;
+  flex-direction:column;
+}
+
+.wrap{
+  width:min(1100px,92%);
+  margin:auto;
+}
+
+header{
+  height:68px;
+  background:#0b0b0b;
+  border-bottom:1px solid #222;
+}
+
+.nav{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  text-decoration:none;
+}
+
+.logo{
+  width:41px;
+  height:41px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#7138f5,#8b58ff);
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-weight:900;
+  font-size:16px;
+  box-shadow:0 8px 25px rgba(113,56,245,.25);
+}
+
+.brand b{
+  font-size:19px;
+}
+
+.brand small{
+  display:block;
+  color:#777;
+  font-size:9px;
+  margin-top:2px;
+}
+
+.back{
+  border:1px solid #292929;
+  background:#111;
+  color:#aaa;
+  border-radius:9px;
+  padding:9px 13px;
+  font-size:10px;
+  font-weight:850;
+  text-decoration:none;
+}
+
+main{
+  flex:1;
+  display:grid;
+  place-items:center;
+  padding:45px 0;
+}
+
+.card{
+  width:min(650px,100%);
+  background:#101010;
+  border:1px solid #292929;
+  border-radius:20px;
+  padding:38px;
+  text-align:center;
+  box-shadow:0 20px 55px rgba(0,0,0,.55);
+}
+
+.badge{
+  display:inline-block;
+  background:#191327;
+  color:#9b73ff;
+  padding:7px 12px;
+  border-radius:99px;
+  font-size:9px;
+  font-weight:900;
+  margin-bottom:16px;
+  border:1px solid #30215a;
+}
+
+.icon{
+  width:78px;
+  height:78px;
+  margin:0 auto 18px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#7138f5,#8b58ff);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:31px;
+  font-weight:900;
+  box-shadow:0 12px 30px rgba(113,56,245,.28);
+}
+
+h1{
+  margin:0;
+  font-size:34px;
+  letter-spacing:-.5px;
+}
+
+.subtitle{
+  color:#929292;
+  font-size:13px;
+  line-height:1.7;
+  max-width:500px;
+  margin:12px auto 0;
+}
+
+.info{
+  margin-top:24px;
+  padding:15px;
+  border:1px solid #292929;
+  background:#0b0b0b;
+  border-radius:12px;
+  color:#858585;
+  font-size:10px;
+  line-height:1.6;
+}
+
+.actions{
+  display:flex;
+  justify-content:center;
+  gap:9px;
+  margin-top:22px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:1px solid #292929;
+  background:#151515;
+  color:#aaa;
+  border-radius:10px;
+  padding:12px 18px;
+  font-size:10px;
+  font-weight:900;
+  text-decoration:none;
+  transition:.2s;
+}
+
+.btn.primary{
+  background:linear-gradient(135deg,#7138f5,#8b58ff);
+  border:0;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(113,56,245,.25);
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+footer{
+  border-top:1px solid #222;
+  background:#0b0b0b;
+  padding:20px 0;
+  color:#666;
+  font-size:9px;
+}
+
+.foot{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+}
+
+@media(max-width:600px){
+  .card{
+    padding:28px 20px;
+  }
+
+  h1{
+    font-size:28px;
+  }
+
+  .foot{
+    flex-direction:column;
+    text-align:center;
+  }
+}
 </style>
 </head>
+
 <body>
-<header><div class="wrap nav">
-<a class="brand" href="index3.html"><div class="logo">iP</div><div><b>iPay</b><small>Digital Payment Platform • WebToolsKita</small></div></a>
-<nav class="links"><a href="#dashboard">Dashboard</a><a href="#transfer">Transfer</a><a href="#transaksi">Transaksi</a><a href="#layanan">Layanan</a></nav>
-<button class="profile" onclick="info('Akun iPay','Area akun siap dihubungkan ke login, verifikasi identitas, dan keamanan backend.')">Akun Saya</button>
-</div></header>
 
-<main class="wrap" id="dashboard">
-<section class="hero"><div><span class="tag">VIP DIGITAL PAYMENT PLATFORM</span><h1>iPay</h1><p>Satu pusat untuk <b>menyimpan uang, kirim uang, transfer bank, menerima pembayaran, membuat pembayaran digital, invoice, QR payment, dan payment link.</b></p></div><div class="actions"><button class="btn" onclick="openTab('transfer')">Kirim Uang</button><button class="btn primary" onclick="openTab('bayar')">Buat Pembayaran</button></div></section>
+<header>
+  <div class="wrap nav">
 
-<section class="stats">
-<div class="stat"><small>Saldo iPay</small><strong id="balance">Rp 0</strong><span>Saldo tersimpan</span></div>
-<div class="stat"><small>Uang Masuk</small><strong id="income">Rp 0</strong><span class="green">Penerimaan</span></div>
-<div class="stat"><small>Uang Keluar</small><strong id="outcome">Rp 0</strong><span>Transfer</span></div>
-<div class="stat"><small>Transaksi</small><strong id="count">0</strong><span>Semua aktivitas</span></div>
-<div class="stat"><small>Menunggu</small><strong id="pending">0</strong><span>Perlu diproses</span></div>
-</section>
+    <a class="brand" href="index3.html">
+      <div class="logo">WH</div>
+      <div>
+        <b>WEBHUB</b>
+        <small>WebToolsKita Access Gateway</small>
+      </div>
+    </a>
 
-<div class="dashboard">
-<section class="card">
-<div class="head"><h2>iPay Payment Workspace</h2><small>Wallet • Transfer • Payment</small></div>
-<div class="tabs">
-<button class="tab active" data-tab="bayar">Bayar Digital</button>
-<button class="tab" data-tab="transfer">Kirim Uang</button>
-<button class="tab" data-tab="simpan">Simpan Uang</button>
-<button class="tab" data-tab="terima">Terima Uang</button>
-<button class="tab" data-tab="invoice">Invoice</button>
-<button class="tab" data-tab="link">Payment Link</button>
-</div>
+    <a class="back" href="index3.html">
+      Kembali
+    </a>
 
-<div class="body panel active" id="panel-bayar">
-<label style="font-size:10px;font-weight:900;color:#4c576a">CHANNEL PEMBAYARAN</label>
-<div class="methods" style="margin-top:8px">
-<button class="method active" data-method="Transfer Bank"><b>🏦 Transfer Bank</b><span>VA / rekening</span></button>
-<button class="method" data-method="QRIS"><b>▦ QRIS</b><span>Scan QR</span></button>
-<button class="method" data-method="E-Wallet"><b>◉ E-Wallet</b><span>Dompet digital</span></button>
-<button class="method" data-method="Payment Link"><b>🔗 Link</b><span>Bayar via tautan</span></button>
-</div>
-<div class="row"><div class="field"><label>Nama Pembayar</label><input id="payer" placeholder="Nama lengkap"></div><div class="field"><label>Email / Kontak</label><input id="pemail" placeholder="nama@email.com"></div></div>
-<div class="field"><label>Produk / Layanan</label><input id="product" placeholder="Contoh: WebToolsKita VIP"></div>
-<div class="field"><label>Nominal Pembayaran</label><input id="bamount" class="amount" type="number" min="1000" placeholder="100000"></div>
-<button class="primary full" onclick="createPayment()">Buat Pembayaran Digital</button>
-<div class="notice">Alur pembayaran siap digunakan di frontend. Untuk uang sungguhan, gateway/VA/QRIS/e-wallet wajib dihubungkan ke backend dan provider resmi.</div>
-</div>
+  </div>
+</header>
 
-<div class="body panel" id="panel-transfer">
-<div class="row"><div class="field"><label>Nama Penerima</label><input id="rname" placeholder="Nama penerima"></div><div class="field"><label>Bank Tujuan</label><select id="rbank"><option value="">Pilih bank</option><option>BCA</option><option>Mandiri</option><option>BNI</option><option>BRI</option><option>BSI</option><option>Bank Lainnya</option></select></div></div>
-<div class="field"><label>Nomor Rekening Tujuan</label><input id="raccount" placeholder="Nomor rekening"></div>
-<div class="field"><label>Nominal Transfer</label><input id="tamount" class="amount" type="number" min="1000" placeholder="100000"></div>
-<div class="field"><label>Catatan</label><textarea id="tnote" placeholder="Catatan transfer (opsional)"></textarea></div>
-<button class="primary full" onclick="transfer()">Lanjutkan Transfer</button>
-<div class="notice">Transfer nyata membutuhkan saldo terverifikasi, autentikasi, rekening sumber, backend, dan API bank/payment provider. Tombol frontend ini tidak memindahkan uang sungguhan.</div>
-</div>
+<main>
+  <section class="card">
 
-<div class="body panel" id="panel-simpan">
-<div class="wallet"><small>Dompet iPay</small><strong id="walletBalance">Rp 0</strong><div class="wrow"><span>Saldo tersimpan</span><span>● SECURE WALLET</span></div></div>
-<div class="row">
-<div class="field"><label>Nominal Tambah Saldo</label><input id="topup" type="number" min="1000" class="amount" placeholder="500000"></div>
-<div class="field"><label>Sumber Dana</label><select id="source"><option>Transfer Bank</option><option>Virtual Account</option><option>QRIS</option><option>E-Wallet</option></select></div>
-</div>
-<button class="primary full" onclick="topup()">Tambah Saldo / Deposit</button>
-<div class="notice">Konsep wallet sudah disiapkan untuk menyimpan saldo pengguna. Penyimpanan uang sungguhan memerlukan rekening/wallet provider, ledger backend, KYC/AML, autentikasi, webhook, dan kepatuhan regulasi yang sesuai.</div>
-</div>
+    <span class="badge">WEBTOOLS KITA - BRIDGE</span>
 
-<div class="body panel" id="panel-terima">
-<div class="featuregrid">
-<div class="feature"><b>🏦 Rekening / VA</b><p>Tujuan pembayaran bank untuk menerima dana.</p><button onclick="info('Virtual Account','VA nyata muncul setelah payment provider terhubung.')">Konfigurasi</button></div>
-<div class="feature"><b>▦ QRIS</b><p>QR pembayaran pelanggan atau toko.</p><button onclick="openTab('bayar');selectMethod('QRIS')">Buat QR</button></div>
-<div class="feature"><b>🔗 Payment Link</b><p>Bagikan link pembayaran.</p><button onclick="openTab('link')">Buat Link</button></div>
-</div>
-<div class="qrbox"><div class="qr"></div><small>QR demo visual. QRIS asli dibuat provider setelah integrasi.</small></div>
-</div>
+    <div class="icon">WH</div>
 
-<div class="body panel" id="panel-invoice">
-<div class="row"><div class="field"><label>Nama Pelanggan</label><input id="iname" placeholder="Nama pelanggan"></div><div class="field"><label>Email</label><input id="iemail" placeholder="email pelanggan"></div></div>
-<div class="field"><label>Judul Invoice</label><input id="ititle" placeholder="Invoice pembayaran"></div><div class="field"><label>Nominal</label><input id="iamount" class="amount" type="number" min="1000" placeholder="250000"></div><div class="field"><label>Deskripsi</label><textarea id="idesc" placeholder="Detail barang / layanan"></textarea></div>
-<button class="primary full" onclick="invoice()">Buat Invoice + Payment Link</button>
-</div>
+    <h1>WEBHUB</h1>
 
-<div class="body panel" id="panel-link">
-<div class="field"><label>Nama Produk</label><input id="lname" placeholder="Produk / layanan"></div><div class="row"><div class="field"><label>Harga</label><input id="lamount" type="number" min="1000" placeholder="100000"></div><div class="field"><label>Masa Berlaku</label><select id="lexp"><option>24 jam</option><option>3 hari</option><option>7 hari</option><option>30 hari</option></select></div></div>
-<div class="field"><label>Deskripsi</label><textarea id="ldesc" placeholder="Informasi produk"></textarea></div><button class="primary full" onclick="paymentLink()">Generate Payment Link</button>
-</div>
-</section>
+    <p class="subtitle">
+      Pusat akses WEBHUB untuk mengelola akun, dashboard,
+      project, file, versi, dan layanan WebHub dalam satu tempat.
+    </p>
 
-<aside class="card">
-<div class="head"><h2>Wallet & Akun</h2></div><div class="body">
-<div class="wallet"><small>Saldo tersedia</small><strong id="sideBalance">Rp 0</strong><div class="wrow"><span>Saldo wallet</span><span>● SECURE</span></div></div>
-<div class="quick"><button onclick="openTab('transfer')">↗ Transfer</button><button onclick="openTab('simpan')">＋ Simpan</button><button onclick="openTab('terima')">↙ Terima</button><button onclick="openTab('invoice')">🧾 Invoice</button></div>
-<div class="sideitem"><b>💰 Penyimpanan saldo</b><p>Saldo wallet dirancang sebagai tempat menyimpan dana sebelum digunakan untuk pembayaran atau transfer.</p></div>
-<div class="sideitem"><b>🏦 Rekening pencairan</b><p>Rekening bank terverifikasi diperlukan untuk settlement nyata.</p></div>
-<div class="sideitem"><b>🔐 Keamanan</b><p>PIN, OTP, password, dan credential bank harus diproses aman di backend, bukan disimpan di frontend.</p></div>
-</div>
-</aside>
-</div>
+    <div class="info">
+      Kamu akan diarahkan ke WEBHUB resmi WebToolsKita.
+      Gunakan akun WEBHUB untuk melanjutkan ke dashboard.
+    </div>
 
-<section class="card tx" id="transaksi">
-<div class="head"><h2>Transaksi & Aktivitas</h2><div class="filters"><input id="search" placeholder="Cari..." oninput="render()"><select id="filter" onchange="render()"><option value="">Semua</option><option value="Masuk">Uang Masuk</option><option value="Keluar">Uang Keluar</option><option value="Menunggu">Menunggu</option></select></div></div><div class="body" id="txlist"></div>
-</section>
+    <div class="actions">
 
-<section class="servicegrid" id="layanan">
-<div class="service"><div class="ico">💰</div><b>Simpan Uang</b><p>Wallet untuk menyimpan saldo dan menggunakannya kembali.</p><button onclick="openTab('simpan')">Buka Wallet</button></div>
-<div class="service"><div class="ico">💸</div><b>Transfer Uang</b><p>Kirim dana ke rekening tujuan.</p><button onclick="openTab('transfer')">Kirim</button></div>
-<div class="service"><div class="ico">💳</div><b>Digital Payment</b><p>Buat pembayaran digital untuk pelanggan.</p><button onclick="openTab('bayar')">Buat</button></div>
-<div class="service"><div class="ico">🔗</div><b>Payment Link</b><p>Generate tautan pembayaran.</p><button onclick="openTab('link')">Generate</button></div>
-<div class="service"><div class="ico">🧾</div><b>Invoice</b><p>Invoice digital dengan ID transaksi.</p><button onclick="openTab('invoice')">Buat</button></div>
-<div class="service"><div class="ico">▦</div><b>QR Payment</b><p>Area QR payment siap integrasi QRIS.</p><button onclick="openTab('terima')">Buka</button></div>
-<div class="service"><div class="ico">📊</div><b>Monitoring</b><p>Pantau seluruh aktivitas pembayaran.</p><button onclick="document.getElementById('transaksi').scrollIntoView()">Monitor</button></div>
-<div class="service"><div class="ico">🛡️</div><b>Settlement</b><p>Kelola pencairan ke rekening terverifikasi.</p><button onclick="info('Settlement','Settlement nyata membutuhkan backend dan provider pembayaran.')">Kelola</button></div>
-</section>
+      <a
+        class="btn primary"
+        href="https://webhub-nine.vercel.app"
+      >
+        Masuk ke WEBHUB
+      </a>
+
+      <a
+        class="btn"
+        href="index3.html"
+      >
+        Kembali
+      </a>
+
+    </div>
+
+  </section>
 </main>
 
-<footer><div class="wrap foot"><span>WebToolsKita • iPay</span><span>VIP Payment Platform • Wallet • Transfer • Digital Payment</span></div></footer>
-<div class="modal" id="modal"><div class="modalbox"><button class="close" onclick="closeModal()">×</button><h2 id="mtitle">iPay</h2><p id="mtext"></p><div class="idbox"><small>ID / LINK</small><b id="mid">READY</b></div><button class="primary full" onclick="closeModal()">Selesai</button></div></div>
-<div class="toast" id="toast"></div>
+<footer>
+  <div class="wrap foot">
+    <span>WebToolsKita - WEBHUB Bridge</span>
+    <span>WEBHUB Access Gateway</span>
+  </div>
+</footer>
 
-<script>
-const KEY='wtk_ipay_full_v5',WALLET='wtk_ipay_wallet_v1';let data=JSON.parse(localStorage.getItem(KEY)||'[]'),balance=Number(localStorage.getItem(WALLET)||0),method='Transfer Bank';
-const $=id=>document.getElementById(id),money=n=>'Rp '+Number(n||0).toLocaleString('id-ID'),newId=p=>(p||'IPY')+'-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
-function safe(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function toast(s){let t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
-function save(){localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(WALLET,String(balance));render()}
-function add(x){data.unshift(x);save()}
-function info(title,text,id='READY'){ $('mtitle').textContent=title;$('mtext').textContent=text;$('mid').textContent=id;$('modal').classList.add('show')}
-function closeModal(){$('modal').classList.remove('show')}
-function openTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='panel-'+name));document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'})}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
-document.querySelectorAll('.method').forEach(b=>b.onclick=()=>selectMethod(b.dataset.method));
-function selectMethod(m){method=m;document.querySelectorAll('.method').forEach(x=>x.classList.toggle('active',x.dataset.method===m))}
-function createPayment(){let n=$('payer').value.trim(),e=$('pemail').value.trim(),p=$('product').value.trim(),a=+$('bamount').value;if(!n||!e||!p||a<1000){toast('Lengkapi data dan nominal minimal Rp1.000.');return}let x={id:newId(),type:'Masuk',status:'Menunggu',title:p,party:n,amount:a,method,date:new Date().toISOString()};add(x);info('Pembayaran Digital Dibuat','Pembayaran sudah tercatat di workspace. Provider nyata diperlukan untuk menerima uang sungguhan.',x.id)}
-function transfer(){let n=$('rname').value.trim(),b=$('rbank').value,a=+$('tamount').value,acc=$('raccount').value.trim();if(!n||!b||!acc||a<1000){toast('Lengkapi penerima, bank, rekening, dan nominal.');return}if(a>balance){info('Saldo Tidak Cukup','Saldo wallet saat ini '+money(balance)+'. Transfer nyata juga membutuhkan backend dan autentikasi.');return}let x={id:newId('TRF'),type:'Keluar',status:'Menunggu',title:'Transfer ke '+n,party:acc,amount:a,method:b,date:new Date().toISOString()};balance-=a;add(x);info('Transfer Dibuat','Instruksi transfer tercatat. Eksekusi bank nyata memerlukan koneksi API/provider dan autentikasi.',x.id)}
-function topup(){let a=+$('topup').value,s=$('source').value;if(a<1000){toast('Nominal minimal Rp1.000.');return}let x={id:newId('TOP'),type:'Masuk',status:'Menunggu',title:'Deposit / Top Up Wallet',party:s,amount:a,method:s,date:new Date().toISOString()};add(x);info('Top Up Dibuat','Permintaan top up tercatat. Setelah provider mengonfirmasi pembayaran, saldo wallet dapat dikreditkan.',x.id)}
-function invoice(){let n=$('iname').value.trim(),t=$('ititle').value.trim(),a=+$('iamount').value;if(!n||!t||a<1000){toast('Lengkapi nama, judul invoice, dan nominal.');return}let x={id:newId('INV'),type:'Masuk',status:'Menunggu',title:t,party:n,amount:a,method:'Invoice',date:new Date().toISOString()};add(x);info('Invoice Berhasil Dibuat','Invoice siap dikirim kepada pelanggan. Payment gateway nyata diperlukan untuk konfirmasi pembayaran.',x.id)}
-function paymentLink(){let n=$('lname').value.trim(),a=+$('lamount').value;if(!n||a<1000){toast('Isi produk dan nominal.');return}let x={id:newId('LNK'),type:'Masuk',status:'Menunggu',title:n,party:'Payment Link',amount:a,method:'Payment Link',date:new Date().toISOString()};add(x);info('Payment Link Dibuat','Tautan pembayaran siap secara konseptual. Backend perlu membuat URL publik dan menangani callback pembayaran.',location.origin+'/pay/'+x.id)}
-function render(){let q=($('search')?.value||'').toLowerCase(),f=$('filter')?.value||'',arr=data.filter(x=>(!q||(x.title+x.party+x.id).toLowerCase().includes(q))&&(!f||(f==='Menunggu'?x.status==='Menunggu':x.type===f)));$('balance').textContent=money(balance);$('sideBalance').textContent=money(balance);$('walletBalance').textContent=money(balance);$('income').textContent=money(data.filter(x=>x.type==='Masuk'&&x.status!=='Menunggu').reduce((s,x)=>s+x.amount,0));$('outcome').textContent=money(data.filter(x=>x.type==='Keluar'&&x.status!=='Menunggu').reduce((s,x)=>s+x.amount,0));$('count').textContent=data.length;$('pending').textContent=data.filter(x=>x.status==='Menunggu').length;let box=$('txlist');if(!arr.length){box.innerHTML='<div class="empty"><b>Belum ada transaksi</b><br>Aktivitas yang dibuat akan muncul di sini. Tidak ada data contoh.</div>';return}box.innerHTML=arr.map(x=>`<div class="txrow"><div><b>${safe(x.title)}</b><small>${safe(x.id)} • ${safe(x.method)}</small></div><div>${safe(x.party)}</div><div>${money(x.amount)}</div><div><span class="status ${x.status==='Sukses'?'success':'pending'}">${safe(x.status)}</span></div><div><small>${new Date(x.date).toLocaleDateString('id-ID')}</small></div></div>`).join('')}
-render();
-</script>
 </body>
 </html>

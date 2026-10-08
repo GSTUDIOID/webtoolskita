@@ -8,3 +8,9 @@ database/
 *.db-shm
 *.db-wal
 webtoolskita-firebase-adminsdk-*.json
+
+# Build & temporary files
+.gradle/
+app-builder/jobs/
+app-builder/output/
+*.backup-*

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Index 911 — Emergency Recovery</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:#08050d;
+    color:#fff;
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:520px;
+    background:#120b1d;
+    border:1px solid #7226a8;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 0 35px rgba(140,50,220,.25);
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:24px;
+}
+
+.title{
+    font-size:22px;
+    font-weight:bold;
+    color:#c77dff;
+}
+
+.back{
+    text-decoration:none;
+    color:#fff;
+    background:#7024a5;
+    padding:9px 15px;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.warning{
+    padding:15px;
+    border:1px solid #8b35bd;
+    background:#1b0d27;
+    border-radius:12px;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+.step{
+    border:1px solid #382341;
+    border-radius:13px;
+    padding:18px;
+    margin-top:15px;
+}
+
+.step-title{
+    color:#c77dff;
+    font-weight:bold;
+    margin-bottom:14px;
+}
+
+.status-line{
+    font-size:14px;
+}
+
+.status-text{
+    color:#aaa;
+}
+
+label{
+    display:block;
+    font-size:13px;
+    color:#bbb;
+    margin-bottom:7px;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    background:#0a0710;
+    color:#fff;
+    border:1px solid #4b2d59;
+    border-radius:9px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#a855f7;
+}
+
+button{
+    width:100%;
+    padding:13px;
+    margin-top:13px;
+    border:0;
+    border-radius:9px;
+    background:#7e22ce;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#9333ea;
+}
+
+.danger{
+    background:#991b1b;
+}
+
+.danger:hover{
+    background:#b91c1c;
+}
+
+.message{
+    display:none;
+    margin-top:13px;
+    padding:12px;
+    border-radius:9px;
+    background:#0a0710;
+    border:1px solid #34213d;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.hidden{
+    display:none;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#666;
+    font-size:11px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="title">INDEX 911</div>
+
+        <a href="javascript:history.back()" class="back">
+            Kembali
+        </a>
+    </div>
+
+    <div class="warning">
+        <strong>⚠ EMERGENCY RECOVERY</strong><br>
+        Gunakan halaman ini hanya untuk melakukan recovery
+        administrator melalui password recovery.
+    </div>
+
+
+    <!-- STEP 1 -->
+
+    <div class="step">
+
+        <div class="step-title">
+            STEP 1 — CORE STATUS
+        </div>
+
+        <div class="status-line">
+            Status:
+            <span
+                id="coreStatus"
+                class="status-text"
+            >
+                Checking...
+            </span>
+        </div>
+
+        <div
+            id="coreMessage"
+            class="status-text"
+            style="margin-top:8px;font-size:13px;"
+        ></div>
+
+    </div>
+
+
+    <!-- STEP 2 -->
+
+    <div class="step">
+
+        <div class="step-title">
+            STEP 2 — PASSWORD AUTHENTICATION
+        </div>
+
+        <label for="password">
+            Recovery Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Admin Recovery Password"
+            autocomplete="off"
+        >
+
+        <button
+            id="verifyButton"
+            onclick="verifyAdmin()"
+        >
+            VERIFY ADMIN
+        </button>
+
+        <div
+            id="authMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- STEP 3 -->
+
+    <div
+        id="step3"
+        class="step hidden"
+    >
+
+        <div class="step-title">
+            STEP 3 — RECOVERY CONTROL
+        </div>
+
+        <div
+            style="font-size:13px;color:#aaa;line-height:1.5;"
+        >
+            Administrator berhasil diverifikasi.
+            Recovery control telah dibuka.
+        </div>
+
+        <button
+            class="danger"
+            onclick="endCore()"
+        >
+            END CORE
+        </button>
+
+        <div
+            id="endMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <div class="footer">
+        WebToolsKita — Emergency Recovery System
+    </div>
+
+</div>
+
+
+<script>
+
+let recoveryToken = null;
+
+
+// =====================================================
+// HELPER
+// =====================================================
+
+function showMessage(element, message){
+
+    element.style.display = "block";
+    element.textContent = message;
+
+}
+
+
+// =====================================================
+// CORE STATUS
+// =====================================================
+
+async function checkCoreStatus(){
+
+    const status =
+        document.getElementById("coreStatus");
+
+    const message =
+        document.getElementById("coreMessage");
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/core/status"
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Gagal membaca Core Status."
+            );
+        }
+
+        status.textContent =
+            data.active
+                ? "ACTIVE — LOCKDOWN"
+                : "INACTIVE — NORMAL";
+
+        message.textContent =
+            data.active
+                ? "Core Protocol sedang aktif."
+                : "Core Protocol tidak aktif.";
+
+    }catch(error){
+
+        status.textContent =
+            "ERROR";
+
+        message.textContent =
+            error.message;
+    }
+
+}
+
+
+// =====================================================
+// PASSWORD AUTHENTICATION
+// =====================================================
+
+async function verifyAdmin(){
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+    const button =
+        document.getElementById(
+            "verifyButton"
+        );
+
+    const message =
+        document.getElementById(
+            "authMessage"
+        );
+
+    if(!password){
+
+        showMessage(
+            message,
+            "Password wajib diisi."
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent =
+        "VERIFYING...";
+
+    showMessage(
+        message,
+        "Memverifikasi password..."
+    );
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/core/recovery/auth",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        password:password
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Verifikasi gagal."
+            );
+        }
+
+        recoveryToken =
+            data.recoveryToken;
+
+        message.textContent =
+            "✓ Administrator berhasil diverifikasi.";
+
+        document
+            .getElementById("step3")
+            .classList
+            .remove("hidden");
+
+        document
+            .getElementById("password")
+            .value = "";
+
+    }catch(error){
+
+        recoveryToken = null;
+
+        message.textContent =
+            "✕ " + error.message;
+
+    }finally{
+
+        button.disabled = false;
+
+        button.textContent =
+            "VERIFY ADMIN";
+    }
+
+}
+
+
+// =====================================================
+// END CORE
+// =====================================================
+
+async function endCore(){
+
+    const message =
+        document.getElementById(
+            "endMessage"
+        );
+
+    if(!recoveryToken){
+
+        showMessage(
+            message,
+            "Recovery session tidak tersedia."
+        );
+
+        return;
+    }
+
+    showMessage(
+        message,
+        "Menghentikan Core Protocol..."
+    );
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/core/recovery/end",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        recoveryToken:
+                            recoveryToken
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Gagal menghentikan Core."
+            );
+        }
+
+        message.textContent =
+            "✓ " + data.message;
+
+        recoveryToken = null;
+
+        await checkCoreStatus();
+
+    }catch(error){
+
+        message.textContent =
+            "✕ " + error.message;
+    }
+
+}
+
+
+// =====================================================
+// START
+// =====================================================
+
+checkCoreStatus();
+
+</script>
+
+</body>
+</html>

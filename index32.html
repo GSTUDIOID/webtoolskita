@@ -705,7 +705,10 @@ body{
     <div class="orb three"></div>
 </div>
 
-<button class="back-btn" onclick="window.location.href='index18.html'">
+<button
+    class="back-btn"
+    onclick="window.location.href='index18.html'"
+>
     ← Kembali ke Dashboard
 </button>
 
@@ -734,6 +737,7 @@ body{
 
             <div>
                 <small>Administrator</small>
+
                 <strong id="adminName">
                     Administrator
                 </strong>
@@ -826,7 +830,10 @@ body{
 
         </div>
 
-        <div class="user-list" id="userList">
+        <div
+            class="user-list"
+            id="userList"
+        >
 
             <div class="empty">
 
@@ -850,40 +857,116 @@ body{
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div
+    class="toast"
+    id="toast"
+></div>
 
 <script>
 
-const firebaseConfig={
-    apiKey:"AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
-    authDomain:"webtoolskita.firebaseapp.com",
-    projectId:"webtoolskita",
-    storageBucket:"webtoolskita.firebasestorage.app",
-    messagingSenderId:"593680487717",
-    appId:"1:593680487717:web:33ef7a4bc9be02f99276cc",
-    measurementId:"G-YVEJ90678G"
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+
+    authDomain:
+        "webtoolskita.firebaseapp.com",
+
+    projectId:
+        "webtoolskita",
+
+    storageBucket:
+        "webtoolskita.firebasestorage.app",
+
+    messagingSenderId:
+        "593680487717",
+
+    appId:
+        "1:593680487717:web:33ef7a4bc9be02f99276cc",
+
+    measurementId:
+        "G-YVEJ90678G"
 };
 
-const ADMIN_EMAIL="ganreffafk@gmail.com";
 
-firebase.initializeApp(firebaseConfig);
+const ADMIN_EMAIL =
+    "ganreffafk@gmail.com";
+
+
+let onlineUsersInterval =
+    null;
+
+
+let authChecked =
+    false;
+
+
+firebase.initializeApp(
+    firebaseConfig
+);
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function hideLoading(){
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+    if(loading){
+
+        loading.classList.add(
+            "hide"
+        );
+
+    }
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
 
 function showToast(message){
 
-    const toast=document.getElementById("toast");
+    const toast =
+        document.getElementById(
+            "toast"
+        );
 
-    toast.textContent=message;
+    if(!toast){
+        return;
+    }
 
-    toast.classList.add("show");
+    toast.textContent =
+        message;
+
+    toast.classList.add(
+        "show"
+    );
 
     setTimeout(()=>{
-        toast.classList.remove("show");
+
+        toast.classList.remove(
+            "show"
+        );
+
     },1800);
 }
 
+
+/* =====================================================
+   TIME
+===================================================== */
+
 function formatTime(){
 
-    const now=new Date();
+    const now =
+        new Date();
 
     return now.toLocaleTimeString(
         "id-ID",
@@ -895,19 +978,85 @@ function formatTime(){
     );
 }
 
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+}
+
+
+/* =====================================================
+   RENDER USERS
+===================================================== */
+
 function renderUsers(users){
 
-    const list=document.getElementById("userList");
+    const list =
+        document.getElementById(
+            "userList"
+        );
 
-    document.getElementById("onlineCount").textContent=
-        users.length;
 
-    document.getElementById("lastUpdate").textContent=
-        formatTime();
+    const count =
+        document.getElementById(
+            "onlineCount"
+        );
+
+
+    const update =
+        document.getElementById(
+            "lastUpdate"
+        );
+
+
+    if(count){
+
+        count.textContent =
+            users.length;
+
+    }
+
+
+    if(update){
+
+        update.textContent =
+            formatTime();
+
+    }
+
+
+    if(!list){
+        return;
+    }
+
 
     if(!users.length){
 
-        list.innerHTML=`
+        list.innerHTML = `
 
             <div class="empty">
 
@@ -930,164 +1079,351 @@ function renderUsers(users){
         return;
     }
 
-    list.innerHTML=users.map(user=>{
 
-        const initial=
-            (user.name || user.email || "U")
-            .charAt(0)
-            .toUpperCase();
+    list.innerHTML =
+        users.map(
+            user=>{
 
-        const avatar=user.photo_url
-            ? `<img src="${user.photo_url}" alt="">`
-            : initial;
+                const initial =
+                    (
+                        user.name ||
+                        user.email ||
+                        "U"
+                    )
+                    .charAt(0)
+                    .toUpperCase();
 
-        return `
 
-            <div class="user">
+                const photo =
+                    user.photo_url
+                        ? escapeHtml(
+                            user.photo_url
+                        )
+                        : "";
 
-                <div class="user-avatar">
-                    ${avatar}
-                </div>
 
-                <div class="user-info">
+                const avatar =
+                    photo
+                        ? `
+                            <img
+                                src="${photo}"
+                                alt=""
+                                loading="lazy"
+                            >
+                        `
+                        : initial;
 
-                    <div class="user-name">
-                        ${escapeHtml(user.name || "Pengguna")}
+
+                return `
+
+                    <div class="user">
+
+                        <div class="user-avatar">
+                            ${avatar}
+                        </div>
+
+                        <div class="user-info">
+
+                            <div class="user-name">
+                                ${escapeHtml(
+                                    user.name ||
+                                    "Pengguna"
+                                )}
+                            </div>
+
+                            <div class="user-email">
+                                ${escapeHtml(
+                                    user.email ||
+                                    "-"
+                                )}
+                            </div>
+
+                        </div>
+
+                        <div class="user-status">
+
+                            <span class="status-dot"></span>
+
+                            Online
+
+                        </div>
+
                     </div>
 
-                    <div class="user-email">
-                        ${escapeHtml(user.email || "-")}
-                    </div>
+                `;
 
-                </div>
-
-                <div class="user-status">
-
-                    <span class="status-dot"></span>
-
-                    Online
-
-                </div>
-
-            </div>
-
-        `;
-
-    }).join("");
+            }
+        )
+        .join("");
 }
 
-function escapeHtml(value){
 
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
+/* =====================================================
+   LOAD ONLINE USERS
+===================================================== */
 
 async function loadOnlineUsers(){
 
     try{
 
-        const user=firebase.auth().currentUser;
+        const user =
+            firebase.auth()
+                .currentUser;
+
 
         if(!user){
+
             return;
         }
 
-        const token=await user.getIdToken();
 
-        const response=await fetch(
-            "/api/admin/online-users",
-            {
-                headers:{
-                    Authorization:
-                        "Bearer "+token
+        const token =
+            await user.getIdToken(
+                false
+            );
+
+
+        const response =
+            await fetch(
+                "/api/admin/online-users",
+                {
+                    method:
+                        "GET",
+
+                    credentials:
+                        "include",
+
+                    cache:
+                        "no-store",
+
+                    headers:{
+                        Authorization:
+                            "Bearer " +
+                            token,
+
+                        Accept:
+                            "application/json"
+                    }
                 }
-            }
-        );
+            );
+
+
+        if(
+            response.status ===
+                401 ||
+            response.status ===
+                403
+        ){
+
+            document.getElementById(
+                "monitorStatus"
+            ).textContent =
+                "Ditolak";
+
+            showToast(
+                "Akses administrator ditolak."
+            );
+
+            return;
+        }
+
 
         if(!response.ok){
+
             throw new Error(
-                "Gagal mengambil data online users"
+                "HTTP " +
+                response.status
             );
         }
 
-        const data=await response.json();
+
+        const data =
+            await response.json();
+
 
         renderUsers(
-            Array.isArray(data.users)
+            Array.isArray(
+                data.users
+            )
                 ? data.users
                 : []
         );
 
+
         document.getElementById(
             "monitorStatus"
-        ).textContent="Aktif";
+        ).textContent =
+            "Aktif";
+
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Online users error:",
+            error
+        );
+
 
         document.getElementById(
             "monitorStatus"
-        ).textContent="Error";
+        ).textContent =
+            "Error";
+
+    }finally{
+
+        hideLoading();
 
     }
 }
 
-firebase.auth().onAuthStateChanged(
-    async user=>{
 
-        if(!user){
+/* =====================================================
+   ADMIN AUTHENTICATION
+===================================================== */
 
-            window.location.href="index2.html";
+firebase.auth()
+    .onAuthStateChanged(
+        async user=>{
 
-            return;
+            if(authChecked){
+
+                return;
+            }
+
+            authChecked =
+                true;
+
+
+            if(!user){
+
+                window.location.href =
+                    "index2.html";
+
+                return;
+            }
+
+
+            const userEmail =
+                String(
+                    user.email || ""
+                )
+                .toLowerCase()
+                .trim();
+
+
+            const adminEmail =
+                ADMIN_EMAIL
+                    .toLowerCase()
+                    .trim();
+
+
+            if(
+                userEmail !==
+                adminEmail
+            ){
+
+                alert(
+                    "Akses administrator ditolak."
+                );
+
+                window.location.href =
+                    "index3.html";
+
+                return;
+            }
+
+
+            /* ADMIN PROFILE */
+
+            const adminName =
+                document.getElementById(
+                    "adminName"
+                );
+
+
+            if(adminName){
+
+                adminName.textContent =
+                    user.displayName ||
+                    "Administrator";
+
+            }
+
+
+            const adminAvatar =
+                document.getElementById(
+                    "adminAvatar"
+                );
+
+
+            if(
+                adminAvatar &&
+                user.photoURL
+            ){
+
+                adminAvatar.innerHTML = `
+
+                    <img
+                        src="${escapeHtml(
+                            user.photoURL
+                        )}"
+                        alt="Admin"
+                    >
+
+                `;
+
+            }
+
+
+            /* INITIAL LOAD */
+
+            await loadOnlineUsers();
+
+
+            /* PREVENT DUPLICATE TIMER */
+
+            if(
+                onlineUsersInterval
+            ){
+
+                clearInterval(
+                    onlineUsersInterval
+                );
+
+            }
+
+
+            /* LIVE UPDATE */
+
+            onlineUsersInterval =
+                setInterval(
+                    loadOnlineUsers,
+                    10000
+                );
+
         }
+    );
 
-        if(user.email!==ADMIN_EMAIL){
 
-            alert(
-                "Akses administrator ditolak."
+/* =====================================================
+   CLEANUP
+===================================================== */
+
+window.addEventListener(
+    "beforeunload",
+    ()=>{
+
+        if(
+            onlineUsersInterval
+        ){
+
+            clearInterval(
+                onlineUsersInterval
             );
 
-            window.location.href="index3.html";
-
-            return;
+            onlineUsersInterval =
+                null;
         }
-
-        document.getElementById(
-            "adminName"
-        ).textContent=
-            user.displayName ||
-            "Administrator";
-
-        if(user.photoURL){
-
-            document.getElementById(
-                "adminAvatar"
-            ).innerHTML=
-                `<img src="${user.photoURL}" alt="Admin">`;
-
-        }
-
-        await loadOnlineUsers();
-
-        setInterval(
-            loadOnlineUsers,
-            10000
-        );
-
-        setTimeout(()=>{
-
-            document
-                .getElementById("loading")
-                .classList
-                .add("hide");
-
-        },450);
 
     }
 );

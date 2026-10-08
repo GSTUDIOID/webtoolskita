@@ -1,130 +1,405 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>iPay — Real Payment</title>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script>
-const firebaseConfig={
- apiKey:"AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
- authDomain:"webtoolskita.firebaseapp.com",
- projectId:"webtoolskita",
- storageBucket:"webtoolskita.firebasestorage.app",
- messagingSenderId:"593680487717",
- appId:"1:593680487717:web:33ef7a4bc9be02f99276cc",
- measurementId:"G-YVEJ90678G"
-};
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-async function getFirebaseToken(){
- const user=auth.currentUser;
- if(!user) throw new Error("Silakan login terlebih dahulu.");
- return await user.getIdToken(true);
-}
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Tool 25 - Enterprise Software License & Open-Source Compliance Auditor</title>
 <style>
-:root{--bg:#07070a;--card:#0e0e13;--line:#29242f;--text:#f6f4f8;--muted:#98919f;--p:#792cff;--p2:#a35cff;--green:#21cf91;--yellow:#e4b84f}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1c102b,#07070a 42%);color:var(--text);font:14px Inter,Segoe UI,Arial,sans-serif}button,input,select{font:inherit}.wrap{width:min(1180px,92%);margin:auto}
-header{padding:25px 0}.nav{display:flex;align-items:center;gap:14px}.back{color:#ddd;text-decoration:none;border:1px solid var(--line);border-radius:11px;padding:10px 14px}.brand{display:flex;align-items:center;gap:10px}.logo{width:45px;height:45px;border-radius:13px;background:linear-gradient(135deg,var(--p),var(--p2));display:grid;place-items:center;font-weight:900;font-size:19px}.brand b{font-size:20px}.brand small{display:block;color:var(--muted);font-size:10px}.live{margin-left:auto;background:#10251d;color:var(--green);border:1px solid #204f3d;border-radius:99px;padding:7px 10px;font-size:9px;font-weight:900}
-.hero{padding:20px 0}.tag{display:inline-block;color:#bf9cff;background:#171021;border:1px solid #38264b;padding:6px 9px;border-radius:99px;font-size:9px;font-weight:900}.hero h1{font-size:31px;margin:10px 0 7px}.hero p{color:var(--muted);line-height:1.6;max-width:800px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.card{background:#0d0d12;border:1px solid var(--line);border-radius:17px;overflow:hidden}.head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.head h2{margin:0;font-size:15px}.head small{color:var(--muted)}.body{padding:19px}.field{margin-bottom:13px}.field label{display:block;font-size:10px;font-weight:800;color:#c9c2cd;margin-bottom:6px}.field input,.field select{width:100%;background:#08080b;border:1px solid #302a36;color:#eee;border-radius:10px;padding:11px;outline:none}.field input:focus,.field select:focus{border-color:#8242f4}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.amount{font-size:22px!important;font-weight:900}.methods{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0 14px}.method{background:#09090c;border:1px solid var(--line);color:#eee;border-radius:9px;padding:10px;text-align:left;cursor:pointer}.method.active{background:#180e27;border-color:#8546f2}.method b{font-size:10px}.method span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.btn{border:1px solid var(--line);background:#09090c;color:#eee;border-radius:9px;padding:11px 13px;cursor:pointer;font-size:10px;font-weight:850}.primary{border:0;background:linear-gradient(135deg,var(--p),var(--p2));width:100%}.result{min-height:390px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.waiting{color:var(--muted);border:1px dashed #39323f;border-radius:14px;padding:55px 30px;width:85%}.paybox{display:none;width:100%}.paybox.show{display:block}.payurl{background:#08080b;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:left;word-break:break-all;font-size:10px;color:#c8b5dd}.payno{font-size:25px;font-weight:900;margin:8px 0}.status{display:inline-block;border-radius:99px;padding:6px 9px;background:#251c2e;color:#c9b6d9;font-size:9px;font-weight:900}.status.paid{background:#103325;color:var(--green)}.status.pending{background:#302714;color:var(--yellow)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.notice{margin-top:12px;border:1px solid #30263b;background:#120d18;color:#aaa0b2;border-radius:10px;padding:11px;font-size:9px;line-height:1.55}
-.tx{margin-top:15px}.txrow{display:grid;grid-template-columns:1.3fr .8fr .7fr .7fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);font-size:10px}.txrow:last-child{border:0}.txrow small{display:block;color:var(--muted);margin-top:3px;font-size:8px}.empty{text-align:center;color:var(--muted);padding:24px;border:1px dashed #302a35;border-radius:10px;font-size:10px}
-footer{margin-top:30px;padding:20px 0;border-top:1px solid var(--line);color:#665f6d;font-size:9px}.foot{display:flex;justify-content:space-between}
-.toast{position:fixed;right:18px;bottom:18px;background:#f6f4f8;color:#111;padding:11px 14px;border-radius:9px;font-size:10px;font-weight:800;opacity:0;transform:translateY(7px);transition:.2s}.toast.show{opacity:1;transform:none}
-@media(max-width:800px){.grid{grid-template-columns:1fr}.live{display:none}}@media(max-width:560px){.row,.methods,.actions{grid-template-columns:1fr}}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:#08080d;
+  color:#f4f4f7;
+}
+header{
+  padding:20px;
+  border-bottom:1px solid #242431;
+  background:#0d0d14;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+.brand{
+  font-weight:800;
+  letter-spacing:.5px;
+}
+.back{
+  text-decoration:none;
+  color:#fff;
+  background:#6d28d9;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:700;
+}
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:35px 20px 60px;
+}
+.badge{
+  display:inline-block;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#172554;
+  color:#93c5fd;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.7px;
+}
+h1{
+  margin:18px 0 10px;
+  font-size:clamp(28px,5vw,48px);
+  line-height:1.08;
+}
+.sub{
+  color:#a1a1aa;
+  max-width:850px;
+  line-height:1.7;
+}
+.panel{
+  margin-top:28px;
+  background:#101018;
+  border:1px solid #292936;
+  border-radius:18px;
+  padding:22px;
+}
+label{
+  display:block;
+  margin-bottom:10px;
+  font-weight:700;
+}
+input[type=file]{
+  width:100%;
+  padding:14px;
+  border:1px dashed #44445a;
+  border-radius:12px;
+  background:#0b0b11;
+  color:#ddd;
+}
+button{
+  margin-top:16px;
+  border:0;
+  padding:13px 20px;
+  border-radius:11px;
+  background:linear-gradient(135deg,#7c3aed,#4f46e5);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+button:hover{filter:brightness(1.12)}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:22px;
+}
+.stat{
+  padding:18px;
+  border:1px solid #292936;
+  border-radius:14px;
+  background:#0b0b11;
+}
+.stat b{
+  display:block;
+  font-size:25px;
+  margin-bottom:5px;
+}
+.stat span{
+  color:#9999a6;
+  font-size:13px;
+}
+.table-wrap{
+  overflow:auto;
+  margin-top:20px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+th,td{
+  text-align:left;
+  padding:13px;
+  border-bottom:1px solid #292936;
+}
+th{
+  color:#aaa;
+  font-size:12px;
+  text-transform:uppercase;
+}
+.risk-high{color:#f87171;font-weight:800}
+.risk-medium{color:#fbbf24;font-weight:800}
+.risk-low{color:#4ade80;font-weight:800}
+.empty{
+  color:#8f8f9d;
+  text-align:center;
+  padding:30px 10px;
+}
+.note{
+  margin-top:18px;
+  color:#888895;
+  font-size:12px;
+  line-height:1.6;
+}
+@media(max-width:700px){
+  header{align-items:flex-start}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
-<header><div class="wrap nav">
-<a class="back" href="index3.html">← Kembali</a>
-<div class="brand"><div class="logo">iP</div><div><b>iPay</b><small>WebToolsKita • Real Payment Gateway</small></div></div>
-<div class="live">● GATEWAY CONNECTED</div>
-</div></header>
 
-<main class="wrap">
-<section class="hero"><span class="tag">REAL PAYMENT • iPAYMU API</span><h1>Buat Pembayaran Nyata</h1><p>Halaman ini menggunakan backend WebToolsKita untuk membuat transaksi melalui <b>iPaymu API</b>. Setelah merchant dikonfigurasi, pelanggan diarahkan ke halaman pembayaran iPaymu untuk menyelesaikan transaksi melalui channel yang tersedia.</p></section>
+<header>
+  <div class="brand">WebToolsKita</div>
+  <a class="back" href="index3.html">Kembali</a>
+</header>
 
-<section class="grid">
-<div class="card"><div class="head"><h2>Buat Transaksi</h2><small id="env">Checking gateway…</small></div><div class="body">
-<div class="field"><label>Metode Pembayaran</label><div class="methods">
-<button class="method active" data-m="va" data-c="bca"><b>🏦 BCA VA</b><span>Virtual Account</span></button>
-<button class="method" data-m="va" data-c="mandiri"><b>🏦 Mandiri VA</b><span>Virtual Account</span></button>
-<button class="method" data-m="qris" data-c="mpm"><b>▦ QRIS</b><span>Scan QR</span></button>
-</div></div>
-<div class="row"><div class="field"><label>Nama Pembayar</label><input id="name" placeholder="Nama lengkap"></div><div class="field"><label>No. HP</label><input id="phone" placeholder="08123456789"></div></div>
-<div class="field"><label>Email</label><input id="email" type="email" placeholder="customer@email.com"></div>
-<div class="field"><label>Nominal</label><input id="amount" class="amount" type="number" min="1000" placeholder="50000"></div>
-<div class="field"><label>Produk / Layanan</label><input id="product" placeholder="WebToolsKita VIP"></div>
-<button class="btn primary" id="create">Buat Pembayaran Nyata</button>
-<div class="notice">API key dan VA tidak disimpan di browser. Backend yang membuat signature dan berkomunikasi dengan iPaymu. Jangan menaruh credential merchant di HTML/JavaScript frontend.</div>
-</div></div>
+<main>
+  <span class="badge">FREE TOOL 25</span>
 
-<div class="card"><div class="head"><h2>Instruksi Pembayaran</h2><small id="status">Belum ada transaksi</small></div><div class="body result">
-<div class="waiting" id="waiting">Setelah transaksi dibuat, nomor pembayaran / URL pembayaran nyata akan muncul di sini.</div>
-<div class="paybox" id="paybox">
-<div id="methodTitle"></div><div class="payno" id="payno">—</div><span class="status pending" id="paystatus">MENUNGGU PEMBAYARAN</span>
-<p style="color:var(--muted);font-size:10px">Gunakan tombol di bawah untuk membuka halaman pembayaran resmi.</p>
-<div class="payurl" id="url">—</div>
-<div class="actions"><button class="btn" onclick="copyUrl()">Salin URL</button><button class="btn primary" onclick="openPayment()">Bayar Sekarang</button></div>
-</div></div></div>
-</section>
+  <h1>Enterprise Software License &amp; Open-Source Compliance Auditor</h1>
 
-<section class="card tx"><div class="head"><h2>Transaksi Terbaru</h2><small>Status diperbarui dari callback</small></div><div class="body" id="history"></div></section>
+  <p class="sub">
+    Audit awal terhadap dependency dan manifest software perusahaan untuk
+    mengidentifikasi potensi risiko lisensi open-source seperti GPL, AGPL,
+    LGPL, MPL, Apache, MIT, dan lisensi terkait.
+  </p>
+
+  <section class="panel">
+    <label for="manifest">Upload dependency manifest</label>
+    <input id="manifest" type="file" accept=".json,.txt,.mod">
+
+    <button id="scanBtn">Scan Compliance</button>
+
+    <div class="stats">
+      <div class="stat">
+        <b id="total">0</b>
+        <span>Dependencies</span>
+      </div>
+      <div class="stat">
+        <b id="low">0</b>
+        <span>Low Risk</span>
+      </div>
+      <div class="stat">
+        <b id="medium">0</b>
+        <span>Medium Risk</span>
+      </div>
+      <div class="stat">
+        <b id="high">0</b>
+        <span>High Risk</span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Dependency</th>
+            <th>Detected License</th>
+            <th>Risk</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody id="results">
+          <tr>
+            <td colspan="4" class="empty">
+              Upload manifest lalu jalankan Scan Compliance.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      Format yang didukung: package.json, requirements.txt, dan go.mod.
+      Hasil merupakan pemeriksaan awal berbasis pola dan bukan nasihat hukum.
+      Untuk keputusan legal/compliance perusahaan, verifikasi license metadata
+      dari sumber resmi masing-masing dependency.
+    </div>
+  </section>
 </main>
-<footer><div class="wrap foot"><span>WebToolsKita • iPay</span><span>Powered by iPaymu API</span></div></footer>
-<div class="toast" id="toast"></div>
 
 <script>
-let selected={method:'va',channel:'bca'},current=null,history=JSON.parse(localStorage.getItem('wtk_real_payments')||'[]');
-const $=id=>document.getElementById(id);
-const money=n=>'Rp '+Number(n||0).toLocaleString('id-ID');
-function toast(t){let x=$('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
-document.querySelectorAll('.method').forEach(b=>b.onclick=()=>{document.querySelectorAll('.method').forEach(x=>x.classList.remove('active'));b.classList.add('active');selected={method:b.dataset.m,channel:b.dataset.c}});
-let authSyncedUser=null;
-async function syncFirebaseUser(){
- const user=auth.currentUser;
- if(!user) throw new Error('Silakan login terlebih dahulu.');
- if(authSyncedUser===user.uid) return;
- const token=await user.getIdToken(true);
- const r=await fetch('/api/auth/login',{
-  method:'POST',
-  headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-  body:'{}'
- });
- const j=await r.json().catch(()=>({}));
- if(!r.ok||j.success===false) throw new Error(j.message||'Sinkronisasi akun gagal.');
- authSyncedUser=user.uid;
+const fileInput = document.getElementById("manifest");
+const scanBtn = document.getElementById("scanBtn");
+const results = document.getElementById("results");
+
+function guessLicense(name){
+  const n = name.toLowerCase();
+
+  if(n.includes("agpl")) return "AGPL";
+  if(n.includes("gpl")) return "GPL";
+  if(n.includes("lgpl")) return "LGPL";
+  if(n.includes("mpl")) return "MPL";
+  if(n.includes("epl")) return "EPL";
+  if(n.includes("apache")) return "Apache";
+  if(n.includes("mit")) return "MIT";
+  if(n.includes("bsd")) return "BSD";
+  if(n.includes("isc")) return "ISC";
+
+  return "Unknown";
 }
-async function api(url,opt={}){
- await syncFirebaseUser();
- const token=await getFirebaseToken();
- const headers={
-  'Content-Type':'application/json',
-  'Authorization':`Bearer ${token}`,
-  ...(opt.headers||{})
- };
- let r=await fetch(url,{...opt,headers});
- let j=await r.json().catch(()=>({}));
- if(!r.ok)throw new Error(j.message||j.Message||'Gateway error');
- return j;
+
+function classify(license){
+  const l = license.toUpperCase();
+
+  if(
+    l.includes("AGPL") ||
+    l.includes("GPL") ||
+    l.includes("SSPL") ||
+    l.includes("COPYLEFT")
+  ){
+    return {
+      risk:"HIGH",
+      reason:"Copyleft license may impose distribution or source-code obligations."
+    };
+  }
+
+  if(
+    l.includes("LGPL") ||
+    l.includes("MPL") ||
+    l.includes("EPL") ||
+    l.includes("CDDL")
+  ){
+    return {
+      risk:"MEDIUM",
+      reason:"File or component-level compliance obligations may apply."
+    };
+  }
+
+  return {
+    risk:"LOW",
+    reason:"No high-risk copyleft pattern detected by this preliminary scan."
+  };
 }
-$('create').onclick=async()=>{
-let name=$('name').value.trim(),phone=$('phone').value.trim(),email=$('email').value.trim(),amount=Number($('amount').value),product=$('product').value.trim();
-if(!name||!phone||!email||amount<1000||!product){toast('Lengkapi semua data pembayaran.');return}
-$('create').disabled=true;$('create').textContent='Menghubungkan ke gateway…';
-try{
-let r=await api('/api/payment/create',{method:'POST',body:JSON.stringify({name,phone,email,amount,product,paymentMethod:selected.method,paymentChannel:selected.channel})});
-current=r.data||r.Data;renderPayment(current);history.unshift({id:current.ReferenceId||current.TransactionId,amount,current:current,status:'pending',date:new Date().toISOString()});localStorage.setItem('wtk_real_payments',JSON.stringify(history.slice(0,20)));renderHistory();poll();
-}catch(e){toast(e.message)}
-finally{$('create').disabled=false;$('create').textContent='Buat Pembayaran Nyata'}
-};
-function renderPayment(x){$('waiting').style.display='none';$('paybox').classList.add('show');$('methodTitle').textContent=(x.PaymentName||x.Via||'Payment');$('payno').textContent=x.PaymentNo||'Gunakan URL pembayaran';$('url').textContent=x.Url||'—';$('status').textContent='TRANSAKSI '+(x.TransactionId||'CREATED');$('env').textContent='Gateway aktif'}
-function copyUrl(){let u=$('url').textContent;if(u&&u!=='—'){navigator.clipboard?.writeText(u);toast('URL pembayaran disalin.')}}
-function openPayment(){let u=$('url').textContent;if(u&&u!=='—')window.open(u,'_blank','noopener')}
-async function poll(){if(!current?.TransactionId)return;for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,5000));try{let r=await api('/api/payment/status/'+encodeURIComponent(current.TransactionId));let x=r.data||r.Data||{};let s=String(x.status||x.Status||'').toLowerCase();if(['berhasil','success','paid','settlement'].some(v=>s.includes(v))){$('paystatus').textContent='PAID / BERHASIL';$('paystatus').className='status paid';return}}catch(e){}}}
-function renderHistory(){let h=$('history');if(!history.length){h.innerHTML='<div class="empty">Belum ada transaksi dibuat dari perangkat ini.</div>';return}h.innerHTML=history.slice(0,10).map(x=>`<div class="txrow"><div><b>${x.id||'—'}</b><small>${new Date(x.date).toLocaleString('id-ID')}</small></div><div>${money(x.amount)}</div><div><span class="status ${x.status==='paid'?'paid':'pending'}">${x.status==='paid'?'PAID':'PENDING'}</span></div><div>iPaymu</div></div>`).join('')}
-renderHistory();
+
+function parseDependencies(text,fileName){
+  const dependencies = [];
+
+  if(fileName.toLowerCase().endsWith(".json")){
+    try{
+      const data = JSON.parse(text);
+
+      [
+        data.dependencies,
+        data.devDependencies,
+        data.optionalDependencies,
+        data.peerDependencies
+      ].forEach(group=>{
+        if(group){
+          Object.keys(group).forEach(name=>{
+            dependencies.push(name);
+          });
+        }
+      });
+    }catch(error){}
+  }
+
+  if(fileName.toLowerCase().endsWith(".txt")){
+    text.split(/\r?\n/).forEach(line=>{
+      const clean = line.trim();
+
+      if(
+        clean &&
+        !clean.startsWith("#") &&
+        !clean.startsWith("-")
+      ){
+        const name = clean.split(/[<>=~!;\s]/)[0];
+
+        if(name){
+          dependencies.push(name);
+        }
+      }
+    });
+  }
+
+  if(fileName.toLowerCase().endsWith(".mod")){
+    text.split(/\r?\n/).forEach(line=>{
+      const match = line.match(/^\s*([A-Za-z0-9._~\/-]+)\s+v[^\s]+/);
+
+      if(match){
+        dependencies.push(match[1]);
+      }
+    });
+  }
+
+  return [...new Set(dependencies)];
+}
+
+function render(rows){
+  results.innerHTML = "";
+
+  if(!rows.length){
+    results.innerHTML =
+      '<tr><td colspan="4" class="empty">Tidak ditemukan dependency yang dapat dianalisis.</td></tr>';
+    return;
+  }
+
+  rows.forEach(row=>{
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${escapeHtml(row.name)}</td>
+      <td>${escapeHtml(row.license)}</td>
+      <td class="risk-${row.risk.toLowerCase()}">${row.risk}</td>
+      <td>${escapeHtml(row.reason)}</td>
+    `;
+
+    results.appendChild(tr);
+  });
+}
+
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+scanBtn.addEventListener("click",()=>{
+  const file = fileInput.files[0];
+
+  if(!file){
+    alert("Pilih file manifest terlebih dahulu.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = ()=>{
+    const dependencies =
+      parseDependencies(reader.result,file.name);
+
+    const rows = dependencies.map(name=>{
+      const license = guessLicense(name);
+      const classification = classify(license);
+
+      return {
+        name,
+        license,
+        risk:classification.risk,
+        reason:classification.reason
+      };
+    });
+
+    document.getElementById("total").textContent = rows.length;
+    document.getElementById("low").textContent =
+      rows.filter(x=>x.risk==="LOW").length;
+    document.getElementById("medium").textContent =
+      rows.filter(x=>x.risk==="MEDIUM").length;
+    document.getElementById("high").textContent =
+      rows.filter(x=>x.risk==="HIGH").length;
+
+    render(rows);
+  };
+
+  reader.readAsText(file);
+});
 </script>
+
 </body>
 </html>

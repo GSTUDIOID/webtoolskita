@@ -1,2504 +1,2392 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPay Virtual — WebToolsKita</title>
 
-<title>APEX CROWN - Agency Operation</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
 <style>
+:root{
+  --bg:#08050f;
+  --panel:#120a1d;
+  --panel2:#190d29;
+  --line:#32203f;
+  --text:#f7f0ff;
+  --muted:#a99ab8;
+  --cyan:#45e4ff;
+  --gold:#ffd166;
+  --green:#4dff9a;
+  --red:#ff637d;
+  --purple:#a778ff;
+}
 
 *{
-box-sizing:border-box;
-font-family:Segoe UI,Arial,sans-serif;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
 }
 
 body{
-margin:0;
-background:
-radial-gradient(circle at top,#32105b,#050505 75%);
-color:white;
+  margin:0;
+  background:
+    radial-gradient(circle at top left,#24103d 0%,#0b0712 42%,#050308 100%);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
 }
 
-.layout{
-display:flex;
+button,
+input{
+  font:inherit;
 }
 
-/* SIDEBAR */
+button{
+  cursor:pointer;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+
+.app{
+  min-height:100vh;
+  display:flex;
+}
 
 .sidebar{
-position:fixed;
-width:280px;
-height:100vh;
-overflow-y:auto;
-background:#070711;
-border-right:1px solid #35205a;
-padding:20px;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:250px;
+  background:rgba(9,5,16,.97);
+  border-right:1px solid var(--line);
+  padding:24px 16px;
+  z-index:20;
+  overflow-y:auto;
 }
 
-.sidebar::-webkit-scrollbar{
-width:6px;
+.brand{
+  padding:4px 10px 24px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:18px;
 }
 
-.sidebar::-webkit-scrollbar-thumb{
-background:#8b35ff;
-border-radius:20px;
+.brand-title{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:.5px;
 }
 
-.logo{
-text-align:center;
-margin-bottom:30px;
+.brand-sub{
+  color:var(--cyan);
+  font-size:10px;
+  letter-spacing:2px;
+  margin-top:5px;
 }
 
-.logo h1{
-color:#d58cff;
+.nav-title{
+  color:#776985;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.5px;
+  margin:18px 10px 8px;
 }
 
-.logo span{
-color:#ffd34d;
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 12px;
+  margin:4px 0;
+  border:1px solid transparent;
+  border-radius:10px;
+  color:#bdb0ca;
+  font-size:13px;
+  transition:.2s;
 }
 
-.menu button{
-width:100%;
-padding:14px;
-margin-bottom:10px;
-border:0;
-border-radius:14px;
-background:rgba(255,255,255,.08);
-color:white;
-cursor:pointer;
-text-align:left;
-transition:.3s;
+.nav a:hover,
+.nav a.active{
+  background:#190d29;
+  border-color:#3b2450;
+  color:#fff;
 }
 
-.menu button:hover,
-.menu button.active{
-background:
-linear-gradient(90deg,#7b2cff,#00c8ff);
+.nav-icon{
+  width:20px;
+  text-align:center;
 }
 
-.status{
-margin-top:25px;
-background:rgba(255,255,255,.08);
-padding:15px;
-border-radius:15px;
-font-size:13px;
+.sidebar-status{
+  margin-top:22px;
+  padding:12px;
+  border:1px solid #1f523b;
+  background:rgba(30,90,60,.12);
+  border-radius:10px;
+  color:var(--green);
+  font-size:10px;
+  letter-spacing:1px;
+  text-align:center;
 }
-
-/* MAIN */
 
 .main{
-margin-left:280px;
-padding:25px;
-width:100%;
+  width:calc(100% - 250px);
+  margin-left:250px;
+  min-width:0;
 }
 
-.back{
-display:inline-block;
-background:#111;
-color:white;
-padding:12px 20px;
-border-radius:12px;
-text-decoration:none;
+.topbar{
+  height:66px;
+  border-bottom:1px solid var(--line);
+  background:rgba(8,5,15,.72);
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.back-btn{
+  border:1px solid #4c1d95;
+  background:linear-gradient(135deg,#6b21a8,#9333ea);
+  color:white;
+  padding:9px 15px;
+  border-radius:9px;
+  font-weight:800;
+  font-size:12px;
+}
+
+.top-badge{
+  color:var(--cyan);
+  font-size:10px;
+  letter-spacing:1.5px;
+  font-weight:800;
+}
+
+.content{
+  padding:28px;
+  max-width:1500px;
+  margin:auto;
 }
 
 .hero{
-margin-top:20px;
-padding:30px;
-border-radius:25px;
-background:
-linear-gradient(
-120deg,
-rgba(120,40,255,.35),
-rgba(0,200,255,.15)
-);
-border:1px solid #542b82;
+  margin-bottom:24px;
+}
+
+.eyebrow{
+  color:var(--cyan);
+  font-size:10px;
+  letter-spacing:2px;
+  font-weight:900;
+  margin-bottom:8px;
 }
 
 .hero h1{
-font-size:38px;
+  margin:0;
+  font-size:clamp(28px,4vw,46px);
+  line-height:1.05;
 }
 
-.gold{
-color:#ffd34d;
+.hero p{
+  color:var(--muted);
+  max-width:850px;
+  line-height:1.7;
+  font-size:14px;
 }
 
-.badge{
-background:#064;
-color:#8cffbb;
-padding:8px 15px;
-border-radius:20px;
-display:inline-block;
+/* =========================
+   GRID
+========================= */
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 320px;
+  gap:18px;
 }
 
-.page{
-display:none;
-margin-top:25px;
-}
-
-.page.active{
-display:block;
-}
-
-.cards{
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(230px,1fr));
-gap:20px;
+.left-column,
+.right-column{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
 }
 
 .card{
-background:
-rgba(255,255,255,.08);
-border:1px solid #33205a;
-border-radius:20px;
-padding:20px;
+  background:
+    linear-gradient(145deg,rgba(25,13,41,.96),rgba(12,7,20,.96));
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 18px 50px rgba(0,0,0,.22);
 }
 
-.card h2{
-color:#d58cff;
+.card-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
 }
 
-input,select,textarea{
-width:100%;
-padding:12px;
-margin:8px 0;
-background:#080808;
-color:white;
-border:1px solid #333;
-border-radius:10px;
+.card-title h2{
+  margin:0;
+  font-size:15px;
+}
+
+.card-title span{
+  color:#806f91;
+  font-size:10px;
+  letter-spacing:1px;
+}
+
+.balance-card{
+  border-color:#3a2152;
+}
+
+.balance-label{
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:1px;
+}
+
+.balance{
+  font-size:42px;
+  font-weight:900;
+  margin:8px 0 4px;
+  color:#fff;
+}
+
+.currency{
+  color:var(--cyan);
+  font-size:12px;
+  font-weight:800;
+}
+
+.action-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:18px;
 }
 
 .btn{
-padding:12px 20px;
-border:0;
-border-radius:12px;
-background:
-linear-gradient(90deg,#792cff,#00c8ff);
-color:white;
-cursor:pointer;
+  border:1px solid #4c1d95;
+  background:linear-gradient(135deg,#6b21a8,#9333ea);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:9px;
+  font-size:11px;
+  font-weight:900;
 }
 
 .btn:hover{
-opacity:.85;
+  filter:brightness(1.12);
 }
 
-.btn-danger{
-background:linear-gradient(90deg,#8b1e1e,#ff4d4d);
+.btn.secondary{
+  background:#170c25;
+  border-color:#3a2450;
+  color:#d9cbe6;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
+.btn.green{
+  background:rgba(36,120,75,.2);
+  border-color:#28764e;
+  color:var(--green);
 }
 
-th,td{
-padding:12px;
-border-bottom:1px solid #333;
-text-align:left;
+.btn.gold{
+  background:rgba(130,94,20,.2);
+  border-color:#806018;
+  color:var(--gold);
 }
 
-.green{
-color:#00ff99;
+.btn.red{
+  background:rgba(130,30,50,.15);
+  border-color:#713044;
+  color:var(--red);
 }
 
-.yellow{
-color:#ffd34d;
+/* =========================
+   ACCOUNT
+========================= */
+
+.account-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
 }
 
-.red{
-color:#ff6666;
+.info-box{
+  border:1px solid #291936;
+  background:rgba(0,0,0,.15);
+  border-radius:10px;
+  padding:11px;
 }
 
-.blue{
-color:#00c8ff;
+.info-label{
+  color:#786986;
+  font-size:9px;
+  letter-spacing:1px;
+  text-transform:uppercase;
 }
 
-.small{
-font-size:13px;
-opacity:.7;
+.info-value{
+  color:#eee6f5;
+  font-size:12px;
+  margin-top:5px;
+  word-break:break-word;
 }
 
-.stat-number{
-font-size:28px;
-font-weight:bold;
-margin-top:8px;
+.status-active{
+  color:var(--green);
 }
 
-.badge-small{
-display:inline-block;
-padding:5px 10px;
-border-radius:15px;
-font-size:11px;
-background:rgba(0,200,255,.15);
-color:#00c8ff;
+/* =========================
+   FORM
+========================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
 }
 
-.divider{
-height:1px;
-background:#33205a;
-margin:20px 0;
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  color:#9989a7;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.7px;
+}
+
+.field input{
+  width:100%;
+  border:1px solid #34203f;
+  background:#0a0610;
+  color:#fff;
+  padding:11px 12px;
+  border-radius:9px;
+  outline:none;
+}
+
+.field input:focus{
+  border-color:#7344a8;
+  box-shadow:0 0 0 2px rgba(167,120,255,.08);
+}
+
+.note{
+  border-top:1px solid var(--line);
+  margin-top:15px;
+  padding-top:12px;
+  color:#7f718b;
+  font-size:10px;
+  line-height:1.6;
+}
+
+/* =========================
+   VAULT
+========================= */
+
+.credentials{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.credential{
+  padding:15px;
+  border:1px solid #39234c;
+  border-radius:12px;
+  background:#0b0611;
+}
+
+.credential-label{
+  color:#857391;
+  font-size:9px;
+  letter-spacing:1px;
+}
+
+.credential-value{
+  margin-top:7px;
+  font-family:monospace;
+  font-size:13px;
+  color:var(--cyan);
+  word-break:break-all;
+}
+
+.warning{
+  margin-top:12px;
+  padding:11px;
+  border:1px solid #594519;
+  border-radius:9px;
+  color:#cdbb83;
+  background:rgba(100,80,20,.08);
+  font-size:10px;
+  line-height:1.6;
+}
+
+/* =========================
+   HISTORY
+========================= */
+
+.history-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.history-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  border:1px solid #291936;
+  border-radius:10px;
+  padding:11px;
+  background:rgba(0,0,0,.14);
+}
+
+.history-main{
+  min-width:0;
+}
+
+.history-title{
+  font-size:11px;
+  font-weight:800;
+}
+
+.history-meta{
+  color:#746681;
+  font-size:9px;
+  margin-top:4px;
+}
+
+.history-amount{
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.credit{
+  color:var(--green);
+}
+
+.debit{
+  color:var(--red);
 }
 
 .empty{
-text-align:center;
-padding:25px;
-opacity:.6;
+  color:#70637b;
+  text-align:center;
+  padding:20px;
+  font-size:11px;
 }
 
-.activity{
-padding:12px 0;
-border-bottom:1px solid #292929;
+/* =========================
+   RIGHT
+========================= */
+
+.quick-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
 
-.activity:last-child{
-border-bottom:0;
+.quick-list a{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border:1px solid #2c1a39;
+  border-radius:9px;
+  padding:10px;
+  color:#b9aac5;
+  font-size:10px;
 }
 
-.actions{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-margin-top:12px;
+.quick-list a:hover{
+  border-color:#533477;
+  color:#fff;
 }
 
-.actions .btn{
-padding:9px 14px;
-font-size:12px;
+.webpay-online{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--green);
+  font-size:10px;
+  font-weight:900;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  background:var(--green);
+  border-radius:50%;
+  box-shadow:0 0 10px rgba(77,255,154,.8);
+}
+
+.bonus{
+  color:var(--gold);
+  font-size:28px;
+  font-weight:900;
+}
+
+.small-text{
+  color:#857590;
+  font-size:10px;
+  line-height:1.7;
+}
+
+/* =========================
+   MODAL / TOAST
+========================= */
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:100;
+  max-width:360px;
+  padding:13px 15px;
+  border:1px solid #50306c;
+  background:#130a1d;
+  color:#fff;
+  border-radius:10px;
+  box-shadow:0 15px 40px rgba(0,0,0,.4);
+  font-size:11px;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(10px);
+  transition:.25s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.toast.success{
+  border-color:#28764e;
+}
+
+.toast.error{
+  border-color:#713044;
+}
+
+.loading{
+  opacity:.55;
+  pointer-events:none;
+}
+
+footer{
+  text-align:center;
+  color:#5d5066;
+  font-size:9px;
+  line-height:1.7;
+  padding:30px 0 10px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:1050px){
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+  .right-column{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
 
 @media(max-width:800px){
+  .sidebar{
+    position:relative;
+    width:100%;
+    height:auto;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+  }
 
-.sidebar{
-width:220px;
-}
+  .app{
+    display:block;
+  }
 
-.main{
-margin-left:220px;
-}
+  .main{
+    width:100%;
+    margin-left:0;
+  }
 
+  .sidebar-status{
+    margin-bottom:5px;
+  }
+
+  .nav{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:3px;
+  }
+
+  .nav-title{
+    display:none;
+  }
+
+  .topbar{
+    position:relative;
+    padding:0 15px;
+  }
+
+  .content{
+    padding:18px 12px;
+  }
+
+  .right-column{
+    display:flex;
+  }
 }
 
 @media(max-width:600px){
+  .form-grid,
+  .account-grid,
+  .credentials{
+    grid-template-columns:1fr;
+  }
 
-.sidebar{
-position:relative;
-width:100%;
-height:auto;
+  .field.full{
+    grid-column:auto;
+  }
+
+  .balance{
+    font-size:34px;
+  }
+
+  .action-row .btn{
+    width:100%;
+  }
+
+  .nav{
+    grid-template-columns:1fr;
+  }
+
+  .top-badge{
+    display:none;
+  }
 }
-
-.main{
-margin-left:0;
-}
-
-.layout{
-display:block;
-}
-
-}
-
-/* TOAST */
-
-#toast{
-position:fixed;
-right:25px;
-bottom:25px;
-background:#111;
-border:1px solid #542b82;
-padding:15px 20px;
-border-radius:14px;
-display:none;
-z-index:9999;
-box-shadow:0 0 25px rgba(123,44,255,.25);
-}
-
 </style>
-
 </head>
 
 <body>
 
-<div class="layout">
+<div class="app">
 
-<!-- SIDEBAR -->
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+  <aside class="sidebar">
 
-<aside class="sidebar">
+    <div class="brand">
+      <div class="brand-title">iPay Virtual</div>
+      <div class="brand-sub">WEBPAY SYSTEM</div>
+    </div>
 
-<div class="logo">
+    <div class="nav-title">VIRTUAL VAULT</div>
 
-<h1>
-🏢 APEX <span>AGENCY</span>
-</h1>
+    <nav class="nav">
+      <a href="#dashboard" class="active">
+        <span class="nav-icon">◈</span>
+        <span>Vault Dashboard</span>
+      </a>
 
-<p>
-OPERATION CENTER
-</p>
+      <a href="#verification">
+        <span class="nav-icon">✓</span>
+        <span>Vault Verification</span>
+      </a>
+
+      <a href="#transfer">
+        <span class="nav-icon">↗</span>
+        <span>Transfer</span>
+      </a>
+
+      <a href="#reward">
+        <span class="nav-icon">★</span>
+        <span>Daily Reward</span>
+      </a>
+
+      <a href="#history">
+        <span class="nav-icon">≡</span>
+        <span>History</span>
+      </a>
+
+      <a href="index70000.html">
+        <span class="nav-icon">◆</span>
+        <span>Security</span>
+      </a>
+    </nav>
+
+    <div class="nav-title">WEBPAY</div>
+
+    <nav class="nav">
+      <a href="index10000.html">
+        <span class="nav-icon">01</span>
+        <span>Verification Gateway</span>
+      </a>
+
+      <a href="index20000.html">
+        <span class="nav-icon">02</span>
+        <span>Create Vault</span>
+      </a>
+
+      <a href="index30000.html">
+        <span class="nav-icon">03</span>
+        <span>Open WEBPAY</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-status">
+      ● VIRTUAL SYSTEM ONLINE
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+  <main class="main">
+
+    <header class="topbar">
+      <a href="index3.html" class="back-btn">← Kembali</a>
+
+      <div class="top-badge">
+        iPAY VIRTUAL • WEBPAY
+      </div>
+    </header>
+
+
+    <div class="content">
+
+      <!-- HERO -->
+      <section class="hero" id="dashboard">
+        <div class="eyebrow">
+          WEBTOOLSKITA • VIRTUAL FINANCE SYSTEM
+        </div>
+
+        <h1>iPay Virtual</h1>
+
+        <p>
+          Virtual Vault untuk menyimpan Virtual Balance,
+          melakukan transfer menggunakan Vault Code dan Transfer Code,
+          menerima reward, serta melihat riwayat transaksi.
+          Sistem ini sepenuhnya virtual dan bukan layanan pembayaran nyata.
+        </p>
+      </section>
+
+
+      <div class="dashboard-grid">
+
+        <!-- =========================
+             LEFT COLUMN
+        ========================== -->
+        <div class="left-column">
+
+          <!-- BALANCE -->
+          <section class="card balance-card">
+
+            <div class="card-title">
+              <h2>Virtual Balance</h2>
+              <span>BACKEND WALLET CORE</span>
+            </div>
+
+            <div class="balance-label">
+              CURRENT VIRTUAL BALANCE
+            </div>
+
+            <div class="balance" id="balance">
+              0
+            </div>
+
+            <div class="currency">
+              VIRTUAL
+            </div>
+
+            <div class="action-row">
+
+              <a
+                class="btn"
+                href="index30000.html"
+              >
+                OPEN VIRTUAL VAULT
+              </a>
+
+              <a
+                class="btn gold"
+                href="index50000.html"
+              >
+                DAILY REWARD
+              </a>
+
+              <a
+                class="btn secondary"
+                href="index60000.html"
+              >
+                TRANSACTION HISTORY
+              </a>
+
+            </div>
+
+          </section>
+
+
+          <!-- ACCOUNT -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>Account</h2>
+              <span>WEBPAY PROFILE</span>
+            </div>
+
+            <div class="account-grid">
+
+              <div class="info-box">
+                <div class="info-label">Name</div>
+                <div class="info-value" id="accountName">
+                  -
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="info-label">Email</div>
+                <div class="info-value" id="accountEmail">
+                  -
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="info-label">Age</div>
+                <div class="info-value" id="accountAge">
+                  -
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="info-label">Origin</div>
+                <div class="info-value" id="accountOrigin">
+                  -
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="info-label">Vault Code</div>
+                <div class="info-value" id="accountVaultCode">
+                  -
+                </div>
+              </div>
+
+              <div class="info-box">
+                <div class="info-label">Status</div>
+                <div class="info-value status-active" id="accountStatus">
+                  -
+                </div>
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- VERIFICATION -->
+          <section class="card" id="verification">
+
+            <div class="card-title">
+              <h2>Vault Verification</h2>
+              <span>PROFILE DATA</span>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="profileName">NAME</label>
+                <input
+                  id="profileName"
+                  type="text"
+                  placeholder="Nama lengkap"
+                >
+              </div>
+
+              <div class="field">
+                <label for="profileAge">AGE</label>
+                <input
+                  id="profileAge"
+                  type="number"
+                  min="1"
+                  max="120"
+                  placeholder="Usia"
+                >
+              </div>
+
+              <div class="field">
+                <label for="profileOrigin">ORIGIN</label>
+                <input
+                  id="profileOrigin"
+                  type="text"
+                  placeholder="Asal"
+                >
+              </div>
+
+              <div class="field">
+                <label for="profileEmail">EMAIL</label>
+                <input
+                  id="profileEmail"
+                  type="email"
+                  placeholder="Email"
+                  readonly
+                >
+              </div>
+
+            </div>
+
+            <div class="action-row">
+
+              <button
+                class="btn"
+                type="button"
+                id="saveProfileBtn"
+              >
+                SAVE VERIFICATION
+              </button>
+
+              <button
+                class="btn secondary"
+                type="button"
+                id="loadProfileBtn"
+              >
+                LOAD PROFILE
+              </button>
+
+            </div>
+
+            <div class="note">
+              Data nama, usia dan asal digunakan sebagai informasi
+              profil tampilan. Status Vault dan saldo tetap dikendalikan
+              oleh backend WebToolsKita.
+            </div>
+
+          </section>
+
+
+          <!-- VAULT CREDENTIALS -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>Vault Credentials</h2>
+              <span>SECURITY</span>
+            </div>
+
+            <div class="credentials">
+
+              <div class="credential">
+                <div class="credential-label">
+                  VAULT CODE
+                </div>
+
+                <div
+                  class="credential-value"
+                  id="vaultCode"
+                >
+                  -
+                </div>
+              </div>
+
+              <div class="credential">
+                <div class="credential-label">
+                  TRANSFER CODE
+                </div>
+
+                <div
+                  class="credential-value"
+                  id="transferCodeDisplay"
+                >
+                  ••••••••••
+                </div>
+              </div>
+
+            </div>
+
+            <div class="warning">
+              Vault Code digunakan sebagai identitas Vault.
+              Transfer Code digunakan untuk otorisasi transfer.
+              Jangan membagikan Transfer Code kepada orang lain.
+              Transfer Code hanya ditampilkan ketika Vault baru dibuat.
+            </div>
+
+            <div class="action-row">
+
+              <button
+                class="btn"
+                type="button"
+                id="createVaultBtn"
+              >
+                CREATE / ENSURE VAULT
+              </button>
+
+            </div>
+
+          </section>
+
+
+          <!-- TRANSFER -->
+          <section class="card" id="transfer">
+
+            <div class="card-title">
+              <h2>Transfer Virtual</h2>
+              <span>VAULT TO VAULT</span>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="field full">
+                <label for="recipientVaultCode">
+                  RECIPIENT VAULT CODE
+                </label>
+
+                <input
+                  id="recipientVaultCode"
+                  type="text"
+                  placeholder="Contoh: VLT-XXXXXXXX"
+                  autocomplete="off"
+                >
+              </div>
+
+              <div class="field">
+                <label for="transferAmount">
+                  NOMINAL VIRTUAL
+                </label>
+
+                <input
+                  id="transferAmount"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="10000"
+                >
+              </div>
+
+              <div class="field">
+                <label for="transferCodeInput">
+                  TRANSFER CODE
+                </label>
+
+                <input
+                  id="transferCodeInput"
+                  type="password"
+                  placeholder="Masukkan Transfer Code"
+                  autocomplete="off"
+                >
+              </div>
+
+              <div class="field full">
+                <label for="transferNote">
+                  NOTE / CATATAN
+                </label>
+
+                <input
+                  id="transferNote"
+                  type="text"
+                  maxlength="120"
+                  placeholder="Contoh: Transfer Virtual"
+                >
+              </div>
+
+            </div>
+
+            <div class="action-row">
+
+              <button
+                class="btn"
+                type="button"
+                id="sendTransferBtn"
+              >
+                SEND VIRTUAL
+              </button>
+
+              <button
+                class="btn secondary"
+                type="button"
+                id="resetTransferBtn"
+              >
+                RESET
+              </button>
+
+            </div>
+
+            <div class="note">
+              Transfer menggunakan Vault Code penerima.
+              Gmail bukan tujuan transfer. Setelah berhasil,
+              saldo pengirim berkurang dan saldo penerima bertambah
+              melalui Wallet Core backend.
+            </div>
+
+          </section>
+
+
+          <!-- DAILY REWARD -->
+          <section class="card" id="reward">
+
+            <div class="card-title">
+              <h2>Daily Reward</h2>
+              <span>WEBPAY BONUS</span>
+            </div>
+
+            <div class="bonus">
+              +10,000
+            </div>
+
+            <div class="small-text">
+              Reward harian dikelola oleh sistem WEBPAY.
+              Gunakan halaman Daily Reward untuk proses reward.
+            </div>
+
+            <div class="action-row">
+              <a
+                class="btn gold"
+                href="index50000.html"
+              >
+                OPEN DAILY REWARD
+              </a>
+            </div>
+
+          </section>
+
+
+          <!-- HISTORY -->
+          <section class="card" id="history">
+
+            <div class="card-title">
+              <h2>Recent History</h2>
+              <span>BACKEND LEDGER</span>
+            </div>
+
+            <div
+              class="history-list"
+              id="historyList"
+            >
+              <div class="empty">
+                Memuat history...
+              </div>
+            </div>
+
+            <div class="action-row">
+
+              <button
+                class="btn secondary"
+                type="button"
+                id="refreshHistoryBtn"
+              >
+                REFRESH HISTORY
+              </button>
+
+              <a
+                class="btn"
+                href="index60000.html"
+              >
+                OPEN FULL HISTORY
+              </a>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- =========================
+             RIGHT COLUMN
+        ========================== -->
+        <aside class="right-column">
+
+          <!-- STATUS -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>WEBPAY Status</h2>
+              <span>LIVE</span>
+            </div>
+
+            <div class="webpay-online">
+              <span class="dot"></span>
+              VIRTUAL SYSTEM ONLINE
+            </div>
+
+            <div class="small-text" style="margin-top:12px;">
+              Balance dan transfer diproses melalui
+              WebToolsKita Wallet Core.
+            </div>
+
+          </section>
+
+
+          <!-- QUICK ACCESS -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>Quick Access</h2>
+              <span>WEBPAY</span>
+            </div>
+
+            <div class="quick-list">
+
+              <a href="index10000.html">
+                <span>Verification Gateway</span>
+                <span>→</span>
+              </a>
+
+              <a href="index20000.html">
+                <span>Create Vault</span>
+                <span>→</span>
+              </a>
+
+              <a href="index30000.html">
+                <span>Open WEBPAY</span>
+                <span>→</span>
+              </a>
+
+              <a href="index40000.html">
+                <span>MiniGame</span>
+                <span>→</span>
+              </a>
+
+              <a href="index50000.html">
+                <span>Daily Reward</span>
+                <span>→</span>
+              </a>
+
+              <a href="index60000.html">
+                <span>Transaction History</span>
+                <span>→</span>
+              </a>
+
+              <a href="index70000.html">
+                <span>Security</span>
+                <span>→</span>
+              </a>
+
+            </div>
+
+          </section>
+
+
+          <!-- BONUS -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>WEBPAY Bonus</h2>
+              <span>VIRTUAL</span>
+            </div>
+
+            <div class="bonus">
+              +10,000
+            </div>
+
+            <div class="small-text">
+              Bonus Virtual tersedia melalui sistem
+              Daily Reward WEBPAY.
+            </div>
+
+          </section>
+
+
+          <!-- ABOUT -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>About iPay Virtual</h2>
+            </div>
+
+            <div class="small-text">
+              iPay Virtual merupakan sistem keuangan virtual
+              WebToolsKita. Saldo yang ditampilkan bukan uang nyata,
+              bukan rekening bank dan bukan alat pembayaran resmi.
+            </div>
+
+          </section>
+
+
+          <!-- SECURITY NOTICE -->
+          <section class="card">
+
+            <div class="card-title">
+              <h2>Security Notice</h2>
+              <span>BACKEND</span>
+            </div>
+
+            <div class="small-text">
+              Vault Code digunakan untuk identitas Vault.
+              Transfer Code digunakan untuk otorisasi transfer.
+              Saldo dan transaksi tidak lagi bergantung pada
+              sessionStorage browser, melainkan diproses oleh
+              backend Wallet Core.
+            </div>
+
+          </section>
+
+        </aside>
+
+      </div>
+
+
+      <footer>
+        iPay Virtual • WEBPAY SYSTEM • WebToolsKita<br>
+        Virtual system only — bukan layanan pembayaran nyata.
+      </footer>
+
+    </div>
+
+  </main>
 
 </div>
 
-<div class="menu">
-
-<button class="active"
-onclick="openPage('dashboard',this)">
-🏠 Agency Dashboard
-</button>
-
-<button
-onclick="openPage('company',this)">
-🏢 Company Profile
-</button>
-
-<button
-onclick="openPage('employee',this)">
-👥 Employee Management
-</button>
-
-<button
-onclick="openPage('sales',this)">
-📦 Sales Report
-</button>
-
-<button
-onclick="openPage('bank',this)">
-🏦 Payout Directory
-</button>
-
-<button
-onclick="openPage('connection',this)">
-🔗 CEO Connection
-</button>
-
-<button
-onclick="openPage('security',this)">
-🔐 Agency Security
-</button>
-
-</div>
-
-<div class="status">
-
-<b>
-AGENCY STATUS
-</b>
-
-<br><br>
-
-🟢 <span class="green">Connected</span>
-
-<br><br>
-
-CEO Link:
-<span id="sideCEO" class="yellow">
-Waiting
-</span>
-
-<br><br>
-
-System:
-<span class="green">
-Secure
-</span>
-
-</div>
-
-</aside>
-
-
-<!-- MAIN -->
-
-<main class="main">
-
-<a class="back" href="index3.html">
-⬅ Kembali Tools
-</a>
-
-
-<div class="hero">
-
-<h1>
-
-WELCOME
-
-<br>
-
-<span class="gold">
-AGENCY OPERATION
-</span>
-
-</h1>
-
-<p>
-
-APEX CROWN ENTERPRISE
-
-<br>
-
-Branch Business Management System
-
-</p>
-
-<span class="badge">
-SECURED AGENCY ENVIRONMENT
-</span>
-
-</div>
-
-
-<!-- DASHBOARD -->
-
-<section id="dashboard" class="page active">
-
-<div class="cards">
-
-<div class="card">
-
-<h2>Company</h2>
 
 <div
-id="dashboardCompany"
-class="stat-number">
-Not Registered
-</div>
-
-<p class="small">
-Agency profile status
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h2>Employee</h2>
-
-<div
-id="dashboardEmployee"
-class="stat-number">
-0
-</div>
-
-<p class="small">
-Registered employees
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h2>Daily Sales</h2>
-
-<div
-id="dashboardSales"
-class="stat-number">
-Rp 0
-</div>
-
-<p class="small">
-Current recorded sales
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h2>CEO Connection</h2>
-
-<div
-id="dashboardCEO"
-class="stat-number yellow">
-Waiting
-</div>
-
-<p class="small">
-Authorization status
-</p>
-
-</div>
-
-</div>
-
-
-<br>
-
-
-<div class="cards">
-
-<div class="card">
-
-<h2>📊 Agency Overview</h2>
-
-<p>
-Total Transactions:
-<strong id="totalTransactions">
-0
-</strong>
-</p>
-
-<p>
-Approved:
-<strong
-id="approvedTransactions"
-class="green">
-0
-</strong>
-</p>
-
-<p>
-Pending:
-<strong
-id="pendingTransactions"
-class="yellow">
-0
-</strong>
-</p>
-
-<p>
-Rejected:
-<strong
-id="rejectedTransactions"
-class="red">
-0
-</strong>
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h2>⚡ Quick Actions</h2>
-
-<div class="actions">
-
-<button class="btn"
-onclick="openPageById('company')">
-Company Profile
-</button>
-
-<button class="btn"
-onclick="openPageById('employee')">
-Add Employee
-</button>
-
-<button class="btn"
-onclick="openPageById('sales')">
-Record Sale
-</button>
-
-<button class="btn"
-onclick="openPageById('connection')">
-CEO Connection
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<br>
-
-
-<div class="card">
-
-<h2>🕒 Recent Agency Activity</h2>
-
-<div id="activityList">
-
-<div class="empty">
-Belum ada aktivitas agency.
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- COMPANY -->
-
-<section id="company" class="page">
-
-<div class="card">
-
-<h2>
-🏢 Company Profile
-</h2>
-
-<p class="small">
-Kelola identitas resmi agency dan informasi cabang.
-</p>
-
-<div class="divider"></div>
-
-<input
-id="companyName"
-placeholder="Nama Perusahaan">
-
-<input
-id="branchName"
-placeholder="Nama Cabang">
-
-<input
-id="city"
-placeholder="Kabupaten / Kota">
-
-<input
-id="province"
-placeholder="Provinsi">
-
-<input
-id="address"
-placeholder="Alamat Operasional">
-
-<input
-id="agencyCode"
-placeholder="Agency Code">
-
-<select id="companyStatus">
-
-<option value="active">
-ACTIVE
-</option>
-
-<option value="inactive">
-INACTIVE
-</option>
-
-</select>
-
-<br>
-
-<button
-class="btn"
-onclick="saveCompany()">
-Save Company
-</button>
-
-</div>
-
-<br>
-
-<div class="card">
-
-<h2>
-📋 Current Company Data
-</h2>
-
-<div id="companyPreview">
-Belum ada data perusahaan.
-</div>
-
-</div>
-
-</section>
-
-
-<!-- EMPLOYEE -->
-
-<section id="employee" class="page">
-
-<div class="card">
-
-<h2>
-👥 Employee Management
-</h2>
-
-<p class="small">
-Tambahkan dan kelola anggota agency.
-</p>
-
-<input
-id="employeeName"
-placeholder="Nama Pegawai">
-
-<input
-id="employeeId"
-placeholder="ID Pegawai">
-
-<input
-id="employeeRole"
-placeholder="Jabatan">
-
-<input
-id="employeeWhatsapp"
-placeholder="WhatsApp">
-
-<select id="employeeStatus">
-
-<option value="Active">
-Active
-</option>
-
-<option value="Inactive">
-Inactive
-</option>
-
-</select>
-
-<br>
-
-<button
-class="btn"
-onclick="addEmployee()">
-Add Employee
-</button>
-
-</div>
-
-<br>
-
-<div class="card">
-
-<h2>
-📋 Employee Directory
-</h2>
-
-<div style="overflow-x:auto;">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-
-<th>Nama</th>
-
-<th>Jabatan</th>
-
-<th>WhatsApp</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="employeeTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- SALES -->
-
-<section id="sales" class="page">
-
-<div class="card">
-
-<h2>
-📦 Daily Sales Report
-</h2>
-
-<p class="small">
-Catat transaksi penjualan agency.
-</p>
-
-<select id="saleType">
-
-<option>
-Digital Product
-</option>
-
-<option>
-Physical Product
-</option>
-
-<option>
-Service
-</option>
-
-</select>
-
-<input
-id="saleProduct"
-placeholder="Nama Produk">
-
-<input
-id="saleCustomer"
-placeholder="Nama Customer">
-
-<input
-id="saleAmount"
-type="number"
-placeholder="Nominal Penjualan">
-
-<input
-id="saleProof"
-placeholder="Link Bukti / Nomor Resi">
-
-<button
-class="btn"
-onclick="submitSale()">
-Submit Sales
-</button>
-
-</div>
-
-
-<br>
-
-
-<div class="card">
-
-<h2>
-📊 Sales History
-</h2>
-
-<div style="overflow-x:auto;">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Product</th>
-
-<th>Customer</th>
-
-<th>Amount</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="salesTable">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- BANK -->
-
-<section id="bank" class="page">
-
-<div class="card">
-
-<h2>
-🏦 Payout Directory
-</h2>
-
-<p class="small">
-Data rekening tujuan payout agency.
-</p>
-
-<input
-id="bankOwner"
-placeholder="Nama Pemilik Rekening">
-
-<input
-id="bankName"
-placeholder="Nama Bank">
-
-<input
-id="bankNumber"
-placeholder="Nomor Rekening">
-
-<input
-id="bankBranch"
-placeholder="Cabang Bank">
-
-<input
-id="bankWhatsapp"
-placeholder="Nomor WhatsApp">
-
-<button
-class="btn"
-onclick="saveBank()">
-Save Bank Data
-</button>
-
-</div>
-
-
-<br>
-
-
-<div class="card">
-
-<h2>
-💰 Payout Status
-</h2>
-
-<div id="bankPreview">
-
-Belum ada data payout.
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- CEO CONNECTION -->
-
-<section id="connection" class="page">
-
-<div class="card">
-
-<h2>
-🔗 CEO Connection
-</h2>
-
-<p class="small">
-
-Hubungkan agency dengan CEO Command Center.
-
-</p>
-
-<input
-id="ceoCode"
-placeholder="CEO Connection Code">
-
-<button
-class="btn"
-onclick="connectCEO()">
-Connect CEO
-</button>
-
-<br><br>
-
-<p>
-Status:
-
-<span
-id="ceoStatus"
-class="yellow">
-WAITING APPROVAL
-</span>
-</p>
-
-<div class="divider"></div>
-
-<p>
-CEO Command Center:
-</p>
-
-<a
-href="index48.html"
-class="btn"
-style="display:inline-block;text-decoration:none;">
-Open CEO Command Center
-</a>
-
-</div>
-
-</section>
-
-
-<!-- SECURITY -->
-
-<section id="security" class="page">
-
-<div class="cards">
-
-<div class="card">
-
-<h2>
-🔐 Access Control
-</h2>
-
-<p>
-Status:
-<span class="green">
-ACTIVE
-</span>
-</p>
-
-<p class="small">
-Agency dashboard access is enabled.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h2>
-🛡 Authorization</h2>
-
-<p>
-CEO Authorization:
-<span
-id="securityCEO"
-class="yellow">
-REQUIRED
-</span>
-</p>
-
-<p class="small">
-Sensitive agency operations may require CEO approval.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h2>
-🔒 Session</h2>
-
-<p>
-Session:
-<span class="green">
-ACTIVE
-</span>
-</p>
-
-<p>
-Environment:
-<span class="green">
-SECURED
-</span>
-</p>
-
-</div>
-
-</div>
-
-
-<br>
-
-
-<div class="card">
-
-<h2>
-📜 Security Information
-</h2>
-
-<p>
-Agency Code:
-<span id="securityAgencyCode">
-Not Registered
-</span>
-</p>
-
-<p>
-CEO Connection:
-<span id="securityConnection">
-Waiting
-</span>
-</p>
-
-<p>
-System Status:
-<span class="green">
-SECURE
-</span>
-</p>
-
-</div>
-
-</section>
-
-
-</main>
-
-</div>
-
-
-<div id="toast"></div>
+  class="toast"
+  id="toast"
+></div>
 
 
 <script>
-
 /* =====================================================
-   STORAGE
+   FIREBASE
 ===================================================== */
 
-const STORAGE = {
-
-company:
-"apex_agency_company",
-
-employees:
-"apex_agency_employees",
-
-sales:
-"apex_agency_sales",
-
-bank:
-"apex_agency_bank",
-
-ceo:
-"apex_agency_ceo",
-
-activity:
-"apex_agency_activity"
-
+const firebaseConfig = {
+  apiKey: "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
+  authDomain: "webtoolskita.firebaseapp.com",
+  projectId: "webtoolskita",
+  storageBucket: "webtoolskita.firebasestorage.app",
+  messagingSenderId: "593680487717",
+  appId: "1:593680487717:web:33ef7a4bc9be02f99276cc",
+  measurementId: "G-YVEJ90678G"
 };
 
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
 
 /* =====================================================
-   HELPERS
+   BACKEND REQUEST
 ===================================================== */
 
-function getData(key, fallback){
+async function backendRequest(url, options = {}){
 
-try{
+  const user = auth.currentUser;
 
-const data =
-localStorage.getItem(key);
+  if(!user){
+    throw new Error("Sesi Firebase belum tersedia.");
+  }
 
-return data
-? JSON.parse(data)
-: fallback;
+  const token = await user.getIdToken();
 
-}catch{
+  const headers = new Headers(
+    options.headers || {}
+  );
 
-return fallback;
+  headers.set(
+    "Authorization",
+    `Bearer ${token}`
+  );
 
-}
+  if(
+    options.body &&
+    !headers.has("Content-Type")
+  ){
+    headers.set(
+      "Content-Type",
+      "application/json"
+    );
+  }
 
-}
+  const response = await fetch(
+    url,
+    {
+      ...options,
+      headers
+    }
+  );
 
+  const data =
+    await response
+      .json()
+      .catch(() => ({}));
 
-function saveData(key,data){
+  if(!response.ok){
 
-localStorage.setItem(
-key,
-JSON.stringify(data)
-);
+    throw new Error(
+      data.message ||
+      "Backend WebToolsKita tidak dapat dihubungi."
+    );
+  }
 
-}
-
-
-function showToast(message){
-
-const toast =
-document.getElementById("toast");
-
-toast.textContent =
-message;
-
-toast.style.display =
-"block";
-
-setTimeout(()=>{
-
-toast.style.display =
-"none";
-
-},2500);
-
-}
-
-
-function formatRupiah(value){
-
-return new Intl.NumberFormat(
-"id-ID",
-{
-style:"currency",
-currency:"IDR",
-maximumFractionDigits:0
-}
-).format(
-Number(value)||0
-);
-
-}
-
-
-function addActivity(message){
-
-const activity =
-getData(
-STORAGE.activity,
-[]
-);
-
-activity.unshift({
-
-message,
-
-time:
-new Date().toLocaleString(
-"id-ID"
-)
-
-});
-
-saveData(
-STORAGE.activity,
-activity.slice(0,20)
-);
-
-renderActivity();
-
+  return data;
 }
 
 
 /* =====================================================
-   NAVIGATION
+   ELEMENTS
 ===================================================== */
 
-function openPage(id,button){
+const $ = id =>
+  document.getElementById(id);
 
-document
-.querySelectorAll(".page")
-.forEach(page=>{
+const balanceEl =
+  $("balance");
 
-page.classList.remove(
-"active"
-);
+const accountNameEl =
+  $("accountName");
 
-});
+const accountEmailEl =
+  $("accountEmail");
 
+const accountAgeEl =
+  $("accountAge");
 
-const page =
-document.getElementById(id);
+const accountOriginEl =
+  $("accountOrigin");
 
-if(page){
+const accountVaultCodeEl =
+  $("accountVaultCode");
 
-page.classList.add(
-"active"
-);
+const accountStatusEl =
+  $("accountStatus");
 
-}
+const vaultCodeEl =
+  $("vaultCode");
 
+const transferCodeDisplayEl =
+  $("transferCodeDisplay");
 
-document
-.querySelectorAll(".menu button")
-.forEach(btn=>{
+const historyListEl =
+  $("historyList");
 
-btn.classList.remove(
-"active"
-);
-
-});
-
-
-if(button){
-
-button.classList.add(
-"active"
-);
-
-}
-
-}
-
-
-function openPageById(id){
-
-const button =
-[...document.querySelectorAll(
-".menu button"
-)]
-.find(btn =>
-btn.getAttribute(
-"onclick"
-)?.includes(
-"'" + id + "'"
-)
-);
-
-openPage(id,button);
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
-}
+const toastEl =
+  $("toast");
 
 
 /* =====================================================
-   COMPANY
+   TOAST
 ===================================================== */
 
-function saveCompany(){
-
-const company = {
-
-name:
-document.getElementById(
-"companyName"
-).value.trim(),
-
-branch:
-document.getElementById(
-"branchName"
-).value.trim(),
-
-city:
-document.getElementById(
-"city"
-).value.trim(),
-
-province:
-document.getElementById(
-"province"
-).value.trim(),
-
-address:
-document.getElementById(
-"address"
-).value.trim(),
-
-agencyCode:
-document.getElementById(
-"agencyCode"
-).value.trim(),
-
-status:
-document.getElementById(
-"companyStatus"
-).value
-
-};
-
-
-if(!company.name){
-
-showToast(
-"Nama perusahaan wajib diisi."
-);
-
-return;
-
-}
-
-
-saveData(
-STORAGE.company,
-company
-);
-
-addActivity(
-"Company profile diperbarui."
-);
-
-renderAll();
-
-showToast(
-"Company profile berhasil disimpan."
-);
-
-}
-
-
-/* =====================================================
-   EMPLOYEE
-===================================================== */
-
-function addEmployee(){
-
-const name =
-document.getElementById(
-"employeeName"
-).value.trim();
-
-const id =
-document.getElementById(
-"employeeId"
-).value.trim();
-
-const role =
-document.getElementById(
-"employeeRole"
-).value.trim();
-
-const whatsapp =
-document.getElementById(
-"employeeWhatsapp"
-).value.trim();
-
-const status =
-document.getElementById(
-"employeeStatus"
-).value;
-
-
-if(!name || !id){
-
-showToast(
-"Nama dan ID pegawai wajib diisi."
-);
-
-return;
-
-}
-
-
-const employees =
-getData(
-STORAGE.employees,
-[]
-);
-
-
-employees.push({
-
-id,
-
-name,
-
-role,
-
-whatsapp,
-
-status,
-
-createdAt:
-new Date().toISOString()
-
-});
-
-
-saveData(
-STORAGE.employees,
-employees
-);
-
-
-document.getElementById(
-"employeeName"
-).value="";
-
-document.getElementById(
-"employeeId"
-).value="";
-
-document.getElementById(
-"employeeRole"
-).value="";
-
-document.getElementById(
-"employeeWhatsapp"
-).value="";
-
-
-addActivity(
-"Employee baru ditambahkan: "
-+ name
-);
-
-renderAll();
-
-showToast(
-"Employee berhasil ditambahkan."
-);
-
-}
-
-
-function deleteEmployee(index){
-
-const employees =
-getData(
-STORAGE.employees,
-[]
-);
-
-if(!employees[index])
-return;
-
-const name =
-employees[index].name;
-
-employees.splice(
-index,
-1
-);
-
-saveData(
-STORAGE.employees,
-employees
-);
-
-addActivity(
-"Employee dihapus: "
-+ name
-);
-
-renderAll();
-
-showToast(
-"Employee berhasil dihapus."
-);
-
-}
-
-
-/* =====================================================
-   SALES
-===================================================== */
-
-function submitSale(){
-
-const type =
-document.getElementById(
-"saleType"
-).value;
-
-const product =
-document.getElementById(
-"saleProduct"
-).value.trim();
-
-const customer =
-document.getElementById(
-"saleCustomer"
-).value.trim();
-
-const amount =
-Number(
-document.getElementById(
-"saleAmount"
-).value
-);
-
-const proof =
-document.getElementById(
-"saleProof"
-).value.trim();
-
-
-if(
-!product ||
-!customer ||
-!amount ||
-amount<=0
+let toastTimer = null;
+
+function showToast(
+  message,
+  type = ""
 ){
 
-showToast(
-"Lengkapi data penjualan."
-);
+  clearTimeout(toastTimer);
 
-return;
+  toastEl.textContent =
+    message;
 
-}
+  toastEl.className =
+    "toast show " + type;
 
+  toastTimer =
+    setTimeout(() => {
 
-const sales =
-getData(
-STORAGE.sales,
-[]
-);
+      toastEl.className =
+        "toast";
 
-
-sales.push({
-
-id:
-"SALE-" +
-Date.now(),
-
-type,
-
-product,
-
-customer,
-
-amount,
-
-proof,
-
-status:
-"PENDING",
-
-createdAt:
-new Date().toISOString()
-
-});
-
-
-saveData(
-STORAGE.sales,
-sales
-);
-
-
-document.getElementById(
-"saleProduct"
-).value="";
-
-document.getElementById(
-"saleCustomer"
-).value="";
-
-document.getElementById(
-"saleAmount"
-).value="";
-
-document.getElementById(
-"saleProof"
-).value="";
-
-
-addActivity(
-"Sales baru dicatat: "
-+ product
-);
-
-renderAll();
-
-showToast(
-"Sales berhasil dicatat."
-);
-
-}
-
-
-function deleteSale(index){
-
-const sales =
-getData(
-STORAGE.sales,
-[]
-);
-
-if(!sales[index])
-return;
-
-sales.splice(
-index,
-1
-);
-
-saveData(
-STORAGE.sales,
-sales
-);
-
-addActivity(
-"Data sales dihapus."
-);
-
-renderAll();
-
-showToast(
-"Sales berhasil dihapus."
-);
-
+    }, 3500);
 }
 
 
 /* =====================================================
-   BANK
+   LOCAL PROFILE
+   hanya profile UI, bukan saldo
 ===================================================== */
 
-function saveBank(){
+function profileStorageKey(){
 
-const bank={
+  const user =
+    auth.currentUser;
 
-owner:
-document.getElementById(
-"bankOwner"
-).value.trim(),
+  if(!user){
+    return null;
+  }
 
-bank:
-document.getElementById(
-"bankName"
-).value.trim(),
-
-number:
-document.getElementById(
-"bankNumber"
-).value.trim(),
-
-branch:
-document.getElementById(
-"bankBranch"
-).value.trim(),
-
-whatsapp:
-document.getElementById(
-"bankWhatsapp"
-).value.trim()
-
-};
+  return "webpay_profile_" +
+    user.uid;
+}
 
 
-if(
-!bank.owner ||
-!bank.bank ||
-!bank.number
-){
+function loadLocalProfile(){
 
-showToast(
-"Lengkapi data rekening."
-);
+  const key =
+    profileStorageKey();
 
-return;
+  if(!key){
+    return;
+  }
+
+  try{
+
+    const data =
+      JSON.parse(
+        localStorage.getItem(key) ||
+        "{}"
+      );
+
+    $("profileName").value =
+      data.name || "";
+
+    $("profileAge").value =
+      data.age || "";
+
+    $("profileOrigin").value =
+      data.origin || "";
+
+  }catch(error){
+
+    console.warn(
+      "Profile local load:",
+      error
+    );
+  }
 
 }
 
 
-saveData(
-STORAGE.bank,
-bank
-);
+function saveLocalProfile(){
 
-addActivity(
-"Data payout directory diperbarui."
-);
+  const key =
+    profileStorageKey();
 
-renderAll();
+  if(!key){
+    return;
+  }
 
-showToast(
-"Data rekening berhasil disimpan."
-);
+  const data = {
 
+    name:
+      $("profileName").value.trim(),
+
+    age:
+      $("profileAge").value.trim(),
+
+    origin:
+      $("profileOrigin").value.trim(),
+
+    email:
+      auth.currentUser?.email || ""
+
+  };
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(data)
+  );
+
+  renderAccountProfile();
+
+  showToast(
+    "Profile verification tersimpan.",
+    "success"
+  );
 }
 
 
 /* =====================================================
-   CEO
+   ACCOUNT PROFILE
 ===================================================== */
 
-function connectCEO(){
+function renderAccountProfile(){
 
-const code =
-document.getElementById(
-"ceoCode"
-).value.trim();
+  const user =
+    auth.currentUser;
 
+  if(!user){
+    return;
+  }
 
-if(!code){
+  const profileKey =
+    profileStorageKey();
 
-showToast(
-"Masukkan CEO Connection Code."
-);
+  let profile = {};
 
-return;
+  try{
 
-}
+    profile =
+      JSON.parse(
+        localStorage.getItem(profileKey) ||
+        "{}"
+      );
 
+  }catch(error){
 
-const ceo={
+    profile = {};
+  }
 
-code,
+  accountNameEl.textContent =
+    profile.name ||
+    user.displayName ||
+    "-";
 
-status:
-"CONNECTED",
+  accountEmailEl.textContent =
+    user.email ||
+    "-";
 
-connectedAt:
-new Date().toISOString()
+  accountAgeEl.textContent =
+    profile.age ||
+    "-";
 
-};
+  accountOriginEl.textContent =
+    profile.origin ||
+    "-";
 
-
-saveData(
-STORAGE.ceo,
-ceo
-);
-
-addActivity(
-"Agency terhubung dengan CEO Command Center."
-);
-
-renderAll();
-
-showToast(
-"CEO connection berhasil dibuat."
-);
-
+  $("profileEmail").value =
+    user.email || "";
 }
 
 
 /* =====================================================
-   RENDER COMPANY
+   WEBPAY VAULT
 ===================================================== */
 
-function renderCompany(){
-
-const company =
-getData(
-STORAGE.company,
-null
-);
+let currentVault = null;
 
 
-if(!company){
+/* GET VAULT */
 
-document.getElementById(
-"companyPreview"
-).innerHTML=
-`<div class="empty">
-Belum ada data perusahaan.
-</div>`;
+async function loadVault(){
 
-return;
+  const data =
+    await backendRequest(
+      "/api/webpay/vault"
+    );
 
+  if(
+    !data ||
+    !data.success
+  ){
+
+    throw new Error(
+      data?.message ||
+      "Vault gagal dimuat."
+    );
+  }
+
+  currentVault =
+    data.vault || null;
+
+  renderVault();
+
+  return currentVault;
 }
 
 
-document.getElementById(
-"companyName"
-).value =
-company.name || "";
+/* RENDER VAULT */
 
-document.getElementById(
-"branchName"
-).value =
-company.branch || "";
+function renderVault(){
 
-document.getElementById(
-"city"
-).value =
-company.city || "";
+  if(!currentVault){
 
-document.getElementById(
-"province"
-).value =
-company.province || "";
+    vaultCodeEl.textContent =
+      "-";
 
-document.getElementById(
-"address"
-).value =
-company.address || "";
+    accountVaultCodeEl.textContent =
+      "-";
 
-document.getElementById(
-"agencyCode"
-).value =
-company.agencyCode || "";
+    accountStatusEl.textContent =
+      "BELUM AKTIF";
 
-document.getElementById(
-"companyStatus"
-).value =
-company.status || "active";
+    transferCodeDisplayEl.textContent =
+      "••••••••••";
 
+    return;
+  }
 
-document.getElementById(
-"companyPreview"
-).innerHTML =
+  vaultCodeEl.textContent =
+    currentVault.vaultCode ||
+    currentVault.vault_code ||
+    "-";
 
-`
-<p>
-<strong>Company:</strong>
-${escapeHTML(company.name)}
-</p>
+  accountVaultCodeEl.textContent =
+    currentVault.vaultCode ||
+    currentVault.vault_code ||
+    "-";
 
-<p>
-<strong>Branch:</strong>
-${escapeHTML(company.branch || "-")}
-</p>
+  accountStatusEl.textContent =
+    String(
+      currentVault.status ||
+      "active"
+    ).toUpperCase();
 
-<p>
-<strong>Location:</strong>
-${escapeHTML(company.city || "-")},
-${escapeHTML(company.province || "-")}
-</p>
-
-<p>
-<strong>Agency Code:</strong>
-<span class="blue">
-${escapeHTML(company.agencyCode || "-")}
-</span>
-</p>
-
-<p>
-<strong>Status:</strong>
-<span class="green">
-${escapeHTML(company.status)}
-</span>
-</p>
-`;
-
+  transferCodeDisplayEl.textContent =
+    "••••••••••";
 }
 
 
 /* =====================================================
-   RENDER EMPLOYEES
+   CREATE / ENSURE VAULT
 ===================================================== */
 
-function renderEmployees(){
+async function createVault(){
 
-const employees =
-getData(
-STORAGE.employees,
-[]
-);
+  const button =
+    $("createVaultBtn");
 
-const table =
-document.getElementById(
-"employeeTable"
-);
+  button.disabled = true;
 
+  try{
 
-if(!employees.length){
+    const data =
+      await backendRequest(
+        "/api/webpay/vault",
+        {
+          method:"POST",
+          body:JSON.stringify({})
+        }
+      );
 
-table.innerHTML=
-`
-<tr>
-<td colspan="6"
-class="empty">
-Belum ada employee.
-</td>
-</tr>
-`;
+    if(
+      !data ||
+      !data.success
+    ){
 
-return;
+      throw new Error(
+        data?.message ||
+        "Vault gagal dibuat."
+      );
+    }
 
-}
+    currentVault =
+      data.vault ||
+      null;
 
+    renderVault();
 
-table.innerHTML =
-employees.map(
-(employee,index)=>`
+    /*
+      Backend hanya boleh mengirim plaintext
+      Transfer Code ketika Vault baru dibuat.
+    */
 
-<tr>
+    const returnedTransferCode =
+      data.transferCode ||
+      data.transfer_code ||
+      data.vault?.transferCode ||
+      data.vault?.transfer_code ||
+      null;
 
-<td>
-${escapeHTML(employee.id)}
-</td>
+    if(returnedTransferCode){
 
-<td>
-${escapeHTML(employee.name)}
-</td>
+      transferCodeDisplayEl.textContent =
+        returnedTransferCode;
 
-<td>
-${escapeHTML(employee.role || "-")}
-</td>
+      showToast(
+        "Vault berhasil dibuat. Simpan Transfer Code sekarang.",
+        "success"
+      );
 
-<td>
-${escapeHTML(employee.whatsapp || "-")}
-</td>
+    }else{
 
-<td>
+      transferCodeDisplayEl.textContent =
+        "••••••••••";
 
-<span class="${
-employee.status==="Active"
-? "green"
-: "red"
-}">
+      showToast(
+        "Vault berhasil dimuat. Transfer Code tidak dikirim ulang oleh backend.",
+        "success"
+      );
+    }
 
-${escapeHTML(employee.status)}
+    await loadWallet();
+    await loadHistory();
 
-</span>
+  }catch(error){
 
-</td>
+    console.error(
+      "CREATE VAULT:",
+      error
+    );
 
-<td>
+    showToast(
+      error.message ||
+      "Vault gagal dibuat.",
+      "error"
+    );
 
-<button
-class="btn btn-danger"
-onclick="deleteEmployee(${index})">
+  }finally{
 
-Delete
-
-</button>
-
-</td>
-
-</tr>
-
-`
-).join("");
-
+    button.disabled = false;
+  }
 }
 
 
 /* =====================================================
-   RENDER SALES
+   WALLET
 ===================================================== */
 
-function renderSales(){
+async function loadWallet(){
 
-const sales =
-getData(
-STORAGE.sales,
-[]
-);
+  const data =
+    await backendRequest(
+      "/api/wallet"
+    );
 
-const table =
-document.getElementById(
-"salesTable"
-);
+  if(
+    !data ||
+    !data.success
+  ){
 
+    throw new Error(
+      data?.message ||
+      "Wallet gagal dimuat."
+    );
+  }
 
-if(!sales.length){
+  const wallet =
+    data.wallet ||
+    data;
 
-table.innerHTML=
-`
-<tr>
-<td colspan="5"
-class="empty">
-Belum ada transaksi.
-</td>
-</tr>
-`;
+  const balance =
+    Number(
+      wallet.balance || 0
+    );
 
-return;
-
-}
-
-
-table.innerHTML =
-sales.map(
-(sale,index)=>`
-
-<tr>
-
-<td>
-${escapeHTML(sale.product)}
-</td>
-
-<td>
-${escapeHTML(sale.customer)}
-</td>
-
-<td>
-${formatRupiah(sale.amount)}
-</td>
-
-<td>
-
-<span class="${
-sale.status==="APPROVED"
-? "green"
-: sale.status==="REJECTED"
-? "red"
-: "yellow"
-}">
-
-${escapeHTML(sale.status)}
-
-</span>
-
-</td>
-
-<td>
-
-<button
-class="btn btn-danger"
-onclick="deleteSale(${index})">
-
-Delete
-
-</button>
-
-</td>
-
-</tr>
-
-`
-).join("");
-
+  balanceEl.textContent =
+    balance.toLocaleString(
+      "id-ID"
+    );
 }
 
 
 /* =====================================================
-   RENDER BANK
+   TRANSFER
 ===================================================== */
 
-function renderBank(){
+async function sendTransfer(){
 
-const bank =
-getData(
-STORAGE.bank,
-null
-);
+  const button =
+    $("sendTransferBtn");
 
+  const recipientVaultCode =
+    $("recipientVaultCode")
+      .value
+      .trim()
+      .toUpperCase();
 
-if(!bank){
+  const amountRaw =
+    $("transferAmount")
+      .value
+      .trim();
 
-document.getElementById(
-"bankPreview"
-).innerHTML=
-`
-<div class="empty">
-Belum ada data payout.
-</div>
-`;
+  const transferCode =
+    $("transferCodeInput")
+      .value
+      .trim();
 
-return;
+  const note =
+    $("transferNote")
+      .value
+      .trim();
 
-}
+  const amount =
+    Number(amountRaw);
 
+  if(!recipientVaultCode){
 
-document.getElementById(
-"bankOwner"
-).value =
-bank.owner || "";
+    showToast(
+      "Vault Code penerima wajib diisi.",
+      "error"
+    );
 
-document.getElementById(
-"bankName"
-).value =
-bank.bank || "";
+    return;
+  }
 
-document.getElementById(
-"bankNumber"
-).value =
-bank.number || "";
+  if(
+    !Number.isInteger(amount) ||
+    amount <= 0
+  ){
 
-document.getElementById(
-"bankBranch"
-).value =
-bank.branch || "";
+    showToast(
+      "Nominal transfer tidak valid.",
+      "error"
+    );
 
-document.getElementById(
-"bankWhatsapp"
-).value =
-bank.whatsapp || "";
+    return;
+  }
 
+  if(!transferCode){
 
-document.getElementById(
-"bankPreview"
-).innerHTML=
+    showToast(
+      "Transfer Code wajib diisi.",
+      "error"
+    );
 
-`
-<p>
-<strong>Owner:</strong>
-${escapeHTML(bank.owner)}
-</p>
+    return;
+  }
 
-<p>
-<strong>Bank:</strong>
-${escapeHTML(bank.bank)}
-</p>
+  if(!currentVault){
 
-<p>
-<strong>Account:</strong>
-${escapeHTML(bank.number)}
-</p>
+    showToast(
+      "Vault belum aktif.",
+      "error"
+    );
 
-<p>
-<strong>Branch:</strong>
-${escapeHTML(bank.branch || "-")}
-</p>
+    return;
+  }
 
-<p>
-<strong>Status:</strong>
-<span class="green">
-READY FOR PAYOUT
-</span>
-</p>
-`;
+  button.disabled = true;
 
+  try{
+
+    const data =
+      await backendRequest(
+        "/api/webpay/transfer",
+        {
+          method:"POST",
+          body:JSON.stringify({
+
+            recipientVaultCode,
+
+            amount,
+
+            transferCode,
+
+            note:
+              note ||
+              "WEBPAY Virtual Transfer"
+
+          })
+        }
+      );
+
+    if(
+      !data ||
+      !data.success
+    ){
+
+      throw new Error(
+        data?.message ||
+        "Transfer gagal."
+      );
+    }
+
+    $("transferAmount").value =
+      "";
+
+    $("transferCodeInput").value =
+      "";
+
+    $("transferNote").value =
+      "";
+
+    await loadWallet();
+    await loadHistory();
+
+    showToast(
+      `Transfer berhasil • ${Number(data.amount || amount).toLocaleString("id-ID")} VIRTUAL`,
+      "success"
+    );
+
+  }catch(error){
+
+    console.error(
+      "WEBPAY TRANSFER:",
+      error
+    );
+
+    showToast(
+      error.message ||
+      "Transfer Virtual gagal.",
+      "error"
+    );
+
+  }finally{
+
+    button.disabled = false;
+  }
 }
 
 
 /* =====================================================
-   RENDER CEO
+   HISTORY
 ===================================================== */
 
-function renderCEO(){
+async function loadHistory(){
 
-const ceo =
-getData(
-STORAGE.ceo,
-null
-);
+  historyListEl.innerHTML =
+    `<div class="empty">Memuat history...</div>`;
 
+  try{
 
-const status =
-document.getElementById(
-"ceoStatus"
-);
+    const data =
+      await backendRequest(
+        "/api/webpay/history"
+      );
 
-const dashboard =
-document.getElementById(
-"dashboardCEO"
-);
+    if(
+      !data ||
+      !data.success
+    ){
 
-const side =
-document.getElementById(
-"sideCEO"
-);
+      throw new Error(
+        data?.message ||
+        "History gagal dimuat."
+      );
+    }
 
-const security =
-document.getElementById(
-"securityConnection"
-);
+    const history =
+      Array.isArray(data.history)
+        ? data.history
+        : [];
 
-const securityCEO =
-document.getElementById(
-"securityCEO"
-);
+    renderHistory(history);
 
+  }catch(error){
 
-if(!ceo){
+    console.error(
+      "HISTORY:",
+      error
+    );
 
-status.textContent =
-"WAITING APPROVAL";
+    historyListEl.innerHTML =
+      `<div class="empty">
+        History tidak dapat dimuat.
+      </div>`;
 
-status.className =
-"yellow";
-
-dashboard.textContent =
-"Waiting";
-
-dashboard.className =
-"stat-number yellow";
-
-side.textContent =
-"Waiting";
-
-side.className =
-"yellow";
-
-security.textContent =
-"Waiting";
-
-securityCEO.textContent =
-"REQUIRED";
-
-securityCEO.className =
-"yellow";
-
-return;
-
+    showToast(
+      error.message ||
+      "Gagal mengambil history.",
+      "error"
+    );
+  }
 }
 
 
-status.textContent =
-"CONNECTED";
+function renderHistory(history){
 
-status.className =
-"green";
+  if(!history.length){
 
-dashboard.textContent =
-"Connected";
+    historyListEl.innerHTML =
+      `<div class="empty">
+        Belum ada transaksi WEBPAY.
+      </div>`;
 
-dashboard.className =
-"stat-number green";
+    return;
+  }
 
-side.textContent =
-"Connected";
+  historyListEl.innerHTML =
+    history
+      .slice(0,5)
+      .map(item => {
 
-side.className =
-"green";
+        const direction =
+          String(
+            item.direction || ""
+          ).toLowerCase();
 
-security.textContent =
-"Connected";
+        const isCredit =
+          direction === "credit";
 
-securityCEO.textContent =
-"AUTHORIZED";
+        const amount =
+          Number(
+            item.amount || 0
+          );
 
-securityCEO.className =
-"green";
+        const sign =
+          isCredit
+            ? "+"
+            : "-";
 
+        const cls =
+          isCredit
+            ? "credit"
+            : "debit";
+
+        const title =
+          isCredit
+            ? "Virtual masuk"
+            : "Virtual keluar";
+
+        const date =
+          formatDate(
+            item.created_at
+          );
+
+        return `
+          <div class="history-item">
+
+            <div class="history-main">
+
+              <div class="history-title">
+                ${escapeHtml(title)}
+              </div>
+
+              <div class="history-meta">
+                ${escapeHtml(
+                  item.reference_id || "-"
+                )}
+                •
+                ${escapeHtml(date)}
+                <br>
+                ${escapeHtml(
+                  item.description ||
+                  "WEBPAY Virtual Transfer"
+                )}
+              </div>
+
+            </div>
+
+            <div class="history-amount ${cls}">
+              ${sign}${amount.toLocaleString("id-ID")}
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
 }
 
 
 /* =====================================================
-   DASHBOARD
+   DATE
 ===================================================== */
 
-function renderDashboard(){
+function formatDate(value){
 
-const company =
-getData(
-STORAGE.company,
-null
-);
+  if(!value){
+    return "-";
+  }
 
-const employees =
-getData(
-STORAGE.employees,
-[]
-);
+  const date =
+    new Date(value);
 
-const sales =
-getData(
-STORAGE.sales,
-[]
-);
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
 
+    return String(value);
+  }
 
-const total =
-sales.reduce(
-(sum,sale)=>
-sum + Number(sale.amount||0),
-0
-);
-
-
-document.getElementById(
-"dashboardCompany"
-).textContent =
-company
-? company.name
-: "Not Registered";
-
-
-document.getElementById(
-"dashboardEmployee"
-).textContent =
-employees.length;
-
-
-document.getElementById(
-"dashboardSales"
-).textContent =
-formatRupiah(total);
-
-
-document.getElementById(
-"totalTransactions"
-).textContent =
-sales.length;
-
-
-document.getElementById(
-"approvedTransactions"
-).textContent =
-sales.filter(
-s=>s.status==="APPROVED"
-).length;
-
-
-document.getElementById(
-"pendingTransactions"
-).textContent =
-sales.filter(
-s=>s.status==="PENDING"
-).length;
-
-
-document.getElementById(
-"rejectedTransactions"
-).textContent =
-sales.filter(
-s=>s.status==="REJECTED"
-).length;
-
-
-const companyCode =
-document.getElementById(
-"securityAgencyCode"
-);
-
-companyCode.textContent =
-company?.agencyCode ||
-"Not Registered";
-
+  return date.toLocaleString(
+    "id-ID",
+    {
+      dateStyle:"short",
+      timeStyle:"short"
+    }
+  );
 }
 
 
 /* =====================================================
-   ACTIVITY
+   HTML ESCAPE
 ===================================================== */
 
-function renderActivity(){
+function escapeHtml(value){
 
-const activity =
-getData(
-STORAGE.activity,
-[]
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* =====================================================
+   BACKEND SESSION SYNC
+===================================================== */
+
+async function syncBackendSession(){
+
+  try{
+
+    await backendRequest(
+      "/api/auth/login",
+      {
+        method:"POST",
+        body:"{}"
+      }
+    );
+
+    await backendRequest(
+      "/api/auth/me"
+    );
+
+  }catch(error){
+
+    console.warn(
+      "WebToolsKita backend sync:",
+      error.message
+    );
+  }
+}
+
+
+/* =====================================================
+   BUTTON EVENTS
+===================================================== */
+
+$("saveProfileBtn")
+  .addEventListener(
+    "click",
+    saveLocalProfile
+  );
+
+
+$("loadProfileBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      loadLocalProfile();
+      renderAccountProfile();
+
+      showToast(
+        "Profile dimuat."
+      );
+
+    }
+  );
+
+
+$("createVaultBtn")
+  .addEventListener(
+    "click",
+    createVault
+  );
+
+
+$("sendTransferBtn")
+  .addEventListener(
+    "click",
+    sendTransfer
+  );
+
+
+$("resetTransferBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("recipientVaultCode").value =
+        "";
+
+      $("transferAmount").value =
+        "";
+
+      $("transferCodeInput").value =
+        "";
+
+      $("transferNote").value =
+        "";
+
+    }
+  );
+
+
+$("refreshHistoryBtn")
+  .addEventListener(
+    "click",
+    async () => {
+
+      try{
+
+        await loadWallet();
+        await loadHistory();
+
+        showToast(
+          "Balance dan history diperbarui.",
+          "success"
+        );
+
+      }catch(error){
+
+        showToast(
+          error.message ||
+          "Gagal refresh.",
+          "error"
+        );
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
+
+auth.onAuthStateChanged(
+  async user => {
+
+    if(!user){
+
+      location.href =
+        "index2.html";
+
+      return;
+    }
+
+    try{
+
+      await syncBackendSession();
+
+      $("profileEmail").value =
+        user.email || "";
+
+      loadLocalProfile();
+      renderAccountProfile();
+
+      await loadVault();
+      await loadWallet();
+      await loadHistory();
+
+    }catch(error){
+
+      console.error(
+        "INDEX34 INIT:",
+        error
+      );
+
+      showToast(
+        error.message ||
+        "Gagal memuat iPay Virtual.",
+        "error"
+      );
+    }
+
+  }
 );
-
-const container =
-document.getElementById(
-"activityList"
-);
-
-
-if(!activity.length){
-
-container.innerHTML=
-`
-<div class="empty">
-Belum ada aktivitas agency.
-</div>
-`;
-
-return;
-
-}
-
-
-container.innerHTML =
-activity.slice(0,8)
-.map(item=>`
-
-<div class="activity">
-
-<strong>
-${escapeHTML(item.message)}
-</strong>
-
-<br>
-
-<span class="small">
-${escapeHTML(item.time)}
-</span>
-
-</div>
-
-`)
-.join("");
-
-}
-
-
-/* =====================================================
-   SECURITY
-===================================================== */
-
-function escapeHTML(value){
-
-return String(value ?? "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   MASTER RENDER
-===================================================== */
-
-function renderAll(){
-
-renderCompany();
-
-renderEmployees();
-
-renderSales();
-
-renderBank();
-
-renderCEO();
-
-renderDashboard();
-
-renderActivity();
-
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-renderAll();
-
 </script>
 
 </body>

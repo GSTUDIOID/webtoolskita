@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Workspace — WebToolsKita Admin</title>
+
+<meta name="description"
+content="Workspace Admin WebToolsKita untuk membuka ChatGPT dengan cepat.">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(
+            circle at top,
+            #24103d 0%,
+            #0b0712 48%,
+            #050308 100%
+        );
+    color: #f3e8ff;
+}
+
+.container {
+    width: min(850px, 94%);
+    margin: 30px auto;
+}
+
+.card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 12, 52, 0.97),
+            rgba(9, 5, 16, 0.98)
+        );
+    border: 1px solid #4c1d95;
+    border-radius: 22px;
+    padding: 35px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 15px;
+    font-size: clamp(26px, 5vw, 40px);
+    color: #f3e8ff;
+    line-height: 1.2;
+}
+
+.description {
+    margin: 0 auto 30px;
+    max-width: 680px;
+    color: #d8b4fe;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.admin-badge {
+    display: inline-block;
+    margin-bottom: 22px;
+    padding: 7px 14px;
+    border: 1px solid #7e22ce;
+    border-radius: 999px;
+    background: rgba(107, 33, 168, 0.18);
+    color: #c084fc;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.work-button {
+    display: inline-block;
+    width: min(100%, 360px);
+    padding: 16px 25px;
+    border: 1px solid #a855f7;
+    border-radius: 11px;
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.work-button:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.work-button:active {
+    transform: translateY(0);
+}
+
+.info {
+    margin-top: 25px;
+    padding-top: 16px;
+    border-top: 1px solid #3b1d5d;
+    color: #a78bfa;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.back-wrapper {
+    text-align: center;
+    margin-top: 18px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 11px 24px;
+    border: 1px solid #a855f7;
+    border-radius: 11px;
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 94%;
+        margin: 20px auto;
+    }
+
+    .card {
+        padding: 25px 18px;
+    }
+
+    .work-button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="admin-badge">
+            ADMIN
+        </div>
+
+        <h1>Workspace</h1>
+
+        <p class="description">
+            Workspace Admin WebToolsKita untuk membuka ruang kerja
+            dengan cepat.
+        </p>
+
+        <a
+            class="work-button"
+            href="https://chatgpt.com/"
+        >
+            Work
+        </a>
+
+        <div class="info">
+            Klik Work untuk membuka ChatGPT.
+        </div>
+
+    </div>
+
+    <div class="back-wrapper">
+        <a
+            href="index18.html"
+            class="back-button"
+        >
+            ← Kembali
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

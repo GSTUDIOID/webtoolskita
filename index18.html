@@ -1,9 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Admin Dashboard — WebToolsKita</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -276,7 +275,9 @@ button{font:inherit}
     margin-top:7px
 }
 
-.status{color:#86efac}
+.status{
+    color:#86efac
+}
 
 .section-title{
     margin-bottom:15px
@@ -349,7 +350,8 @@ button{font:inherit}
     display:grid;
     place-items:center;
     border-radius:16px;
-    font-size:23px;
+    font-size:16px;
+    font-weight:800;
     background:rgba(139,92,246,.14);
     border:1px solid rgba(168,85,247,.18);
     margin-bottom:18px
@@ -531,7 +533,6 @@ button{font:inherit}
         opacity:0;
         transform:translateY(20px)
     }
-
     to{
         opacity:1;
         transform:translateY(0)
@@ -549,7 +550,6 @@ button{font:inherit}
 }
 
 @media(max-width:600px){
-
     .container{
         width:94%;
         padding-top:82px
@@ -610,7 +610,7 @@ button{font:inherit}
 </div>
 
 <button class="back-btn" onclick="goBack()">
-    ← Kembali ke Menu
+    Kembali ke Menu
 </button>
 
 <div class="container">
@@ -620,7 +620,7 @@ button{font:inherit}
         <div class="brand">
 
             <div class="logo">
-                ⚡
+                W
             </div>
 
             <div>
@@ -661,8 +661,8 @@ button{font:inherit}
 
         <p>
             Pusat kendali WebToolsKita untuk mengelola pengguna,
-            VIP, keamanan, database, pembaruan, monitoring,
-            dan modul eksklusif dari satu tempat.
+            keamanan, database, pembaruan, monitoring,
+            dan modul administrator dari satu tempat.
         </p>
 
     </section>
@@ -672,22 +672,23 @@ button{font:inherit}
 
         <div class="stat">
             <span>Status Sistem</span>
-            <strong
-                id="systemStatus"
-                class="status"
-            >
-                ● Online
+            <strong id="systemStatus" class="status">
+                Online
             </strong>
         </div>
 
         <div class="stat">
             <span>Admin Tools</span>
-            <strong>12</strong>
+            <strong>
+                18
+            </strong>
         </div>
 
         <div class="stat">
             <span>Versi Dashboard</span>
-            <strong>2.0.0</strong>
+            <strong>
+                2.0.0
+            </strong>
         </div>
 
     </div>
@@ -709,11 +710,10 @@ button{font:inherit}
     <div class="grid">
 
 
-        <div
-            class="card"
-            onclick="openPage('index19.html','Kelola Pengguna')"
-        >
-            <div class="icon">👥</div>
+        <div class="card"
+             onclick="openPage('index19.html','Kelola Pengguna')">
+
+            <div class="icon">01</div>
 
             <h4>
                 Kelola Pengguna
@@ -723,15 +723,17 @@ button{font:inherit}
                 Kelola dan lihat data pengguna WebToolsKita.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index32.html','Pengguna Online')"
-        >
-            <div class="icon">🟢</div>
+        <div class="card"
+             onclick="openPage('index32.html','Pengguna Online')">
+
+            <div class="icon">02</div>
 
             <h4>
                 Pengguna Online
@@ -741,51 +743,57 @@ button{font:inherit}
                 Pantau pengguna yang sedang aktif secara online.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index21.html','Kelola VIP')"
-        >
-            <div class="icon">💎</div>
+        <div class="card"
+             onclick="openPage('index21.html','Statistik Pengunjung Harian')">
+
+            <div class="icon">03</div>
 
             <h4>
-                Kelola VIP
+                Statistik Pengunjung Harian
             </h4>
 
             <p>
-                Kelola status VIP dan informasi membership pengguna.
+                Lihat statistik jumlah pengunjung WebToolsKita berdasarkan hari.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index31.html','Peringatan Update')"
-        >
-            <div class="icon">🔔</div>
+        <div class="card"
+             onclick="openPage('index31.html','Google Search Console')">
+
+            <div class="icon">04</div>
 
             <h4>
-                Peringatan Update
+                Google Search Console
             </h4>
 
             <p>
-                Kelola informasi dan pemberitahuan update sistem.
+                Jembatan menuju Google Search Console untuk memantau performa dan indexing.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index23.html','Update')"
-        >
-            <div class="icon">🚀</div>
+        <div class="card"
+             onclick="openPage('index23.html','Update')">
+
+            <div class="icon">05</div>
 
             <h4>
                 Update
@@ -795,15 +803,17 @@ button{font:inherit}
                 Lihat changelog dan perkembangan WebToolsKita.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index25.html','Security')"
-        >
-            <div class="icon">🛡️</div>
+        <div class="card"
+             onclick="openPage('index25.html','Security')">
+
+            <div class="icon">06</div>
 
             <h4>
                 Security
@@ -813,15 +823,17 @@ button{font:inherit}
                 Monitor dan kelola keamanan sistem administrator.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index33.html','Database')"
-        >
-            <div class="icon">🗄️</div>
+        <div class="card"
+             onclick="openPage('index33.html','Database')">
+
+            <div class="icon">07</div>
 
             <h4>
                 Database
@@ -831,15 +843,17 @@ button{font:inherit}
                 Lihat status database dan informasi penyimpanan sistem.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index30.html','Vault')"
-        >
-            <div class="icon">🔐</div>
+        <div class="card"
+             onclick="openPage('index30.html','Vault')">
+
+            <div class="icon">08</div>
 
             <h4>
                 Vault
@@ -849,53 +863,57 @@ button{font:inherit}
                 Akses penyimpanan aman untuk kebutuhan administrator.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index42.html','System Monitor')"
-        >
-            <div class="icon">📊</div>
+        <div class="card"
+             onclick="openPage('index42.html','System Monitor')">
+
+            <div class="icon">09</div>
 
             <h4>
                 System Monitor
             </h4>
 
             <p>
-                Monitor CPU, memory, uptime, disk, Node.js,
-                dan kondisi server.
+                Monitor CPU, memory, uptime, disk, Node.js, dan kondisi server.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index43.html','API Monitor')"
-        >
-            <div class="icon">🔍</div>
+        <div class="card"
+             onclick="openPage('index43.html','API Monitor')">
+
+            <div class="icon">10</div>
 
             <h4>
                 API Monitor
             </h4>
 
             <p>
-                Periksa status endpoint API, response time,
-                dan kondisi layanan.
+                Periksa status endpoint API, response time, dan kondisi layanan.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <div
-            class="card"
-            onclick="openPage('index44.html','System Health Check')"
-        >
-            <div class="icon">🩺</div>
+        <div class="card"
+             onclick="openPage('index44.html','System Health Check')">
+
+            <div class="icon">11</div>
 
             <h4>
                 System Health Check
@@ -906,28 +924,84 @@ button{font:inherit}
                 authentication, storage, dan uptime.
             </p>
 
-            <div class="arrow">→</div>
+            <div class="arrow">
+                →
+            </div>
+
         </div>
 
 
-        <!-- CONTROL CENTER -->
+        <div class="card"
+             onclick="openPage('index61.html','Control Center')">
 
-        <div
-            class="card"
-            onclick="openPage('index62.html','Control Center')"
-        >
-
-            <div class="icon">
-                📣
-            </div>
+            <div class="icon">12</div>
 
             <h4>
                 Control Center
             </h4>
 
             <p>
-                Kelola server dan account secara real time
-		dan tutup server apabila diinginkan
+                Pusat kendali berbagai sistem administrator WebToolsKita.
+            </p>
+
+            <div class="arrow">
+                →
+            </div>
+
+        </div>
+
+
+        <div class="card"
+             onclick="openPage('index78.html','Workspace')">
+
+            <div class="icon">13</div>
+
+            <h4>
+                Workspace
+            </h4>
+
+            <p>
+                Kelola dan akses Workspace WebToolsKita.
+            </p>
+
+            <div class="arrow">
+                →
+            </div>
+
+        </div>
+
+
+        <div class="card"
+             onclick="openPage('index79.html','Index79')">
+
+            <div class="icon">14</div>
+
+            <h4>
+                Syslog / System Event Severity Filter
+            </h4>
+
+            <p>
+                Filter dan pantau tingkat severity syslog untuk membantu pemeriksaan aktivitas sistem.
+            </p>
+
+            <div class="arrow">
+                →
+            </div>
+
+        </div>
+
+
+        <div class="card"
+             onclick="openPage('index80.html','Index80')">
+
+            <div class="icon">15</div>
+
+            <h4>
+                Admin Demon Core Protocol
+            </h4>
+
+            <p>
+                Modul protokol khusus administrator untuk kebutuhan kontrol dan pengamanan sistem.
             </p>
 
             <div class="arrow">
@@ -958,28 +1032,21 @@ button{font:inherit}
         <div class="exclusive-grid">
 
 
-            <!-- iPAY MANAGEMENT -->
+            <div class="card exclusive-card"
+                 onclick="openPage('index38.html','WLAN')">
 
-            <div
-                class="card exclusive-card"
-                onclick="openPage('index38.html','iPay Management')"
-            >
-
-                <div class="icon">
-                    💳
-                </div>
+                <div class="icon">16</div>
 
                 <div class="exclusive-badge">
                     ADMIN EXCLUSIVE
                 </div>
 
                 <h4>
-                    iPay Management
+                    WLAN
                 </h4>
 
                 <p>
-                    Pusat pengelolaan layanan iPay asli
-                    WebToolsKita dan kebutuhan pembayaran.
+                    Kelola dan pantau koneksi jaringan nirkabel.
                 </p>
 
                 <div class="arrow">
@@ -989,16 +1056,10 @@ button{font:inherit}
             </div>
 
 
-            <!-- MANAGER SARAN -->
+            <div class="card exclusive-card"
+                 onclick="openPage('index61.html','Manager Saran')">
 
-            <div
-                class="card exclusive-card"
-                onclick="openPage('index61.html','Manager Saran')"
-            >
-
-                <div class="icon">
-                    💬
-                </div>
+                <div class="icon">17</div>
 
                 <div class="exclusive-badge">
                     ADMIN EXCLUSIVE
@@ -1020,16 +1081,10 @@ button{font:inherit}
             </div>
 
 
-            <!-- MONITORING CENTER -->
+            <div class="card exclusive-card"
+                 onclick="openPage('index61.html','Monitoring Center')">
 
-            <div
-                class="card exclusive-card"
-                onclick="openPage('index60.html','Monitoring Center')"
-            >
-
-                <div class="icon">
-                    🖥️
-                </div>
+                <div class="icon">18</div>
 
                 <div class="exclusive-badge">
                     ADMIN EXCLUSIVE
@@ -1064,10 +1119,7 @@ button{font:inherit}
 </div>
 
 
-<div
-    class="toast"
-    id="toast"
-></div>
+<div class="toast" id="toast"></div>
 
 
 <script>
@@ -1118,22 +1170,15 @@ function goBack(){
 function showToast(message){
 
     const toast =
-        document.getElementById(
-            "toast"
-        );
+        document.getElementById("toast");
 
     toast.textContent =
         message;
 
-    toast.classList.add(
-        "show"
-    );
+    toast.classList.add("show");
 
     setTimeout(
-        () =>
-            toast.classList.remove(
-                "show"
-            ),
+        () => toast.classList.remove("show"),
         1900
     );
 
@@ -1148,10 +1193,8 @@ function openPage(page,name){
 
     setTimeout(
         () => {
-
             window.location.href =
                 page;
-
         },
         180
     );
@@ -1184,43 +1227,39 @@ function denyAdmin(){
 const auth =
     firebase.auth();
 
-
 let authResolved =
     false;
-
 
 let authRedirectTimer =
     null;
 
 
-auth
-    .setPersistence(
-        firebase.auth.Auth.Persistence.LOCAL
-    )
-    .catch(
-        e =>
-            console.warn(
-                "Firebase persistence:",
-                e
-            )
-    );
+auth.setPersistence(
+    firebase.auth.Auth.Persistence.LOCAL
+)
+.catch(
+    e =>
+        console.warn(
+            "Firebase persistence:",
+            e
+        )
+);
 
 
 const redirectResult =
-    auth
-        .getRedirectResult()
-        .catch(
-            e => {
+    auth.getRedirectResult()
+    .catch(
+        e => {
 
-                console.error(
-                    "Firebase redirect result:",
-                    e
-                );
+            console.error(
+                "Firebase redirect result:",
+                e
+            );
 
-                return null;
+            return null;
 
-            }
-        );
+        }
+    );
 
 
 authRedirectTimer =
@@ -1300,9 +1339,7 @@ auth.onAuthStateChanged(
         if(user.photoURL){
 
             document
-                .getElementById(
-                    "avatar"
-                )
+                .getElementById("avatar")
                 .innerHTML =
                     `<img src="${user.photoURL}" alt="Admin">`;
 
@@ -1314,7 +1351,7 @@ auth.onAuthStateChanged(
                 "systemStatus"
             )
             .textContent =
-                "● Online";
+                "Online";
 
 
         setTimeout(
@@ -1329,3 +1366,9 @@ auth.onAuthStateChanged(
 
 </body>
 </html>
+
+
+
+
+
+

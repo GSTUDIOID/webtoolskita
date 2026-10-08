@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CSS Selector to XPath Translator — WebToolsKita</title>
+
+<meta name="description"
+      content="CSS Selector to XPath Translator untuk mengubah CSS Selector menjadi XPath yang dapat digunakan pada Selenium, Puppeteer, Playwright, dan automation testing.">
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+            radial-gradient(circle at top, #24103d 0%, #0b0712 48%, #050308 100%);
+        color: #f3e8ff;
+    }
+
+    .container {
+        width: min(850px, 94%);
+        margin: 30px auto;
+    }
+
+    .card {
+        background:
+            linear-gradient(
+                145deg,
+                rgba(30, 12, 52, 0.97),
+                rgba(9, 5, 16, 0.98)
+            );
+        border: 1px solid #4c1d95;
+        border-radius: 22px;
+        padding: 35px;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.45),
+            inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    h1 {
+        margin: 0 0 15px;
+        text-align: center;
+        font-size: clamp(26px, 5vw, 40px);
+        color: #f3e8ff;
+        line-height: 1.2;
+    }
+
+    .description {
+        text-align: center;
+        color: #d8b4fe;
+        font-size: 15px;
+        line-height: 1.7;
+        margin: 0 auto 28px;
+        max-width: 720px;
+    }
+
+    .label {
+        display: block;
+        margin-bottom: 9px;
+        color: #e9d5ff;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    textarea,
+    input {
+        width: 100%;
+        border: 1px solid #5b21b6;
+        border-radius: 11px;
+        background: #0b0712;
+        color: #f3e8ff;
+        outline: none;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+    textarea {
+        min-height: 125px;
+        padding: 15px;
+        resize: vertical;
+    }
+
+    textarea:focus,
+    input:focus {
+        border-color: #a855f7;
+        box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.12);
+    }
+
+    .example-box {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #3b1d5d;
+        background: rgba(30, 12, 52, 0.5);
+        color: #a78bfa;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .example-box code {
+        color: #d8b4fe;
+        font-family: Consolas, Monaco, monospace;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    button {
+        flex: 1;
+        border: 1px solid #a855f7;
+        border-radius: 11px;
+        padding: 13px 18px;
+        background: linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        filter: brightness(1.15);
+        transform: translateY(-1px);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    .secondary {
+        background: linear-gradient(
+            135deg,
+            #3b1761,
+            #581c87
+        );
+    }
+
+    .result-section {
+        margin-top: 25px;
+    }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 9px;
+    }
+
+    .result-header .label {
+        margin: 0;
+    }
+
+    .copy-btn {
+        flex: 0 0 auto;
+        width: auto;
+        padding: 8px 13px;
+        font-size: 12px;
+    }
+
+    .result {
+        width: 100%;
+        min-height: 125px;
+        padding: 15px;
+        border-radius: 11px;
+        border: 1px solid #5b21b6;
+        background: #07040c;
+        color: #c4b5fd;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 14px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+    }
+
+    .status {
+        margin-top: 12px;
+        padding: 11px 13px;
+        border-radius: 10px;
+        border: 1px solid #3b1d5d;
+        background: rgba(30, 12, 52, 0.5);
+        color: #a78bfa;
+        font-size: 12px;
+        line-height: 1.6;
+        display: none;
+    }
+
+    .info {
+        margin-top: 25px;
+        padding-top: 16px;
+        border-top: 1px solid #3b1d5d;
+        color: #a78bfa;
+        font-size: 12px;
+        line-height: 1.7;
+        text-align: center;
+    }
+
+    .back-wrapper {
+        text-align: center;
+        margin-top: 18px;
+    }
+
+    .back-button {
+        display: inline-block;
+        text-decoration: none;
+        color: white;
+        border: 1px solid #a855f7;
+        border-radius: 11px;
+        padding: 11px 24px;
+        background: linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+        font-size: 14px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .back-button:hover {
+        filter: brightness(1.15);
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            width: 94%;
+            margin: 20px auto;
+        }
+
+        .card {
+            padding: 25px 18px;
+        }
+
+        .button-row {
+            flex-direction: column;
+        }
+
+        .result-header {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .copy-btn {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>CSS Selector to XPath Translator</h1>
+
+        <p class="description">
+            Ubah CSS Selector menjadi XPath untuk kebutuhan automation
+            testing seperti Selenium, Puppeteer, Playwright, dan tools
+            browser automation lainnya.
+        </p>
+
+        <label class="label" for="cssSelector">
+            CSS Selector
+        </label>
+
+        <textarea
+            id="cssSelector"
+            placeholder="Contoh: #login-button"
+            spellcheck="false"
+        ></textarea>
+
+        <div class="example-box">
+            Contoh selector:
+            <br>
+            <code>#login-button</code>
+            &nbsp; • &nbsp;
+            <code>.btn.primary</code>
+            &nbsp; • &nbsp;
+            <code>input[name="email"]</code>
+            &nbsp; • &nbsp;
+            <code>div.container &gt; button</code>
+        </div>
+
+        <div class="button-row">
+            <button onclick="convertSelector()">
+                Convert to XPath
+            </button>
+
+            <button
+                class="secondary"
+                onclick="clearAll()"
+            >
+                Clear
+            </button>
+        </div>
+
+        <div class="result-section">
+
+            <div class="result-header">
+                <span class="label">
+                    XPath Result
+                </span>
+
+                <button
+                    class="copy-btn"
+                    onclick="copyXPath()"
+                >
+                    Copy XPath
+                </button>
+            </div>
+
+            <div
+                id="result"
+                class="result"
+            >Hasil XPath akan muncul di sini...</div>
+
+            <div
+                id="status"
+                class="status"
+            ></div>
+
+        </div>
+
+        <div class="info">
+            Client-side tool • Tidak mengirim selector ke server
+            • Cocok untuk Selenium, Puppeteer & Playwright
+        </div>
+
+    </div>
+
+    <div class="back-wrapper">
+        <a
+            href="index3.html"
+            class="back-button"
+        >
+            ← Kembali
+        </a>
+    </div>
+
+</div>
+
+<script>
+function escapeXPathString(value) {
+    if (!value.includes("'")) {
+        return "'" + value + "'";
+    }
+
+    if (!value.includes('"')) {
+        return '"' + value + '"';
+    }
+
+    const parts = value.split("'");
+
+    return "concat(" +
+        parts.map((part, index) => {
+            const item = "'" + part + "'";
+
+            if (index < parts.length - 1) {
+                return item + ', "\'", ';
+            }
+
+            return item;
+        }).join("") +
+        ")";
+}
+
+function cssAttributeToXPath(attribute) {
+
+    const match = attribute.match(
+        /^([^\s~|^$*!=]+)\s*(?:(\^=|\$=|\*=|~=|\|=|=|!=)\s*(?:"([^"]*)"|'([^']*)'|([^\s]+)))?$/
+    );
+
+    if (!match) {
+        return null;
+    }
+
+    const name = match[1];
+    const operator = match[2];
+    const value =
+        match[3] ??
+        match[4] ??
+        match[5];
+
+    if (!operator) {
+        return "@" + name;
+    }
+
+    const escaped = escapeXPathString(value);
+
+    switch (operator) {
+
+        case "=":
+            return "@" + name + "=" + escaped;
+
+        case "!=":
+            return "@" + name + "!=" + escaped;
+
+        case "^=":
+            return "starts-with(@" + name + "," + escaped + ")";
+
+        case "$=":
+            return "substring(@" + name +
+                ", string-length(@" + name +
+                ") - string-length(" + escaped +
+                ") + 1) = " + escaped;
+
+        case "*=":
+            return "contains(@" + name + "," + escaped + ")";
+
+        case "~=":
+            return "contains(concat(' ', normalize-space(@" +
+                name +
+                "), ' '), concat(' ', " +
+                escaped +
+                ", ' '))";
+
+        case "|=":
+            return "(@" + name +
+                "=" + escaped +
+                " or starts-with(@" +
+                name +
+                ", concat(" +
+                escaped +
+                ", '-')))";
+
+        default:
+            return null;
+    }
+}
+
+function parseSimpleSelector(selector) {
+
+    selector = selector.trim();
+
+    if (!selector) {
+        return "*";
+    }
+
+    let position = 0;
+
+    let tag = "*";
+
+    const tagMatch = selector.match(
+        /^([a-zA-Z][\w-]*|\*)/
+    );
+
+    if (tagMatch) {
+        tag = tagMatch[1];
+        position = tagMatch[0].length;
+    }
+
+    let predicates = [];
+
+    while (position < selector.length) {
+
+        const remaining = selector.slice(position);
+
+        if (remaining[0] === "#") {
+
+            const match = remaining.match(
+                /^#([\w-]+)/
+            );
+
+            if (!match) {
+                throw new Error(
+                    "ID selector tidak valid."
+                );
+            }
+
+            predicates.push(
+                "@id=" +
+                escapeXPathString(match[1])
+            );
+
+            position += match[0].length;
+            continue;
+        }
+
+        if (remaining[0] === ".") {
+
+            const match = remaining.match(
+                /^\.([\w-]+)/
+            );
+
+            if (!match) {
+                throw new Error(
+                    "Class selector tidak valid."
+                );
+            }
+
+            predicates.push(
+                "contains(concat(' ', normalize-space(@class), ' '), " +
+                escapeXPathString(" " + match[1] + " ") +
+                ")"
+            );
+
+            position += match[0].length;
+            continue;
+        }
+
+        if (remaining[0] === "[") {
+
+            let end = -1;
+            let quote = null;
+
+            for (let i = 1; i < remaining.length; i++) {
+
+                const char = remaining[i];
+
+                if ((char === "'" || char === '"')) {
+
+                    if (quote === null) {
+                        quote = char;
+                    } else if (quote === char) {
+                        quote = null;
+                    }
+
+                } else if (
+                    char === "]" &&
+                    quote === null
+                ) {
+                    end = i;
+                    break;
+                }
+            }
+
+            if (end === -1) {
+                throw new Error(
+                    "Attribute selector tidak tertutup."
+                );
+            }
+
+            const attribute =
+                remaining.slice(1, end).trim();
+
+            const xpathAttribute =
+                cssAttributeToXPath(attribute);
+
+            if (!xpathAttribute) {
+                throw new Error(
+                    "Attribute selector tidak didukung: [" +
+                    attribute +
+                    "]"
+                );
+            }
+
+            predicates.push(
+                xpathAttribute
+            );
+
+            position += end + 1;
+            continue;
+        }
+
+        if (remaining.startsWith(":first-child")) {
+
+            predicates.push(
+                "count(preceding-sibling::*)=0"
+            );
+
+            position += 12;
+            continue;
+        }
+
+        if (remaining.startsWith(":last-child")) {
+
+            predicates.push(
+                "count(following-sibling::*)=0"
+            );
+
+            position += 11;
+            continue;
+        }
+
+        if (remaining.startsWith(":only-child")) {
+
+            predicates.push(
+                "count(preceding-sibling::*)=0 and " +
+                "count(following-sibling::*)=0"
+            );
+
+            position += 11;
+            continue;
+        }
+
+        if (remaining.startsWith(":checked")) {
+
+            predicates.push(
+                "@checked"
+            );
+
+            position += 8;
+            continue;
+        }
+
+        if (remaining.startsWith(":disabled")) {
+
+            predicates.push(
+                "@disabled"
+            );
+
+            position += 9;
+            continue;
+        }
+
+        if (remaining.startsWith(":enabled")) {
+
+            predicates.push(
+                "not(@disabled)"
+            );
+
+            position += 8;
+            continue;
+        }
+
+        if (remaining.startsWith(":required")) {
+
+            predicates.push(
+                "@required"
+            );
+
+            position += 9;
+            continue;
+        }
+
+        if (remaining.startsWith(":selected")) {
+
+            predicates.push(
+                "@selected"
+            );
+
+            position += 9;
+            continue;
+        }
+
+        if (remaining.startsWith(":empty")) {
+
+            predicates.push(
+                "not(node())"
+            );
+
+            position += 6;
+            continue;
+        }
+
+        if (remaining.startsWith(":first-of-type")) {
+
+            predicates.push(
+                "count(preceding-sibling::" +
+                tag +
+                ")=0"
+            );
+
+            position += 14;
+            continue;
+        }
+
+        if (remaining.startsWith(":last-of-type")) {
+
+            predicates.push(
+                "count(following-sibling::" +
+                tag +
+                ")=0"
+            );
+
+            position += 13;
+            continue;
+        }
+
+        throw new Error(
+            "Selector tidak didukung atau format tidak dikenali: " +
+            remaining
+        );
+    }
+
+    if (predicates.length) {
+        return tag + "[" + predicates.join(" and ") + "]";
+    }
+
+    return tag;
+}
+
+function splitSelector(selector) {
+
+    const parts = [];
+
+    let current = "";
+    let bracketDepth = 0;
+    let quote = null;
+    let combinator = null;
+
+    for (let i = 0; i < selector.length; i++) {
+
+        const char = selector[i];
+
+        if ((char === "'" || char === '"')) {
+
+            if (quote === null) {
+                quote = char;
+            } else if (quote === char) {
+                quote = null;
+            }
+
+            current += char;
+            continue;
+        }
+
+        if (quote !== null) {
+            current += char;
+            continue;
+        }
+
+        if (char === "[") {
+            bracketDepth++;
+            current += char;
+            continue;
+        }
+
+        if (char === "]") {
+            bracketDepth--;
+            current += char;
+            continue;
+        }
+
+        if (bracketDepth === 0) {
+
+            if (
+                char === ">" ||
+                char === "+" ||
+                char === "~"
+            ) {
+
+                if (current.trim()) {
+                    parts.push({
+                        selector: current.trim(),
+                        combinator: combinator
+                    });
+
+                    current = "";
+                }
+
+                combinator = char;
+                continue;
+            }
+
+            if (/\s/.test(char)) {
+
+                if (current.trim()) {
+
+                    parts.push({
+                        selector: current.trim(),
+                        combinator: combinator
+                    });
+
+                    current = "";
+                    combinator = " ";
+                }
+
+                continue;
+            }
+        }
+
+        current += char;
+    }
+
+    if (current.trim()) {
+        parts.push({
+            selector: current.trim(),
+            combinator: combinator
+        });
+    }
+
+    return parts;
+}
+
+function convertSelector() {
+
+    const input =
+        document.getElementById("cssSelector")
+            .value
+            .trim();
+
+    const result =
+        document.getElementById("result");
+
+    const status =
+        document.getElementById("status");
+
+    status.style.display = "none";
+
+    if (!input) {
+
+        result.textContent =
+            "Masukkan CSS Selector terlebih dahulu.";
+
+        return;
+    }
+
+    try {
+
+        const groups = input.split(",")
+            .map(item => item.trim())
+            .filter(Boolean);
+
+        const xpaths = groups.map(
+            convertSingleSelector
+        );
+
+        const xpath =
+            xpaths.length === 1
+                ? xpaths[0]
+                : xpaths.join(" | ");
+
+        result.textContent = xpath;
+
+        status.textContent =
+            "✓ Berhasil dikonversi. XPath siap digunakan.";
+
+        status.style.display = "block";
+
+    } catch (error) {
+
+        result.textContent =
+            "Tidak dapat mengonversi selector.";
+
+        status.textContent =
+            "⚠ " + error.message;
+
+        status.style.display = "block";
+    }
+}
+
+function convertSingleSelector(selector) {
+
+    const parts =
+        splitSelector(selector);
+
+    if (!parts.length) {
+        throw new Error(
+            "CSS Selector kosong."
+        );
+    }
+
+    let xpath = "";
+
+    parts.forEach((part, index) => {
+
+        const node =
+            parseSimpleSelector(
+                part.selector
+            );
+
+        if (index === 0) {
+
+            xpath = "//" + node;
+            return;
+        }
+
+        switch (part.combinator) {
+
+            case ">":
+                xpath += "/" + node;
+                break;
+
+            case "+":
+                xpath +=
+                    "/following-sibling::*[1]/self::" +
+                    node;
+                break;
+
+            case "~":
+                xpath +=
+                    "/following-sibling::" +
+                    node;
+                break;
+
+            case " ":
+            default:
+                xpath += "//" + node;
+                break;
+        }
+    });
+
+    return xpath;
+}
+
+async function copyXPath() {
+
+    const result =
+        document.getElementById("result");
+
+    const value =
+        result.textContent.trim();
+
+    if (
+        !value ||
+        value ===
+        "Hasil XPath akan muncul di sini..."
+    ) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(value);
+
+        const status =
+            document.getElementById("status");
+
+        status.textContent =
+            "✓ XPath berhasil disalin ke clipboard.";
+
+        status.style.display = "block";
+
+    } catch (error) {
+
+        const textArea =
+            document.createElement("textarea");
+
+        textArea.value = value;
+
+        document.body.appendChild(textArea);
+
+        textArea.select();
+
+        document.execCommand("copy");
+
+        textArea.remove();
+
+        const status =
+            document.getElementById("status");
+
+        status.textContent =
+            "✓ XPath berhasil disalin.";
+
+        status.style.display = "block";
+    }
+}
+
+function clearAll() {
+
+    document.getElementById("cssSelector")
+        .value = "";
+
+    document.getElementById("result")
+        .textContent =
+        "Hasil XPath akan muncul di sini...";
+
+    document.getElementById("status")
+        .style.display = "none";
+}
+
+document.getElementById("cssSelector")
+    .addEventListener("keydown", function(event) {
+
+        if (
+            event.ctrlKey &&
+            event.key === "Enter"
+        ) {
+            convertSelector();
+        }
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Syslog Severity Filter — WebToolsKita Admin</title>
+
+<meta name="description"
+content="Admin Syslog dan System Event Severity Filter WebToolsKita untuk memfilter event berdasarkan tingkat severity.">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(
+            circle at top,
+            #24103d 0%,
+            #0b0712 48%,
+            #050308 100%
+        );
+    color: #f3e8ff;
+}
+
+.container {
+    width: min(850px, 94%);
+    margin: 30px auto;
+}
+
+.card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 12, 52, 0.97),
+            rgba(9, 5, 16, 0.98)
+        );
+    border: 1px solid #4c1d95;
+    border-radius: 22px;
+    padding: 35px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+h1 {
+    margin: 0 0 15px;
+    text-align: center;
+    font-size: clamp(26px, 5vw, 40px);
+    color: #f3e8ff;
+    line-height: 1.2;
+}
+
+.description {
+    text-align: center;
+    color: #d8b4fe;
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0 auto 28px;
+    max-width: 720px;
+}
+
+.admin-badge {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 18px;
+    padding: 7px 14px;
+    border: 1px solid #7e22ce;
+    border-radius: 999px;
+    background: rgba(107, 33, 168, 0.18);
+    color: #c084fc;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 9px;
+    color: #e9d5ff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    min-height: 220px;
+    padding: 15px;
+    resize: vertical;
+    border: 1px solid #5b21b6;
+    border-radius: 11px;
+    outline: none;
+    background: #0b0712;
+    color: #f3e8ff;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+textarea:focus {
+    border-color: #a855f7;
+    box-shadow:
+        0 0 0 3px rgba(168, 85, 247, 0.12);
+}
+
+.controls {
+    margin-top: 18px;
+}
+
+.severity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 9px;
+}
+
+.severity {
+    padding: 11px 8px;
+    border: 1px solid #4c1d95;
+    border-radius: 10px;
+    background: #10091a;
+    color: #d8b4fe;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.severity:hover {
+    border-color: #a855f7;
+}
+
+.severity.active {
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    border-color: #a855f7;
+    color: #ffffff;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+button {
+    flex: 1;
+    border: 1px solid #a855f7;
+    border-radius: 11px;
+    padding: 13px 18px;
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.secondary {
+    background:
+        linear-gradient(
+            135deg,
+            #3b1761,
+            #581c87
+        );
+}
+
+.result-box {
+    margin-top: 25px;
+}
+
+.result {
+    min-height: 180px;
+    max-height: 500px;
+    overflow: auto;
+    padding: 15px;
+    border: 1px solid #3b1d5d;
+    border-radius: 11px;
+    background: #07040c;
+    color: #d8b4fe;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.count {
+    margin-top: 10px;
+    color: #a78bfa;
+    font-size: 12px;
+}
+
+.info {
+    margin-top: 25px;
+    padding-top: 16px;
+    border-top: 1px solid #3b1d5d;
+    color: #a78bfa;
+    font-size: 12px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.back-wrapper {
+    text-align: center;
+    margin-top: 18px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 11px 24px;
+    border: 1px solid #a855f7;
+    border-radius: 11px;
+    background:
+        linear-gradient(
+            135deg,
+            #6b21a8,
+            #9333ea
+        );
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 650px) {
+
+    .container {
+        width: 94%;
+        margin: 20px auto;
+    }
+
+    .card {
+        padding: 25px 18px;
+    }
+
+    .severity-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .button-row {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="admin-badge">
+            ADMIN
+        </div>
+
+        <h1>Syslog Severity Filter</h1>
+
+        <p class="description">
+            Filter baris system log berdasarkan tingkat severity:
+            Emergency, Alert, Critical, Error, Warning, Notice,
+            Info, dan Debug.
+        </p>
+
+        <label class="label" for="logInput">
+            System Log
+        </label>
+
+        <textarea
+            id="logInput"
+            placeholder="Tempel system log di sini..."
+            spellcheck="false"
+        ></textarea>
+
+        <div class="controls">
+
+            <span class="label">
+                Severity Filter
+            </span>
+
+            <div class="severity-grid">
+
+                <div class="severity active"
+                     data-level="emerg"
+                     onclick="selectSeverity(this)">
+                    Emergency
+                </div>
+
+                <div class="severity active"
+                     data-level="alert"
+                     onclick="selectSeverity(this)">
+                    Alert
+                </div>
+
+                <div class="severity active"
+                     data-level="crit"
+                     onclick="selectSeverity(this)">
+                    Critical
+                </div>
+
+                <div class="severity active"
+                     data-level="err"
+                     onclick="selectSeverity(this)">
+                    Error
+                </div>
+
+                <div class="severity active"
+                     data-level="warning"
+                     onclick="selectSeverity(this)">
+                    Warning
+                </div>
+
+                <div class="severity active"
+                     data-level="notice"
+                     onclick="selectSeverity(this)">
+                    Notice
+                </div>
+
+                <div class="severity active"
+                     data-level="info"
+                     onclick="selectSeverity(this)">
+                    Info
+                </div>
+
+                <div class="severity active"
+                     data-level="debug"
+                     onclick="selectSeverity(this)">
+                    Debug
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="button-row">
+
+            <button onclick="filterLogs()">
+                Filter Log
+            </button>
+
+            <button
+                class="secondary"
+                onclick="clearLogs()"
+            >
+                Clear
+            </button>
+
+        </div>
+
+        <div class="result-box">
+
+            <span class="label">
+                Filter Result
+            </span>
+
+            <div
+                id="result"
+                class="result"
+            >Hasil filter akan muncul di sini...</div>
+
+            <div
+                id="count"
+                class="count"
+            >
+                0 event ditemukan
+            </div>
+
+        </div>
+
+        <div class="info">
+            Pemrosesan dilakukan langsung di browser.
+            Log tidak dikirim ke server.
+        </div>
+
+    </div>
+
+    <div class="back-wrapper">
+        <a
+            href="index18.html"
+            class="back-button"
+        >
+            ← Kembali
+        </a>
+    </div>
+
+</div>
+
+<script>
+const severityPatterns = {
+
+    emerg: [
+        /\bemerg(?:ency)?\b/i,
+        /\bpanic\b/i,
+        /\bEMERG\b/i
+    ],
+
+    alert: [
+        /\balert\b/i,
+        /\bALERT\b/i
+    ],
+
+    crit: [
+        /\bcrit(?:ical)?\b/i,
+        /\bCRIT\b/i
+    ],
+
+    err: [
+        /\berr(?:or)?\b/i,
+        /\bERROR\b/i,
+        /\bfailed\b/i,
+        /\bfailure\b/i
+    ],
+
+    warning: [
+        /\bwarn(?:ing)?\b/i,
+        /\bWARNING\b/i
+    ],
+
+    notice: [
+        /\bnotice\b/i,
+        /\bNOTICE\b/i
+    ],
+
+    info: [
+        /\binfo(?:rmation)?\b/i,
+        /\bINFO\b/i
+    ],
+
+    debug: [
+        /\bdebug\b/i,
+        /\bDEBUG\b/i
+    ]
+};
+
+function selectSeverity(element) {
+
+    element.classList.toggle("active");
+
+    filterLogs();
+}
+
+function detectSeverity(line) {
+
+    const order = [
+        "emerg",
+        "alert",
+        "crit",
+        "err",
+        "warning",
+        "notice",
+        "info",
+        "debug"
+    ];
+
+    for (const level of order) {
+
+        const patterns =
+            severityPatterns[level];
+
+        for (const pattern of patterns) {
+
+            if (pattern.test(line)) {
+                return level;
+            }
+        }
+    }
+
+    return null;
+}
+
+function filterLogs() {
+
+    const input =
+        document.getElementById("logInput")
+            .value;
+
+    const result =
+        document.getElementById("result");
+
+    const count =
+        document.getElementById("count");
+
+    if (!input.trim()) {
+
+        result.textContent =
+            "Masukkan system log terlebih dahulu.";
+
+        count.textContent =
+            "0 event ditemukan";
+
+        return;
+    }
+
+    const selected =
+        Array.from(
+            document.querySelectorAll(
+                ".severity.active"
+            )
+        ).map(
+            element =>
+                element.dataset.level
+        );
+
+    const lines =
+        input.split(/\r?\n/);
+
+    const filtered = lines.filter(line => {
+
+        const severity =
+            detectSeverity(line);
+
+        return severity &&
+               selected.includes(severity);
+    });
+
+    if (!filtered.length) {
+
+        result.textContent =
+            "Tidak ada event yang sesuai dengan filter.";
+
+        count.textContent =
+            "0 event ditemukan";
+
+        return;
+    }
+
+    result.textContent =
+        filtered.join("\n");
+
+    count.textContent =
+        filtered.length +
+        " event ditemukan";
+}
+
+function clearLogs() {
+
+    document.getElementById("logInput")
+        .value = "";
+
+    document.getElementById("result")
+        .textContent =
+        "Hasil filter akan muncul di sini...";
+
+    document.getElementById("count")
+        .textContent =
+        "0 event ditemukan";
+
+    document.querySelectorAll(".severity")
+        .forEach(element => {
+            element.classList.add("active");
+        });
+}
+</script>
+
+</body>
+</html>

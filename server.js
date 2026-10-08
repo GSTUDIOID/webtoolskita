@@ -34,6 +34,36 @@ const {
 // =====================================================
 
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "ganreffafk@gmail.com").toLowerCase().trim();
+
+// =====================================================
+// INDEX 911 — EMERGENCY RECOVERY PASSWORD
+// =====================================================
+
+const INDEX911_PASSWORD =
+    String(process.env.INDEX911_PASSWORD || "").trim();
+
+const index911Sessions = new Map();
+
+function createIndex911Token() {
+    return crypto.randomBytes(32).toString("hex");
+}
+
+function getIndex911Session(token) {
+
+    if (!token) return null;
+
+    const session = index911Sessions.get(token);
+
+    if (!session) return null;
+
+    if (session.expiresAt <= Date.now()) {
+        index911Sessions.delete(token);
+        return null;
+    }
+
+    return session;
+}
+
 const PORT = Number(process.env.PORT || 3000);
 const APP_URL = String(process.env.APP_URL || `http://localhost:${PORT}`).replace(/\/$/, "");
 const IPAYMU_ENV = String(process.env.IPAYMU_ENV || "sandbox").toLowerCase() === "production" ? "production" : "sandbox";
@@ -164,6 +194,142 @@ app.use(express.urlencoded({
     limit: process.env.FORM_LIMIT || "1mb"
 }));
 
+// =====================================================
+// ADMIN PAGE GATE
+// Semua halaman admin wajib melewati index14.html
+// =====================================================
+
+const ADMIN_PROTECTED_PAGES = new Set([
+    "/index18.html",
+    "/index19.html",
+    "/index21.html",
+    "/index23.html",
+    "/index25.html",
+    "/index30.html",
+    "/index31.html",
+    "/index32.html",
+    "/index33.html",
+    "/index38.html",
+    "/index42.html",
+    "/index43.html",
+    "/index44.html",
+    "/index60.html",
+    "/index61.html",
+    "/index62.html",
+    "/index78.html",
+    "/index79.html",
+    "/index80.html",
+    "/index911.html"
+]);
+
+const ADMIN_GATE_COOKIE = "wtk_admin_gate";
+
+function hasAdminGate(req) {
+
+    const cookies =
+        String(
+            req.headers.cookie || ""
+        );
+
+    const match =
+        cookies
+            .split(";")
+            .map(item => item.trim())
+            .find(
+                item =>
+                    item.startsWith(
+                        ADMIN_GATE_COOKIE + "="
+                    )
+            );
+
+    return !!match;
+}
+
+app.use((req, res, next) => {
+
+    res.cookie = function (
+        name,
+        value,
+        options = {}
+    ) {
+
+        let cookie =
+            `${name}=${encodeURIComponent(value)}`;
+
+        if (options.maxAge) {
+            cookie +=
+                `; Max-Age=${Math.floor(
+                    options.maxAge / 1000
+                )}`;
+        }
+
+        if (options.path) {
+            cookie +=
+                `; Path=${options.path}`;
+        }
+
+        if (options.httpOnly) {
+            cookie +=
+                "; HttpOnly";
+        }
+
+        if (options.sameSite) {
+            cookie +=
+                `; SameSite=${options.sameSite}`;
+        }
+
+        if (options.secure) {
+            cookie +=
+                "; Secure";
+        }
+
+        res.append(
+            "Set-Cookie",
+            cookie
+        );
+    };
+
+    next();
+
+});
+
+// =====================================================
+// ADMIN PAGE REDIRECT GATE
+// =====================================================
+
+app.use((req, res, next) => {
+
+    const requestedPath =
+        String(
+            req.path || ""
+        ).toLowerCase();
+
+    if (
+        !ADMIN_PROTECTED_PAGES.has(
+            requestedPath
+        )
+    ) {
+        return next();
+    }
+
+    if (
+        hasAdminGate(req)
+    ) {
+        return next();
+    }
+
+    const returnTo =
+        encodeURIComponent(
+            requestedPath
+        );
+
+    return res.redirect(
+        302,
+        `/index14.html?returnTo=${returnTo}`
+    );
+
+});
+
 // Basic security headers without adding another runtime dependency.
 app.use((req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
@@ -270,6 +436,106 @@ app.get("/sitemap.xml", (req, res) => {
   <url><loc>https://webtoolskita.vercel.app/index59.html</loc></url>
 </urlset>`);
 });
+
+// =====================================================
+// PUBLIC DAILY VISITOR TRACKER
+// =====================================================
+
+app.use((req, res, next) => {
+
+    try {
+
+        const requestPath =
+            String(req.path || "/").toLowerCase();
+
+        const isPageRequest =
+            requestPath === "/" ||
+            /^\/index\d+\.html$/.test(requestPath);
+
+        if (!isPageRequest) {
+            return next();
+        }
+
+        if (
+            typeof ADMIN_PROTECTED_PAGES !== "undefined" &&
+            ADMIN_PROTECTED_PAGES.has(requestPath)
+        ) {
+            return next();
+        }
+
+        const cookies =
+            String(req.headers.cookie || "");
+
+        let visitorKey = cookies
+            .split(";")
+            .map(item => item.trim())
+            .find(
+                item =>
+                    item.startsWith("wtk_visitor_id=")
+            );
+
+        if (visitorKey) {
+
+            visitorKey =
+                decodeURIComponent(
+                    visitorKey
+                        .split("=")
+                        .slice(1)
+                        .join("=")
+                );
+
+        } else {
+
+            visitorKey =
+                crypto
+                    .randomBytes(24)
+                    .toString("hex");
+
+            res.cookie(
+                "wtk_visitor_id",
+                visitorKey,
+                {
+                    maxAge:
+                        365 * 24 * 60 * 60 * 1000,
+                    path: "/",
+                    httpOnly: true,
+                    sameSite: "Lax",
+                    secure:
+                        process.env.NODE_ENV === "production"
+                }
+            );
+        }
+
+        const today =
+            new Date()
+                .toISOString()
+                .slice(0, 10);
+
+        db.prepare(`
+            INSERT OR IGNORE INTO visitor_daily
+            (
+                visit_date,
+                visitor_key
+            )
+            VALUES (?, ?)
+        `).run(
+            today,
+            visitorKey
+        );
+
+    } catch (error) {
+
+        console.error(
+            "VISITOR TRACKER ERROR:",
+            error.message
+        );
+
+    }
+
+    next();
+
+});
+
 app.use(express.static(__dirname));
 
 
@@ -344,6 +610,123 @@ db.exec(`
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 `);
+
+// =====================================================
+// DAILY VISITOR STATISTICS
+// index21.html
+// =====================================================
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS visitor_daily (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        visit_date TEXT NOT NULL,
+        visitor_key TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(visit_date, visitor_key)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_visitor_daily_date
+    ON visitor_daily(visit_date);
+`);
+
+// =====================================================
+// PUBLIC DAILY VISITOR TRACKER
+// =====================================================
+
+app.use((req, res, next) => {
+
+    try {
+
+        const requestPath =
+            String(req.path || "/").toLowerCase();
+
+        const isPageRequest =
+            requestPath === "/" ||
+            /^\/index\d+\.html$/.test(requestPath);
+
+        if (!isPageRequest) {
+            return next();
+        }
+
+        if (
+            typeof ADMIN_PROTECTED_PAGES !== "undefined" &&
+            ADMIN_PROTECTED_PAGES.has(requestPath)
+        ) {
+            return next();
+        }
+
+        const cookies =
+            String(req.headers.cookie || "");
+
+        let visitorKey = cookies
+            .split(";")
+            .map(item => item.trim())
+            .find(
+                item =>
+                    item.startsWith("wtk_visitor_id=")
+            );
+
+        if (visitorKey) {
+
+            visitorKey =
+                decodeURIComponent(
+                    visitorKey
+                        .split("=")
+                        .slice(1)
+                        .join("=")
+                );
+
+        } else {
+
+            visitorKey =
+                crypto
+                    .randomBytes(24)
+                    .toString("hex");
+
+            res.cookie(
+                "wtk_visitor_id",
+                visitorKey,
+                {
+                    maxAge:
+                        365 * 24 * 60 * 60 * 1000,
+                    path: "/",
+                    httpOnly: true,
+                    sameSite: "Lax",
+                    secure:
+                        process.env.NODE_ENV === "production"
+                }
+            );
+        }
+
+        const today =
+            new Date()
+                .toISOString()
+                .slice(0, 10);
+
+        db.prepare(`
+            INSERT OR IGNORE INTO visitor_daily
+            (
+                visit_date,
+                visitor_key
+            )
+            VALUES (?, ?)
+        `).run(
+            today,
+            visitorKey
+        );
+
+    } catch (error) {
+
+        console.error(
+            "VISITOR TRACKER ERROR:",
+            error.message
+        );
+
+    }
+
+    next();
+
+});
 
 // =====================================================
 // ADVERTISING SYSTEM
@@ -665,6 +1048,27 @@ db.exec(`
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS system_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        level TEXT DEFAULT 'info',
+        component TEXT NOT NULL,
+        message TEXT NOT NULL,
+        metadata_json TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS webpay_vaults (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE,
+        vault_code TEXT NOT NULL UNIQUE,
+        transfer_code_hash TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+
     CREATE INDEX IF NOT EXISTS idx_users_last_seen ON users(last_seen);
     CREATE INDEX IF NOT EXISTS idx_payments_user ON payment_transactions(user_id);
     CREATE INDEX IF NOT EXISTS idx_payments_status ON payment_transactions(status);
@@ -923,6 +1327,119 @@ async function requireAdmin(
     }
 }
 
+// =====================================================
+// INDEX 911 — EMERGENCY RECOVERY API
+// =====================================================
+
+app.get("/api/core/status", (req, res) => {
+
+    const active =
+        String(
+            process.env.WTK_CORE_ACTIVE || "false"
+        ).toLowerCase() === "true";
+
+    return res.json({
+        success: true,
+        active: active,
+        status: active
+            ? "ACTIVE — LOCKDOWN"
+            : "INACTIVE — NORMAL"
+    });
+
+});
+
+
+app.post("/api/core/recovery/auth", (req, res) => {
+
+    if (!INDEX911_PASSWORD) {
+
+        return res.status(503).json({
+            success: false,
+            message:
+                "Index 911 password belum dikonfigurasi di server."
+        });
+
+    }
+
+    const password =
+        String(req.body?.password || "");
+
+    if (!password) {
+
+        return res.status(400).json({
+            success: false,
+            message:
+                "Password wajib diisi."
+        });
+
+    }
+
+    if (password !== INDEX911_PASSWORD) {
+
+        return res.status(401).json({
+            success: false,
+            message:
+                "Password administrator salah."
+        });
+
+    }
+
+    const recoveryToken =
+        createIndex911Token();
+
+    index911Sessions.set(
+        recoveryToken,
+        {
+            createdAt: Date.now(),
+            expiresAt:
+                Date.now() + (10 * 60 * 1000)
+        }
+    );
+
+    return res.json({
+        success: true,
+        recoveryToken
+    });
+
+});
+
+
+app.post("/api/core/recovery/end", (req, res) => {
+
+    const recoveryToken =
+        String(
+            req.body?.recoveryToken || ""
+        );
+
+    const session =
+        getIndex911Session(
+            recoveryToken
+        );
+
+    if (!session) {
+
+        return res.status(401).json({
+            success: false,
+            message:
+                "Recovery session tidak valid atau sudah kedaluwarsa."
+        });
+
+    }
+
+    process.env.WTK_CORE_ACTIVE =
+        "false";
+
+    index911Sessions.delete(
+        recoveryToken
+    );
+
+    return res.json({
+        success: true,
+        message:
+            "Core Protocol berhasil dihentikan."
+    });
+
+});
 
 // =====================================================
 // VIP MIDDLEWARE
@@ -1711,6 +2228,77 @@ app.get(
                 "Akses admin berhasil"
 
         });
+    }
+);
+
+// =====================================================
+// ADMIN GATE API
+// Digunakan oleh index14.html
+// =====================================================
+
+app.post(
+    "/api/admin/gate",
+    verifyFirebaseToken,
+    requireAdmin,
+    (req, res) => {
+
+        try {
+
+            const gateToken =
+                crypto
+                    .randomBytes(32)
+                    .toString("hex");
+
+            res.cookie(
+                ADMIN_GATE_COOKIE,
+                gateToken,
+                {
+                    maxAge:
+                        30 * 60 * 1000,
+
+                    path:
+                        "/",
+
+                    httpOnly:
+                        true,
+
+                    sameSite:
+                        "Lax",
+
+                    secure:
+                        process.env.NODE_ENV ===
+                        "production"
+                }
+            );
+
+            return res.json({
+
+                success:
+                    true,
+
+                message:
+                    "Admin gate berhasil dibuat"
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "ADMIN GATE ERROR:",
+                error.message
+            );
+
+            return res.status(500).json({
+
+                success:
+                    false,
+
+                message:
+                    "Gagal membuat admin gate"
+
+            });
+
+        }
     }
 );
 
@@ -4713,7 +5301,8 @@ app.post(
 // ============================================================
 // YOUTUBE TO MP3 â€” AUTHORIZED CONVERSION API
 // Advance Tool #11 â€” WebToolsKita
-// Tempel tepat sebelum: // 404 API
+// Tempel tepat sebelum: 
+// 404 API
 // ============================================================
 
 const youtubeMp3Jobs = new Map();
@@ -6952,24 +7541,6 @@ setInterval(
 // 404 API
 // =====================================================
 
-app.use(
-    "/api",
-    (req, res) => {
-
-        res.status(404).json({
-
-            success:
-                false,
-
-            message:
-                "API endpoint tidak ditemukan",
-
-            path:
-                req.originalUrl
-
-        });
-    }
-);
 
 
 // =====================================================
@@ -7012,12 +7583,983 @@ process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 
 // =====================================================
+// INDEX 75 - URL STATUS & REDIRECT CHECKER
+// SERVER SIDE
+// =====================================================
+
+app.get("/api/url-check", async (req, res) => {
+
+    const input =
+        String(req.query.url || "").trim();
+
+    if (!input) {
+
+        return res.status(400).json({
+            success:false,
+            message:"URL wajib diisi."
+        });
+
+    }
+
+    let targetUrl =
+        input;
+
+    if (
+        !/^https?:\/\//i.test(
+            targetUrl
+        )
+    ) {
+
+        targetUrl =
+            "https://" + targetUrl;
+
+    }
+
+    let parsedUrl;
+
+    try {
+
+        parsedUrl =
+            new URL(targetUrl);
+
+    } catch {
+
+        return res.status(400).json({
+            success:false,
+            message:"Format URL tidak valid."
+        });
+
+    }
+
+    if (
+        !["http:","https:"]
+        .includes(
+            parsedUrl.protocol
+        )
+    ) {
+
+        return res.status(400).json({
+            success:false,
+            message:
+                "Hanya HTTP dan HTTPS yang diperbolehkan."
+        });
+
+    }
+
+    const redirectChain = [];
+
+    const maxRedirects = 10;
+
+    let currentUrl =
+        parsedUrl.toString();
+
+    let finalResponse = null;
+
+    try {
+
+        for(
+            let i = 0;
+            i <= maxRedirects;
+            i++
+        ){
+
+            const response =
+                await fetch(
+                    currentUrl,
+                    {
+                        method:"HEAD",
+
+                        redirect:"manual",
+
+                        signal:
+                            AbortSignal.timeout(
+                                10000
+                            ),
+
+                        headers:{
+                            "User-Agent":
+                                "WebToolsKita-URL-Checker/1.0"
+                        }
+                    }
+                );
+
+            const status =
+                response.status;
+
+            const location =
+                response.headers.get(
+                    "location"
+                );
+
+            redirectChain.push({
+
+                step:i + 1,
+
+                url:
+                    currentUrl,
+
+                status:
+                    status,
+
+                statusText:
+                    getHttpStatusText(
+                        status
+                    ),
+
+                location:
+                    location || null
+
+            });
+
+            if(
+                status >= 300 &&
+                status < 400 &&
+                location
+            ){
+
+                if(
+                    i >= maxRedirects
+                ){
+
+                    return res.json({
+
+                        success:true,
+
+                        originalUrl:
+                            targetUrl,
+
+                        finalUrl:
+                            currentUrl,
+
+                        status:
+                            status,
+
+                        statusText:
+                            getHttpStatusText(
+                                status
+                            ),
+
+                        category:
+                            "REDIRECT",
+
+                        redirectCount:
+                            redirectChain.length - 1,
+
+                        redirectChain,
+
+                        error:
+                            "Redirect melebihi batas maksimum."
+
+                    });
+
+                }
+
+                currentUrl =
+                    new URL(
+                        location,
+                        currentUrl
+                    ).toString();
+
+                continue;
+            }
+
+            finalResponse =
+                response;
+
+            break;
+
+        }
+
+        /*
+         * Beberapa server tidak mengizinkan HEAD.
+         * Jika HEAD gagal mendapatkan response yang layak,
+         * coba GET sebagai fallback.
+         */
+
+        if(
+            !finalResponse
+        ){
+
+            const response =
+                await fetch(
+                    currentUrl,
+                    {
+                        method:"GET",
+
+                        redirect:"manual",
+
+                        signal:
+                            AbortSignal.timeout(
+                                10000
+                            ),
+
+                        headers:{
+                            "User-Agent":
+                                "WebToolsKita-URL-Checker/1.0"
+                        }
+                    }
+                );
+
+            finalResponse =
+                response;
+
+        }
+
+        if(
+            !finalResponse
+        ){
+
+            return res.status(502).json({
+
+                success:false,
+
+                message:
+                    "Tidak mendapatkan response dari server tujuan.",
+
+                redirectChain
+
+            });
+
+        }
+
+        const finalStatus =
+            finalResponse.status;
+
+        return res.json({
+
+            success:true,
+
+            originalUrl:
+                targetUrl,
+
+            finalUrl:
+                currentUrl,
+
+            status:
+                finalStatus,
+
+            statusText:
+                getHttpStatusText(
+                    finalStatus
+                ),
+
+            category:
+                getStatusCategory(
+                    finalStatus
+                ),
+
+            redirectCount:
+                Math.max(
+                    0,
+                    redirectChain.length - 1
+                ),
+
+            redirectChain,
+
+            checkedAt:
+                new Date().toISOString()
+
+        });
+
+    } catch(error){
+
+        return res.status(502).json({
+
+            success:false,
+
+            message:
+                "Gagal menghubungi URL tujuan.",
+
+            error:
+                error.name === "TimeoutError"
+                ?
+                "Request timeout."
+                :
+                error.message,
+
+            originalUrl:
+                targetUrl,
+
+            redirectChain
+
+        });
+
+    }
+
+});
+
+
+// =====================================================
+// HTTP STATUS TEXT
+// =====================================================
+
+function getHttpStatusText(status){
+
+    const statuses = {
+
+        200:"OK",
+        201:"Created",
+        202:"Accepted",
+        203:"Non-Authoritative Information",
+        204:"No Content",
+        206:"Partial Content",
+
+        300:"Multiple Choices",
+        301:"Moved Permanently",
+        302:"Found",
+        303:"See Other",
+        304:"Not Modified",
+        307:"Temporary Redirect",
+        308:"Permanent Redirect",
+
+        400:"Bad Request",
+        401:"Unauthorized",
+        402:"Payment Required",
+        403:"Forbidden",
+        404:"Not Found",
+        405:"Method Not Allowed",
+        408:"Request Timeout",
+        409:"Conflict",
+        410:"Gone",
+        413:"Content Too Large",
+        415:"Unsupported Media Type",
+        422:"Unprocessable Content",
+        429:"Too Many Requests",
+
+        500:"Internal Server Error",
+        501:"Not Implemented",
+        502:"Bad Gateway",
+        503:"Service Unavailable",
+        504:"Gateway Timeout",
+        505:"HTTP Version Not Supported"
+
+    };
+
+    return (
+        statuses[status] ||
+        "HTTP Response"
+    );
+
+}
+
+
+// =====================================================
+// STATUS CATEGORY
+// =====================================================
+
+function getStatusCategory(status){
+
+    if(
+        status >= 200 &&
+        status < 300
+    ){
+
+        return "SUCCESS";
+
+    }
+
+    if(
+        status >= 300 &&
+        status < 400
+    ){
+
+        return "REDIRECT";
+
+    }
+
+    if(
+        status >= 400 &&
+        status < 500
+    ){
+
+        return "CLIENT ERROR";
+
+    }
+
+    if(
+        status >= 500 &&
+        status < 600
+    ){
+
+        return "SERVER ERROR";
+
+    }
+
+    return "UNKNOWN";
+
+}
+
+// =====================================================
+// WEBPAY VIRTUAL VAULT API
+// =====================================================
+
+function getWebpayVaultForUser(userId) {
+    return db.prepare(`
+        SELECT
+            id,
+            user_id,
+            vault_code,
+            status,
+            created_at,
+            updated_at
+        FROM webpay_vaults
+        WHERE user_id = ?
+    `).get(userId) || null;
+}
+
+function getWebpayVaultByCode(vaultCode) {
+    return db.prepare(`
+        SELECT
+            id,
+            user_id,
+            vault_code,
+            status,
+            created_at,
+            updated_at
+        FROM webpay_vaults
+        WHERE vault_code = ?
+    `).get(vaultCode) || null;
+}
+
+app.get("/api/webpay/vault", verifyFirebaseToken, (req, res) => {
+    try {
+        const user = getLocalUser(req);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Login diperlukan"
+            });
+        }
+
+        const vault = getWebpayVaultForUser(user.id);
+
+        return res.json({
+            success: true,
+            vault
+        });
+
+    } catch (error) {
+        console.error("WEBPAY VAULT GET ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Gagal mengambil data Vault"
+        });
+    }
+});
+
+app.post("/api/webpay/vault", verifyFirebaseToken, (req, res) => {
+    try {
+        const user = getLocalUser(req);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Login diperlukan"
+            });
+        }
+
+        const existing = getWebpayVaultForUser(user.id);
+
+        if (existing) {
+            return res.json({
+                success: true,
+                created: false,
+                vault: existing
+            });
+        }
+
+        const crypto = require("crypto");
+
+        const vaultCode =
+            "VLT-" +
+            crypto.randomBytes(6).toString("hex").toUpperCase();
+
+        const transferCode =
+            "TRF-" +
+            crypto.randomBytes(6).toString("hex").toUpperCase();
+
+        const transferCodeHash =
+            crypto
+                .createHash("sha256")
+                .update(transferCode)
+                .digest("hex");
+
+        db.prepare(`
+            INSERT INTO webpay_vaults (
+                user_id,
+                vault_code,
+                transfer_code_hash,
+                status
+            )
+            VALUES (?, ?, ?, 'active')
+        `).run(
+            user.id,
+            vaultCode,
+            transferCodeHash
+        );
+
+        const vault = getWebpayVaultForUser(user.id);
+
+        return res.status(201).json({
+            success: true,
+            created: true,
+            vault,
+            transferCode
+        });
+
+    } catch (error) {
+        console.error("WEBPAY VAULT CREATE ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Gagal membuat Vault"
+        });
+    }
+});
+
+// =====================================================
+// WEBPAY VIRTUAL TRANSFER
+// =====================================================
+
+app.post("/api/webpay/transfer", verifyFirebaseToken, (req, res) => {
+    try {
+        const sender = getLocalUser(req);
+
+        if (!sender) {
+            return res.status(401).json({
+                success: false,
+                message: "Login diperlukan"
+            });
+        }
+
+        const {
+            recipientVaultCode,
+            amount,
+            transferCode,
+            note
+        } = req.body || {};
+
+        const numericAmount = Number(amount);
+
+        if (!recipientVaultCode) {
+            return res.status(400).json({
+                success: false,
+                message: "Vault Code penerima wajib diisi"
+            });
+        }
+
+        if (!transferCode) {
+            return res.status(400).json({
+                success: false,
+                message: "Transfer Code wajib diisi"
+            });
+        }
+
+        if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Nominal transfer tidak valid"
+            });
+        }
+
+        const senderVault = getWebpayVaultForUser(sender.id);
+
+        if (!senderVault || senderVault.status !== "active") {
+            return res.status(400).json({
+                success: false,
+                message: "Vault pengirim belum aktif"
+            });
+        }
+
+        const crypto = require("crypto");
+
+        const transferCodeHash = crypto
+            .createHash("sha256")
+            .update(String(transferCode))
+            .digest("hex");
+
+        const storedHash = db.prepare(`
+            SELECT transfer_code_hash
+            FROM webpay_vaults
+            WHERE user_id = ?
+        `).get(sender.id);
+
+        if (
+            !storedHash ||
+            transferCodeHash !== storedHash.transfer_code_hash
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Transfer Code salah"
+            });
+        }
+
+        const recipientVault =
+            getWebpayVaultByCode(
+                String(recipientVaultCode).trim().toUpperCase()
+            );
+
+        if (!recipientVault || recipientVault.status !== "active") {
+            return res.status(404).json({
+                success: false,
+                message: "Vault Code penerima tidak ditemukan"
+            });
+        }
+
+        if (recipientVault.user_id === sender.id) {
+            return res.status(400).json({
+                success: false,
+                message: "Tidak dapat transfer ke Vault sendiri"
+            });
+        }
+
+        const senderWallet =
+            ensureWalletForUser(sender.id);
+
+        const recipientUserId =
+            recipientVault.user_id;
+
+        const recipientWallet =
+            ensureWalletForUser(recipientUserId);
+
+        if (Number(senderWallet.balance) < numericAmount) {
+            return res.status(400).json({
+                success: false,
+                message: "Saldo Virtual tidak mencukupi"
+            });
+        }
+
+        const transferReference =
+            "WEBPAY-" +
+            crypto.randomBytes(8).toString("hex").toUpperCase();
+
+        const executeTransfer = db.transaction(() => {
+
+            db.prepare(`
+                UPDATE wallet_accounts
+                SET balance = balance - ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            `).run(
+                numericAmount,
+                senderWallet.id
+            );
+
+            db.prepare(`
+                UPDATE wallet_accounts
+                SET balance = balance + ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            `).run(
+                numericAmount,
+                recipientWallet.id
+            );
+
+            db.prepare(`
+                INSERT INTO wallet_ledger (
+                    wallet_id,
+                    direction,
+                    amount,
+                    balance_after,
+                    type,
+                    reference,
+                    description
+                )
+                VALUES (?, 'debit', ?, ?, 'transfer', ?, ?)
+            `).run(
+                senderWallet.id,
+                numericAmount,
+                Number(senderWallet.balance) - numericAmount,
+                transferReference,
+                note || "WEBPAY Virtual Transfer"
+            );
+
+            db.prepare(`
+                INSERT INTO wallet_ledger (
+                    wallet_id,
+                    direction,
+                    amount,
+                    balance_after,
+                    type,
+                    reference,
+                    description
+                )
+                VALUES (?, 'credit', ?, ?, 'transfer', ?, ?)
+            `).run(
+                recipientWallet.id,
+                numericAmount,
+                Number(recipientWallet.balance) + numericAmount,
+                transferReference,
+                note || "WEBPAY Virtual Transfer"
+            );
+
+            db.prepare(`
+                INSERT INTO wallet_transfers (
+                    sender_user_id,
+                    receiver_user_id,
+                    amount,
+                    note,
+                    status
+                )
+                VALUES (?, ?, ?, ?, 'completed')
+            `).run(
+                sender.id,
+                recipientUserId,
+                numericAmount,
+                note || "WEBPAY Virtual Transfer"
+            );
+        });
+
+        executeTransfer();
+
+        const updatedSenderWallet =
+            ensureWalletForUser(sender.id);
+
+        return res.json({
+            success: true,
+            message: "Transfer Virtual berhasil",
+            reference: transferReference,
+            amount: numericAmount,
+            senderVaultCode: senderVault.vault_code,
+            recipientVaultCode: recipientVault.vault_code,
+            balance: updatedSenderWallet.balance
+        });
+
+    } catch (error) {
+        console.error("WEBPAY TRANSFER ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Transfer Virtual gagal"
+        });
+    }
+});
+
+// =====================================================
+// WEBPAY VIRTUAL TRANSFER
+// =====================================================
+
+
+app.get("/api/webpay/history", verifyFirebaseToken, (req, res) => {
+    try {
+        const user = getLocalUser(req);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Login diperlukan"
+            });
+        }
+
+        const history = db.prepare(`
+            SELECT
+                wl.id,
+                wl.type,
+                wl.direction,
+                wl.amount,
+                wl.balance_after,
+                wl.reference_type,
+                wl.reference_id,
+                wl.description,
+                wl.created_at
+            FROM wallet_ledger wl
+            INNER JOIN wallet_accounts wa
+                ON wa.id = wl.wallet_id
+            WHERE wa.user_id = ?
+              AND wl.reference_type = 'webpay_transfer'
+            ORDER BY wl.id DESC
+            LIMIT 50
+        `).all(user.id);
+
+        return res.json({
+            success: true,
+            history
+        });
+
+    } catch (error) {
+        console.error("WEBPAY HISTORY ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Gagal mengambil history WEBPAY"
+        });
+    }
+});
+
+// =====================================================
+
+// =====================================================
+// =====================================================
+// ADMIN VISITOR STATISTICS
+// index21.html
+// =====================================================
+
+app.get(
+    "/api/admin/visitor-statistics",
+    verifyFirebaseToken,
+    requireAdmin,
+    (req, res) => {
+
+        try {
+
+            const today =
+                new Date()
+                    .toISOString()
+                    .slice(0, 10);
+
+            const dateOffset = (days) => {
+
+                const date = new Date();
+
+                date.setDate(
+                    date.getDate() - days
+                );
+
+                return date
+                    .toISOString()
+                    .slice(0, 10);
+            };
+
+            const yesterday =
+                dateOffset(1);
+
+            const sevenDaysAgo =
+                dateOffset(6);
+
+            const thirtyDaysAgo =
+                dateOffset(29);
+
+            const getCount = (date) => {
+
+                const result =
+                    db.prepare(`
+                        SELECT COUNT(*) AS total
+                        FROM visitor_daily
+                        WHERE visit_date = ?
+                    `)
+                    .get(date);
+
+                return Number(
+                    result?.total || 0
+                );
+            };
+
+            const getRangeCount = (startDate) => {
+
+                const result =
+                    db.prepare(`
+                        SELECT COUNT(*) AS total
+                        FROM visitor_daily
+                        WHERE visit_date >= ?
+                    `)
+                    .get(startDate);
+
+                return Number(
+                    result?.total || 0
+                );
+            };
+
+            const daily =
+                db.prepare(`
+                    SELECT
+                        visit_date AS date,
+                        COUNT(*) AS visitors
+                    FROM visitor_daily
+                    GROUP BY visit_date
+                    ORDER BY visit_date DESC
+                    LIMIT 30
+                `)
+                .all()
+                .map(row => ({
+
+                    date:
+                        row.date,
+
+                    visitors:
+                        Number(
+                            row.visitors || 0
+                        )
+
+                }));
+
+            res.json({
+
+                success:
+                    true,
+
+                today:
+                    getCount(today),
+
+                yesterday:
+                    getCount(yesterday),
+
+                last7Days:
+                    getRangeCount(
+                        sevenDaysAgo
+                    ),
+
+                last30Days:
+                    getRangeCount(
+                        thirtyDaysAgo
+                    ),
+
+                daily
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "VISITOR STATISTICS ERROR:",
+                error
+            );
+
+            res.status(500).json({
+
+                success:
+                    false,
+
+                message:
+                    "Gagal mengambil statistik pengunjung"
+
+            });
+        }
+    }
+);
+
+
+
+// 404 API
+// =====================================================
+app.use(
+    "/api",
+    (req, res) => {
+
+        res.status(404).json({
+
+            success:
+                false,
+
+            message:
+                "API endpoint tidak ditemukan",
+
+            path:
+                req.originalUrl
+
+        });
+    }
+);
+
 // START SERVER
 // =====================================================
 
 if (require.main === module) {
 
-    app.listen(
+
+    
+app.listen(
         PORT,
         () => {
 
@@ -7090,6 +8632,11 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
+
+
+
+
 
 
 

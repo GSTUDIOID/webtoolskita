@@ -1,658 +1,738 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infrastructure-as-Code (IaC) Drift Detection Simulator - WebToolsKita</title>
 
-<title>APEX CROWN ENTERPRISE - CEO Command Center</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-<style>
-*{
-box-sizing:border-box;
-font-family:Segoe UI,Arial,sans-serif
-}
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, #24104f 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #102d52 0%, transparent 35%),
+                #090914;
+            color: #ffffff;
+            min-height: 100vh;
+        }
 
-body{
-margin:0;
-background:
-radial-gradient(circle at top,#35105f,#050505 75%);
-color:white
-}
+        .container {
+            width: min(1100px, 92%);
+            margin: 0 auto;
+            padding: 35px 0 50px;
+        }
 
-.layout{
-display:flex
-}
+        .header {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.25);
+        }
 
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: clamp(25px, 4vw, 38px);
+            line-height: 1.2;
+        }
 
-/* SIDEBAR */
+        .header p {
+            margin: 0;
+            color: #c9c7d8;
+            line-height: 1.7;
+        }
 
-.sidebar{
-position:fixed;
-width:280px;
-height:100vh;
-overflow-y:auto;
-background:rgba(5,5,15,.95);
-border-right:1px solid #3c2465;
-padding:20px
-}
+        .badge {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(120, 100, 255, 0.18);
+            border: 1px solid rgba(150, 135, 255, 0.3);
+            color: #cfc8ff;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
 
-.sidebar::-webkit-scrollbar{
-width:6px
-}
+        .panel {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.11);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(12px);
+        }
 
-.sidebar::-webkit-scrollbar-thumb{
-background:#8b35ff;
-border-radius:20px
-}
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 21px;
+        }
 
-.logo{
-text-align:center;
-margin-bottom:25px
-}
+        .panel-description {
+            margin: 0 0 20px;
+            color: #aaa8bc;
+            line-height: 1.6;
+        }
 
-.logo h1{
-color:#d58cff;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
 
-.logo span{
-color:#ffd34d;
-}
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
+        .field.full {
+            grid-column: 1 / -1;
+        }
 
-.menu button{
-width:100%;
-padding:13px;
-margin-bottom:10px;
-border:0;
-border-radius:12px;
-background:rgba(255,255,255,.08);
-color:white;
-cursor:pointer;
-text-align:left;
-transition:.3s;
-}
+        label {
+            font-size: 13px;
+            color: #c8c5d5;
+            font-weight: bold;
+        }
 
-.menu button:hover,
-.menu button.active{
-background:linear-gradient(90deg,#7b2cff,#00c8ff);
-}
+        textarea,
+        input {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.28);
+            color: #ffffff;
+            padding: 13px 14px;
+            outline: none;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.55;
+            resize: vertical;
+        }
 
+        textarea {
+            min-height: 230px;
+        }
 
+        input {
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-.profile{
-margin-top:25px;
-padding:15px;
-background:rgba(255,255,255,.08);
-border-radius:15px;
-font-size:13px;
-}
+        textarea:focus,
+        input:focus {
+            border-color: rgba(150,135,255,0.65);
+            box-shadow: 0 0 0 3px rgba(120,100,255,0.10);
+        }
 
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
-/* CONTENT */
+        button {
+            border: 0;
+            border-radius: 11px;
+            padding: 12px 18px;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: bold;
+            background: linear-gradient(135deg, #6d5dfc, #4d8cff);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
 
-.content{
-margin-left:280px;
-padding:25px;
-width:100%;
-}
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
 
+        button.secondary {
+            background: rgba(255,255,255,0.09);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
 
-.back{
-display:inline-block;
-padding:10px 18px;
-background:#111;
-border-radius:12px;
-color:white;
-text-decoration:none;
-margin-bottom:20px
-}
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
 
+        .stat {
+            padding: 17px;
+            border-radius: 14px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.09);
+        }
 
-.header{
-padding:30px;
-border-radius:25px;
-background:
-linear-gradient(
-120deg,
-rgba(130,40,255,.35),
-rgba(0,200,255,.15)
-);
-border:1px solid #543080;
-}
+        .stat span {
+            display: block;
+            color: #9996aa;
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
 
+        .stat strong {
+            font-size: 24px;
+        }
 
-.header h1{
-font-size:36px;
-}
+        .result {
+            display: none;
+        }
 
-.gold{
-color:#ffd34d;
-}
+        .result.visible {
+            display: block;
+        }
 
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
 
-.badge{
-display:inline-block;
-padding:8px 15px;
-border-radius:20px;
-background:#064;
-color:#8cffbb;
-}
+        .status.clean {
+            background: rgba(50, 200, 120, 0.12);
+            border: 1px solid rgba(50, 200, 120, 0.25);
+            color: #79e6ad;
+        }
 
+        .status.drift {
+            background: rgba(255, 170, 70, 0.12);
+            border: 1px solid rgba(255, 170, 70, 0.25);
+            color: #ffc477;
+        }
 
-/* PAGE */
+        .status.invalid {
+            background: rgba(255, 80, 100, 0.12);
+            border: 1px solid rgba(255, 80, 100, 0.25);
+            color: #ff9ca8;
+        }
 
-.page{
-display:none;
-margin-top:25px;
-}
+        .drift-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.page.active{
-display:block;
-}
+        .drift-item {
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 13px;
+            padding: 15px;
+            background: rgba(0,0,0,0.18);
+        }
 
+        .drift-item .key {
+            font-family: Consolas, Monaco, monospace;
+            font-weight: bold;
+            color: #d8d3ff;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
 
-.cards{
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
+        .values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
+        .value-box {
+            padding: 11px;
+            border-radius: 9px;
+            background: rgba(255,255,255,0.045);
+        }
 
-.card{
-background:rgba(255,255,255,.08);
-padding:20px;
-border-radius:20px;
-border:1px solid rgba(255,255,255,.15);
-}
+        .value-box small {
+            display: block;
+            color: #9290a1;
+            margin-bottom: 5px;
+        }
 
+        .value-box code {
+            color: #eeeeee;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
 
-.card h2{
-color:#d58cff;
-}
+        .info {
+            color: #a9a6b8;
+            font-size: 13px;
+            line-height: 1.65;
+        }
 
+        .footer {
+            text-align: center;
+            color: #777486;
+            font-size: 12px;
+            margin-top: 25px;
+        }
 
-.number{
-font-size:32px;
-font-weight:bold;
-color:#ffd34d;
-}
+        .back-button {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
 
+        .back-button:hover {
+            background: rgba(255,255,255,0.13);
+        }
 
-input,select,textarea{
-width:100%;
-padding:12px;
-margin:8px 0;
-background:#080808;
-border:1px solid #333;
-color:white;
-border-radius:10px;
-}
+        @media (max-width: 800px) {
+            .grid,
+            .summary,
+            .values {
+                grid-template-columns: 1fr;
+            }
 
-
-.btn{
-padding:12px 20px;
-border:0;
-border-radius:12px;
-background:linear-gradient(90deg,#792cff,#00c8ff);
-color:white;
-cursor:pointer;
-}
-
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-
-td,th{
-padding:12px;
-border-bottom:1px solid #333;
-}
-
-.green{
-color:#00ff99;
-}
-
-.yellow{
-color:#ffd34d;
-}
-
-</style>
+            .field.full {
+                grid-column: auto;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-<div class="layout">
-
-
-<aside class="sidebar">
-
-
-<div class="logo">
-<h1>
-👑 APEX <span>CROWN</span>
-</h1>
-
-<p>
-CEO COMMAND CENTER v3.0
-</p>
-</div>
-
-
-<div class="menu">
-
-<button class="active" onclick="openPage('dashboard',this)">
-🏠 Executive Dashboard
-</button>
-
-
-<button onclick="openPage('agency',this)">
-🏢 Agency Network
-</button>
-
-
-<button onclick="openPage('operation',this)">
-📦 Operation Control
-</button>
-
-
-<button onclick="openPage('audit',this)">
-🛡 Sales Audit
-</button>
-
-
-<button onclick="openPage('revenue',this)">
-📈 Revenue Terminal
-</button>
-
-
-<button onclick="openPage('payment',this)">
-💳 Financial Center
-</button>
-
-
-<button onclick="openPage('security',this)">
-🔐 CEO Security
-</button>
-
-
-<button onclick="openPage('admin',this)">
-👨‍💼 Admin Command
-</button>
-
-
-</div>
-
-
-<div class="profile">
-
-<b>CEO STATUS</b>
-
-<br><br>
-
-🟢 Authorized
-
-<br>
-
-Network:
-Secured
-
-<br>
-
-Access:
-Full Control
-
-</div>
-
-
-</aside>
-
-
-
-
-
-<main class="content">
-
-
-<a href="index3.html" class="back">
-⬅ Kembali
-</a>
-
-
-<div class="header">
-
-<h1>
-WELCOME BACK
-<br>
-<span class="gold">
-PRESIDENTIAL CEO
-</span>
-</h1>
-
-<p>
-APEX CROWN ENTERPRISE
-<br>
-Enterprise Revenue Management System
-</p>
-
-
-<span class="badge">
-SECURED EXECUTIVE ENVIRONMENT
-</span>
-
-</div>
-
-
-
-
-
-<div id="dashboard" class="page active">
-
-<h2>Executive Dashboard</h2>
-
-<div class="cards">
-
-
-<div class="card">
-<h2>Total Revenue</h2>
-<div class="number">Rp 0</div>
-</div>
-
-
-<div class="card">
-<h2>Agency Active</h2>
-<div class="number">0</div>
-</div>
-
-
-<div class="card">
-<h2>Audit Pending</h2>
-<div class="number">0</div>
-</div>
-
-
-<div class="card">
-<h2>Commission</h2>
-<div class="number">Rp 0</div>
-</div>
-
+<div class="container">
+
+    <a href="index18.html" class="back-button">← Kembali</a>
+
+    <div class="header">
+        <div class="badge">WEBTOOLSKITA • INFRASTRUCTURE TOOL</div>
+
+        <h1>Infrastructure-as-Code (IaC) Drift Detection Simulator</h1>
+
+        <p>
+            Membandingkan spesifikasi konfigurasi infrastruktur dengan status aktual
+            untuk mendeteksi configuration drift.
+        </p>
+    </div>
+
+    <div class="panel">
+        <h2>Configuration Input</h2>
+
+        <p class="panel-description">
+            Masukkan konfigurasi yang diharapkan dan konfigurasi aktual dalam format JSON.
+            Simulator akan membandingkan keduanya dan menunjukkan perbedaan konfigurasi.
+        </p>
+
+        <div class="grid">
+
+            <div class="field">
+                <label for="desiredConfig">Desired Configuration / IaC</label>
+
+                <textarea id="desiredConfig">{
+  "server": {
+    "instance_type": "t3.medium",
+    "region": "ap-southeast-1",
+    "count": 3
+  },
+  "database": {
+    "engine": "postgresql",
+    "version": "16",
+    "storage_gb": 100
+  },
+  "network": {
+    "port": 443,
+    "protocol": "https"
+  }
+}</textarea>
+            </div>
+
+            <div class="field">
+                <label for="actualConfig">Actual Infrastructure State</label>
+
+                <textarea id="actualConfig">{
+  "server": {
+    "instance_type": "t3.small",
+    "region": "ap-southeast-1",
+    "count": 2
+  },
+  "database": {
+    "engine": "postgresql",
+    "version": "15",
+    "storage_gb": 100
+  },
+  "network": {
+    "port": 443,
+    "protocol": "https"
+  }
+}</textarea>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button onclick="detectDrift()">Detect Configuration Drift</button>
+            <button class="secondary" onclick="loadExample()">Load Example</button>
+            <button class="secondary" onclick="clearInputs()">Clear</button>
+        </div>
+    </div>
+
+    <div class="panel result" id="resultPanel">
+
+        <h2>Drift Detection Result</h2>
+
+        <div id="status"></div>
+
+        <div class="summary">
+            <div class="stat">
+                <span>Expected Keys</span>
+                <strong id="expectedCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Actual Keys</span>
+                <strong id="actualCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Drifted Keys</span>
+                <strong id="driftCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Match Rate</span>
+                <strong id="matchRate">0%</strong>
+            </div>
+        </div>
+
+        <div id="driftList" class="drift-list"></div>
+
+    </div>
+
+    <div class="panel">
+        <h2>How It Works</h2>
+
+        <p class="info">
+            Simulator ini menggunakan pendekatan deep comparison untuk membandingkan
+            struktur konfigurasi. Perbedaan dapat berupa nilai yang berubah,
+            property yang hilang, atau property baru yang muncul pada kondisi aktual.
+        </p>
+
+        <p class="info">
+            Tool ini berjalan sepenuhnya di browser. Data konfigurasi yang dimasukkan
+            tidak dikirim ke server oleh simulator ini.
+        </p>
+    </div>
+
+    <div class="footer">
+        WebToolsKita • Infrastructure-as-Code (IaC) Drift Detection Simulator
+    </div>
 
 </div>
-
-</div>
-
-
-
-
-
-<div id="agency" class="page">
-
-<div class="card">
-
-<h2>🏢 Agency Network</h2>
-
-<input placeholder="Nama Perusahaan">
-
-<input placeholder="Cabang">
-
-<input placeholder="Kabupaten">
-
-<input placeholder="Agency Code">
-
-
-<button class="btn">
-Connect Agency
-</button>
-
-</div>
-
-</div>
-
-
-
-
-
-<div id="operation" class="page">
-
-<div class="card">
-
-<h2>
-📦 Operation Control
-</h2>
-
-<p>
-Monitoring aktivitas agency dan pegawai.
-</p>
-
-<table>
-
-<tr>
-<th>Agency</th>
-<th>Status</th>
-</tr>
-
-<tr>
-<td>-</td>
-<td class="green">Online</td>
-</tr>
-
-</table>
-
-</div>
-
-</div>
-
-
-
-
-
-<div id="audit" class="page">
-
-<div class="card">
-
-<h2>
-🛡 Sales Audit Center
-</h2>
-
-
-<table>
-
-<tr>
-<th>Produk</th>
-<th>Nominal</th>
-<th>Status</th>
-</tr>
-
-<tr>
-<td>-</td>
-<td>Rp0</td>
-<td class="yellow">
-Pending
-</td>
-</tr>
-
-</table>
-
-
-<br>
-
-<button class="btn">
-APPROVE
-</button>
-
-
-<button class="btn">
-REJECT
-</button>
-
-
-</div>
-
-</div>
-
-
-
-
-
-<div id="revenue" class="page">
-
-<div class="card">
-
-<h2>
-📈 Crypto Revenue Terminal
-</h2>
-
-
-<div style="
-height:220px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:70px;
-color:#8b35ff">
-
-📊
-
-</div>
-
-
-<p>
-Algoritma menghitung transaksi APPROVED CEO.
-</p>
-
-
-</div>
-
-</div>
-
-
-
-
-
-<div id="payment" class="page">
-
-<div class="card">
-
-<h2>
-💳 Financial Center
-</h2>
-
-<input placeholder="Nama Pegawai">
-
-<input placeholder="Nominal Transfer">
-
-<button class="btn">
-Transfer Uang
-</button>
-
-
-<br><br>
-
-<p>
-iPay Connection:
-<span class="yellow">
-Waiting
-</span>
-</p>
-
-</div>
-
-</div>
-
-
-
-
-
-<div id="security" class="page">
-
-<div class="card">
-
-<h2>
-🔐 CEO Security
-</h2>
-
-<p>
-Password Lock:
-<span class="green">
-ACTIVE
-</span>
-</p>
-
-<p>
-Device Authorization:
-ACTIVE
-</p>
-
-
-</div>
-
-</div>
-
-
-
-
-
-<div id="admin" class="page">
-
-<div class="card">
-
-<h2>
-👨‍💼 Admin Command
-</h2>
-
-<p>
-Monitoring keamanan dan audit sistem.
-</p>
-
-<p>
-Blacklist System:
-READY
-</p>
-
-
-</div>
-
-</div>
-
-
-
-
-
-</main>
-
-</div>
-
-
 
 <script>
+    function flattenObject(object, prefix = "") {
+        const result = {};
 
-function openPage(id,btn){
+        if (
+            object === null ||
+            typeof object !== "object"
+        ) {
+            result[prefix] = object;
+            return result;
+        }
 
-document.querySelectorAll(".page")
-.forEach(page=>{
-page.classList.remove("active");
-});
+        if (Array.isArray(object)) {
+            if (object.length === 0) {
+                result[prefix] = [];
+                return result;
+            }
 
+            object.forEach((value, index) => {
+                const key =
+                    prefix
+                        ? `${prefix}.${index}`
+                        : String(index);
 
-document.getElementById(id)
-.classList.add("active");
+                if (
+                    value !== null &&
+                    typeof value === "object"
+                ) {
+                    Object.assign(
+                        result,
+                        flattenObject(value, key)
+                    );
+                } else {
+                    result[key] = value;
+                }
+            });
 
+            return result;
+        }
 
-document.querySelectorAll(".menu button")
-.forEach(button=>{
-button.classList.remove("active");
-});
+        const keys = Object.keys(object);
 
+        if (keys.length === 0) {
+            result[prefix] = {};
+            return result;
+        }
 
-btn.classList.add("active");
+        keys.forEach(key => {
+            const fullKey =
+                prefix
+                    ? `${prefix}.${key}`
+                    : key;
 
-}
+            const value = object[key];
 
+            if (
+                value !== null &&
+                typeof value === "object"
+            ) {
+                Object.assign(
+                    result,
+                    flattenObject(value, fullKey)
+                );
+            } else {
+                result[fullKey] = value;
+            }
+        });
+
+        return result;
+    }
+
+    function valueToString(value) {
+        if (value === undefined) {
+            return "—";
+        }
+
+        if (typeof value === "string") {
+            return value;
+        }
+
+        return JSON.stringify(value);
+    }
+
+    function valuesEqual(a, b) {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    function detectDrift() {
+        const desiredText =
+            document.getElementById("desiredConfig").value.trim();
+
+        const actualText =
+            document.getElementById("actualConfig").value.trim();
+
+        const resultPanel =
+            document.getElementById("resultPanel");
+
+        const status =
+            document.getElementById("status");
+
+        const driftList =
+            document.getElementById("driftList");
+
+        resultPanel.classList.add("visible");
+        driftList.innerHTML = "";
+
+        let desired;
+        let actual;
+
+        try {
+            desired = JSON.parse(desiredText);
+            actual = JSON.parse(actualText);
+        } catch (error) {
+            status.innerHTML =
+                '<div class="status invalid">✕ JSON tidak valid</div>';
+
+            document.getElementById("expectedCount").textContent = "—";
+            document.getElementById("actualCount").textContent = "—";
+            document.getElementById("driftCount").textContent = "—";
+            document.getElementById("matchRate").textContent = "—";
+
+            driftList.innerHTML =
+                '<div class="drift-item">' +
+                '<div class="info">Pastikan Desired Configuration dan Actual Infrastructure State berisi JSON yang valid.</div>' +
+                '</div>';
+
+            return;
+        }
+
+        const desiredFlat =
+            flattenObject(desired);
+
+        const actualFlat =
+            flattenObject(actual);
+
+        const allKeys =
+            new Set([
+                ...Object.keys(desiredFlat),
+                ...Object.keys(actualFlat)
+            ]);
+
+        const drifts = [];
+
+        allKeys.forEach(key => {
+            const expected =
+                desiredFlat[key];
+
+            const actualValue =
+                actualFlat[key];
+
+            if (!valuesEqual(expected, actualValue)) {
+                drifts.push({
+                    key,
+                    expected,
+                    actual: actualValue
+                });
+            }
+        });
+
+        const expectedCount =
+            Object.keys(desiredFlat).length;
+
+        const actualCount =
+            Object.keys(actualFlat).length;
+
+        const totalKeys =
+            allKeys.size;
+
+        const matchingKeys =
+            totalKeys - drifts.length;
+
+        const matchRate =
+            totalKeys === 0
+                ? 100
+                : Math.round(
+                    (matchingKeys / totalKeys) * 100
+                );
+
+        document.getElementById("expectedCount").textContent =
+            expectedCount;
+
+        document.getElementById("actualCount").textContent =
+            actualCount;
+
+        document.getElementById("driftCount").textContent =
+            drifts.length;
+
+        document.getElementById("matchRate").textContent =
+            `${matchRate}%`;
+
+        if (drifts.length === 0) {
+            status.innerHTML =
+                '<div class="status clean">✓ No Configuration Drift Detected</div>';
+
+            driftList.innerHTML =
+                '<div class="drift-item">' +
+                '<div class="info">Konfigurasi aktual sesuai dengan spesifikasi IaC.</div>' +
+                '</div>';
+
+            return;
+        }
+
+        status.innerHTML =
+            `<div class="status drift">⚠ Configuration Drift Detected — ${drifts.length} perubahan</div>`;
+
+        drifts.forEach(item => {
+            const element =
+                document.createElement("div");
+
+            element.className = "drift-item";
+
+            element.innerHTML = `
+                <div class="key">${escapeHtml(item.key)}</div>
+
+                <div class="values">
+                    <div class="value-box">
+                        <small>Expected / IaC</small>
+                        <code>${escapeHtml(valueToString(item.expected))}</code>
+                    </div>
+
+                    <div class="value-box">
+                        <small>Actual State</small>
+                        <code>${escapeHtml(valueToString(item.actual))}</code>
+                    </div>
+                </div>
+            `;
+
+            driftList.appendChild(element);
+        });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function loadExample() {
+        document.getElementById("desiredConfig").value =
+`{
+  "server": {
+    "instance_type": "t3.medium",
+    "region": "ap-southeast-1",
+    "count": 3
+  },
+  "database": {
+    "engine": "postgresql",
+    "version": "16",
+    "storage_gb": 100
+  },
+  "network": {
+    "port": 443,
+    "protocol": "https"
+  }
+}`;
+
+        document.getElementById("actualConfig").value =
+`{
+  "server": {
+    "instance_type": "t3.small",
+    "region": "ap-southeast-1",
+    "count": 2
+  },
+  "database": {
+    "engine": "postgresql",
+    "version": "15",
+    "storage_gb": 100
+  },
+  "network": {
+    "port": 443,
+    "protocol": "https"
+  }
+}`;
+
+        detectDrift();
+    }
+
+    function clearInputs() {
+        document.getElementById("desiredConfig").value = "";
+        document.getElementById("actualConfig").value = "";
+
+        document.getElementById("resultPanel")
+            .classList.remove("visible");
+
+        document.getElementById("driftList").innerHTML = "";
+    }
 </script>
-
 
 </body>
 </html>

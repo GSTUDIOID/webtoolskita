@@ -165,6 +165,60 @@
             color: #f87171;
         }
 
+        /* ==========================================
+           PASSWORD
+           ========================================== */
+
+        .password-box {
+            margin-bottom: 18px;
+        }
+
+        .password-label {
+            display: block;
+
+            color: #777;
+
+            font-size: 12px;
+
+            margin-bottom: 7px;
+        }
+
+        .password-input {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border-radius: 12px;
+
+            border: 1px solid rgba(168, 85, 247, 0.25);
+
+            background: rgba(255, 255, 255, 0.035);
+
+            color: white;
+
+            outline: none;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+        .password-input::placeholder {
+            color: #666;
+        }
+
+        .password-input:focus {
+            border-color: rgba(168, 85, 247, 0.65);
+
+            box-shadow:
+                0 0 18px rgba(168, 85, 247, 0.12);
+        }
+
+        .password-input:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
         .login-btn {
             width: 100%;
 
@@ -385,6 +439,31 @@
         </div>
 
 
+        <!-- ==========================================
+             PASSWORD ADMIN
+             ========================================== -->
+
+        <div class="password-box">
+
+            <label
+                for="adminPassword"
+                class="password-label"
+            >
+                Password Admin
+            </label>
+
+            <input
+                type="password"
+                id="adminPassword"
+                class="password-input"
+                placeholder="Masukkan password admin"
+                autocomplete="off"
+                disabled
+            >
+
+        </div>
+
+
         <button
             type="button"
             class="login-btn"
@@ -476,6 +555,91 @@
 
 
     // ==========================================
+    // PASSWORD ADMIN
+    // ==========================================
+    //
+    // EDIT PASSWORD DI SINI.
+    //
+    // Contoh:
+    //
+    // const ADMIN_PASSWORD =
+    //     "admin12345";
+    //
+    // Tidak perlu edit server.js.
+    //
+    // ==========================================
+
+    const ADMIN_PASSWORD =
+        "WEBSTUDIOID_1672026";
+
+
+    // ==========================================
+    // RETURN URL
+    // ==========================================
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const requestedReturnTo =
+        urlParams.get("returnTo");
+
+
+    function getReturnUrl() {
+
+        if (!requestedReturnTo) {
+
+            return "index18.html";
+        }
+
+
+        try {
+
+            const decoded =
+                decodeURIComponent(
+                    requestedReturnTo
+                );
+
+
+            /*
+                Hanya izinkan halaman lokal.
+                Tidak boleh redirect ke domain luar.
+            */
+
+            if (
+                decoded.startsWith("/") &&
+                !decoded.startsWith("//") &&
+                !decoded.includes("://")
+            ) {
+
+                return decoded;
+            }
+
+
+            if (
+                decoded.endsWith(".html") &&
+                !decoded.includes("://") &&
+                !decoded.startsWith("//")
+            ) {
+
+                return decoded;
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Return URL error:",
+                error
+            );
+        }
+
+
+        return "index18.html";
+    }
+
+
+    // ==========================================
     // ELEMENT
     // ==========================================
 
@@ -487,6 +651,9 @@
 
     const adminStatus =
         document.getElementById("adminStatus");
+
+    const adminPassword =
+        document.getElementById("adminPassword");
 
     const loginButton =
         document.getElementById("loginButton");
@@ -539,6 +706,9 @@
 
         loginButton.textContent =
             "⏳ Memeriksa Akses...";
+
+        adminPassword.disabled =
+            true;
     }
 
 
@@ -555,6 +725,11 @@
 
         loginButton.textContent =
             "🔓 Buka Admin Dashboard";
+
+        adminPassword.disabled =
+            false;
+
+        adminPassword.focus();
     }
 
 
@@ -571,6 +746,9 @@
 
         loginButton.textContent =
             "🚫 Akses Ditolak";
+
+        adminPassword.disabled =
+            true;
     }
 
 
@@ -650,6 +828,127 @@
                 (
                     error.message ||
                     "Akses admin ditolak."
+                )
+            );
+
+
+            return false;
+        }
+    }
+
+
+    // ==========================================
+    // PASSWORD
+    // ==========================================
+
+    function verifyPassword() {
+
+        const enteredPassword =
+            adminPassword.value;
+
+
+        if (!enteredPassword) {
+
+            showMessage(
+                "error",
+                "❌ Silakan masukkan password admin."
+            );
+
+            adminPassword.focus();
+
+            return false;
+        }
+
+
+        if (
+            String(enteredPassword) !==
+            String(ADMIN_PASSWORD)
+        ) {
+
+            showMessage(
+                "error",
+                "❌ Password admin salah."
+            );
+
+            adminPassword.value = "";
+
+            adminPassword.focus();
+
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    // ==========================================
+    // SERVER ADMIN GATE
+    // ==========================================
+
+    async function createAdminGate(user) {
+
+        try {
+
+            const token =
+                await user.getIdToken(true);
+
+
+            const response =
+                await fetch(
+                    "/api/admin/gate",
+                    {
+                        method: "POST",
+
+                        credentials: "include",
+
+                        headers: {
+                            "Authorization":
+                                "Bearer " + token,
+
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            returnTo:
+                                getReturnUrl()
+                        })
+                    }
+                );
+
+
+            const data =
+                await response
+                    .json()
+                    .catch(() => ({}));
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Server gagal membuat akses admin."
+                );
+            }
+
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Admin gate error:",
+                error
+            );
+
+
+            showMessage(
+                "error",
+                "❌ " +
+                (
+                    error.message ||
+                    "Gagal membuat sesi admin."
                 )
             );
 
@@ -742,12 +1041,21 @@
             }
 
 
+            clearMessage();
+
+
             loginButton.disabled =
                 true;
 
             loginButton.textContent =
                 "⏳ Memverifikasi...";
 
+
+            /*
+                STEP 1
+                Verifikasi ulang admin
+                melalui server.
+            */
 
             const allowed =
                 await verifyAdmin(user);
@@ -759,12 +1067,68 @@
 
 
             /*
+                STEP 2
+                Verifikasi password.
+            */
+
+            const passwordOK =
+                verifyPassword();
+
+
+            if (!passwordOK) {
+
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "🔓 Buka Admin Dashboard";
+
+                return;
+            }
+
+
+            /*
+                STEP 3
+                Buat admin gate cookie
+                melalui server.
+            */
+
+            loginButton.disabled =
+                true;
+
+            adminPassword.disabled =
+                true;
+
+            loginButton.textContent =
+                "⏳ Membuat Sesi Admin...";
+
+
+            const gateCreated =
+                await createAdminGate(user);
+
+
+            if (!gateCreated) {
+
+                loginButton.disabled =
+                    false;
+
+                adminPassword.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "🔓 Buka Admin Dashboard";
+
+                return;
+            }
+
+
+            /*
                 Kompatibilitas dengan
                 index18 versi lama.
 
                 Ini BUKAN sumber keamanan.
-                Server sudah memverifikasi admin
-                sebelum flag ini dibuat.
+                Server tetap menjadi sumber
+                keputusan akses.
             */
 
             sessionStorage.setItem(
@@ -775,7 +1139,7 @@
 
             showMessage(
                 "success",
-                "✅ Akses admin terverifikasi. Membuka dashboard..."
+                "✅ Akses admin terverifikasi. Membuka halaman..."
             );
 
 
@@ -786,9 +1150,29 @@
             setTimeout(() => {
 
                 window.location.href =
-                    "index18.html";
+                    getReturnUrl();
 
             }, 500);
+
+        }
+    );
+
+
+    // ==========================================
+    // ENTER = LOGIN
+    // ==========================================
+
+    adminPassword.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (
+                event.key === "Enter" &&
+                !loginButton.disabled
+            ) {
+
+                loginButton.click();
+            }
 
         }
     );
@@ -808,7 +1192,9 @@
                     "webtoolskita_admin"
                 );
 
+
                 await auth.signOut();
+
 
                 window.location.href =
                     "index2.html";
@@ -819,6 +1205,7 @@
                     "Logout error:",
                     error
                 );
+
 
                 showMessage(
                     "error",

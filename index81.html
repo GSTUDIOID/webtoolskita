@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Microservice Error Budget & SLI/SLO Compliance Calculator - WebToolsKita</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at top left, #24104f 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #102d52 0%, transparent 35%),
+                #090914;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: auto;
+            padding: 32px 0 50px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .back:hover {
+            background: rgba(255,255,255,0.14);
+        }
+
+        .header,
+        .panel {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.11);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.22);
+        }
+
+        .header {
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .free-badge {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(70, 210, 130, 0.12);
+            border: 1px solid rgba(70, 210, 130, 0.28);
+            color: #7ee7ac;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: clamp(25px, 4vw, 38px);
+            line-height: 1.2;
+        }
+
+        .header p {
+            margin: 0;
+            color: #c3c0d1;
+            line-height: 1.7;
+        }
+
+        .panel {
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 21px;
+        }
+
+        .description {
+            margin: 0 0 20px;
+            color: #a9a6b8;
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            color: #cbc8d7;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 11px;
+            border: 1px solid rgba(255,255,255,0.13);
+            background: rgba(0,0,0,0.28);
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: rgba(130,115,255,0.7);
+            box-shadow: 0 0 0 3px rgba(120,100,255,0.10);
+        }
+
+        option {
+            background: #151522;
+            color: #fff;
+        }
+
+        .hint {
+            color: #777486;
+            font-size: 11px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 11px;
+            padding: 12px 18px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6d5dfc, #4d8cff);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .status {
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .status.good {
+            background: rgba(60,210,130,0.11);
+            border: 1px solid rgba(60,210,130,0.25);
+            color: #80e9b0;
+        }
+
+        .status.warning {
+            background: rgba(255,175,65,0.11);
+            border: 1px solid rgba(255,175,65,0.25);
+            color: #ffc47a;
+        }
+
+        .status.bad {
+            background: rgba(255,75,95,0.11);
+            border: 1px solid rgba(255,75,95,0.25);
+            color: #ff9ca8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat {
+            padding: 18px;
+            border-radius: 14px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .stat span {
+            display: block;
+            color: #9290a1;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+        }
+
+        .stat small {
+            display: block;
+            margin-top: 6px;
+            color: #777486;
+        }
+
+        .formula {
+            padding: 16px;
+            margin-top: 18px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.045);
+            color: #aaa7b8;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .incident-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        .incident-table th,
+        .incident-table td {
+            padding: 11px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: left;
+            font-size: 12px;
+        }
+
+        .incident-table th {
+            color: #aaa7b8;
+        }
+
+        .incident-table td {
+            color: #dedbe8;
+        }
+
+        .footer {
+            text-align: center;
+            color: #777486;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 800px) {
+            .grid,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .incident-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="index18.html" class="back">← Kembali</a>
+
+    <div class="header">
+        <div class="free-badge">FREE TOOL • NO VIP</div>
+
+        <h1>Microservice Error Budget &amp; SLI/SLO Compliance Calculator</h1>
+
+        <p>
+            Kalkulator keandalan sistem untuk mengukur sisa Error Budget
+            berdasarkan target SLI/SLO dan laporan insiden produksi.
+        </p>
+    </div>
+
+    <div class="panel">
+
+        <h2>SLO Configuration</h2>
+
+        <p class="description">
+            Masukkan target SLO dan periode layanan untuk menghitung
+            Error Budget yang tersedia.
+        </p>
+
+        <div class="grid">
+
+            <div class="field">
+                <label for="slo">Target SLO (%)</label>
+                <input
+                    id="slo"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.001"
+                    value="99.9"
+                >
+                <div class="hint">
+                    Contoh: 99.9% berarti toleransi kegagalan 0.1%.
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="period">SLO Period (hari)</label>
+                <input
+                    id="period"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="30"
+                >
+            </div>
+
+            <div class="field">
+                <label for="totalRequests">Total Requests / Events</label>
+                <input
+                    id="totalRequests"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="1000000"
+                >
+            </div>
+
+            <div class="field">
+                <label for="failedRequests">Failed / Bad Requests</label>
+                <input
+                    id="failedRequests"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value="500"
+                >
+            </div>
+
+            <div class="field">
+                <label for="incidentMinutes">Total Incident Downtime (menit)</label>
+                <input
+                    id="incidentMinutes"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value="20"
+                >
+            </div>
+
+            <div class="field">
+                <label for="incidentCount">Jumlah Insiden Produksi</label>
+                <input
+                    id="incidentCount"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value="2"
+                >
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button onclick="calculate()">Calculate Error Budget</button>
+            <button class="secondary" onclick="loadExample()">Load Example</button>
+            <button class="secondary" onclick="resetCalculator()">Reset</button>
+        </div>
+
+    </div>
+
+    <div class="panel result" id="resultPanel">
+
+        <h2>Reliability Result</h2>
+
+        <div id="status"></div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <span>Actual SLI</span>
+                <strong id="actualSli">0%</strong>
+                <small>berdasarkan request/event</small>
+            </div>
+
+            <div class="stat">
+                <span>Error Budget</span>
+                <strong id="budgetPercent">0%</strong>
+                <small>budget kegagalan yang diizinkan</small>
+            </div>
+
+            <div class="stat">
+                <span>Budget Allowed</span>
+                <strong id="budgetAllowed">0</strong>
+                <small>bad events maksimum</small>
+            </div>
+
+            <div class="stat">
+                <span>Budget Consumed</span>
+                <strong id="budgetConsumed">0%</strong>
+                <small>budget yang sudah terpakai</small>
+            </div>
+
+        </div>
+
+        <div class="formula" id="formula"></div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Production Incident Summary</h2>
+
+        <p class="description">
+            Ringkasan insiden digunakan untuk melihat dampak downtime
+            terhadap periode SLO yang dipilih.
+        </p>
+
+        <table class="incident-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>SLO Period</td>
+                    <td id="tablePeriod">30 hari</td>
+                </tr>
+
+                <tr>
+                    <td>Incident Count</td>
+                    <td id="tableIncidents">2</td>
+                </tr>
+
+                <tr>
+                    <td>Total Downtime</td>
+                    <td id="tableDowntime">20 menit</td>
+                </tr>
+
+                <tr>
+                    <td>Downtime Budget</td>
+                    <td id="tableDowntimeBudget">0 menit</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Perhitungan</h2>
+
+        <p class="description">
+            Error Budget adalah tingkat kegagalan yang masih dapat ditoleransi
+            sebelum target SLO terlampaui.
+        </p>
+
+        <div class="formula">
+            Error Budget % = 100% − SLO %<br>
+            Allowed Bad Events = Total Events × Error Budget %<br>
+            Actual SLI = (Total Events − Bad Events) ÷ Total Events × 100%<br>
+            Budget Consumed = Bad Events ÷ Allowed Bad Events × 100%
+        </div>
+
+    </div>
+
+    <div class="footer">
+        WebToolsKita • Microservice Error Budget &amp; SLI/SLO Compliance Calculator • Free Tool
+    </div>
+
+</div>
+
+<script>
+    function number(id) {
+        return Number(
+            document.getElementById(id).value
+        ) || 0;
+    }
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat("id-ID", {
+            maximumFractionDigits: 2
+        }).format(value);
+    }
+
+    function calculate() {
+
+        const slo = number("slo");
+        const period = number("period");
+        const totalRequests = number("totalRequests");
+        const failedRequests = number("failedRequests");
+        const incidentMinutes = number("incidentMinutes");
+        const incidentCount = number("incidentCount");
+
+        const resultPanel =
+            document.getElementById("resultPanel");
+
+        const status =
+            document.getElementById("status");
+
+        resultPanel.classList.add("show");
+
+        if (
+            slo <= 0 ||
+            slo > 100 ||
+            period <= 0 ||
+            totalRequests <= 0 ||
+            failedRequests < 0 ||
+            failedRequests > totalRequests ||
+            incidentMinutes < 0 ||
+            incidentCount < 0
+        ) {
+            status.className = "status bad";
+            status.textContent =
+                "✕ Input tidak valid. Periksa kembali nilai SLO, request, failure, dan incident.";
+
+            return;
+        }
+
+        const errorBudgetPercent =
+            100 - slo;
+
+        const allowedFailures =
+            totalRequests *
+            (errorBudgetPercent / 100);
+
+        const actualSli =
+            (
+                (totalRequests - failedRequests) /
+                totalRequests
+            ) * 100;
+
+        const budgetConsumed =
+            allowedFailures > 0
+                ? (
+                    failedRequests /
+                    allowedFailures
+                ) * 100
+                : 0;
+
+        const remainingBudget =
+            Math.max(
+                0,
+                allowedFailures - failedRequests
+            );
+
+        const periodMinutes =
+            period * 24 * 60;
+
+        const downtimeBudget =
+            periodMinutes *
+            (errorBudgetPercent / 100);
+
+        const downtimeConsumed =
+            downtimeBudget > 0
+                ? (
+                    incidentMinutes /
+                    downtimeBudget
+                ) * 100
+                : 0;
+
+        document.getElementById("actualSli")
+            .textContent =
+            actualSli.toFixed(4) + "%";
+
+        document.getElementById("budgetPercent")
+            .textContent =
+            errorBudgetPercent.toFixed(4) + "%";
+
+        document.getElementById("budgetAllowed")
+            .textContent =
+            formatNumber(allowedFailures);
+
+        document.getElementById("budgetConsumed")
+            .textContent =
+            budgetConsumed.toFixed(2) + "%";
+
+        document.getElementById("tablePeriod")
+            .textContent =
+            period + " hari";
+
+        document.getElementById("tableIncidents")
+            .textContent =
+            formatNumber(incidentCount);
+
+        document.getElementById("tableDowntime")
+            .textContent =
+            formatNumber(incidentMinutes) + " menit";
+
+        document.getElementById("tableDowntimeBudget")
+            .textContent =
+            formatNumber(downtimeBudget) + " menit";
+
+        document.getElementById("formula").innerHTML =
+            "Error Budget = " +
+            errorBudgetPercent.toFixed(4) +
+            "%<br>" +
+
+            "Allowed Bad Events = " +
+            formatNumber(allowedFailures) +
+            "<br>" +
+
+            "Actual SLI = " +
+            actualSli.toFixed(4) +
+            "%<br>" +
+
+            "Remaining Event Budget = " +
+            formatNumber(remainingBudget) +
+            "<br>" +
+
+            "Downtime Budget = " +
+            formatNumber(downtimeBudget) +
+            " menit<br>" +
+
+            "Downtime Budget Consumed = " +
+            downtimeConsumed.toFixed(2) +
+            "%";
+
+        if (
+            actualSli >= slo &&
+            budgetConsumed < 80 &&
+            downtimeConsumed < 80
+        ) {
+            status.className = "status good";
+
+            status.textContent =
+                "✓ SLO COMPLIANT — Error Budget masih berada dalam kondisi aman.";
+        }
+        else if (
+            actualSli >= slo &&
+            budgetConsumed < 100 &&
+            downtimeConsumed < 100
+        ) {
+            status.className = "status warning";
+
+            status.textContent =
+                "⚠ SLO masih tercapai, tetapi Error Budget mulai menipis.";
+        }
+        else {
+            status.className = "status bad";
+
+            status.textContent =
+                "✕ SLO BREACHED — Error Budget telah habis atau target SLO tidak tercapai.";
+        }
+    }
+
+    function loadExample() {
+
+        document.getElementById("slo").value = "99.9";
+        document.getElementById("period").value = "30";
+        document.getElementById("totalRequests").value = "1000000";
+        document.getElementById("failedRequests").value = "500";
+        document.getElementById("incidentMinutes").value = "20";
+        document.getElementById("incidentCount").value = "2";
+
+        calculate();
+    }
+
+    function resetCalculator() {
+
+        document.getElementById("slo").value = "99.9";
+        document.getElementById("period").value = "30";
+        document.getElementById("totalRequests").value = "1000000";
+        document.getElementById("failedRequests").value = "0";
+        document.getElementById("incidentMinutes").value = "0";
+        document.getElementById("incidentCount").value = "0";
+
+        document.getElementById("resultPanel")
+            .classList.remove("show");
+
+        document.getElementById("status").textContent = "";
+    }
+
+    calculate();
+</script>
+
+</body>
+</html>

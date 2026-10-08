@@ -29,7 +29,7 @@ button,input{font:inherit}
 .hero p{margin:0;color:var(--muted);max-width:760px;line-height:1.65}
 .status{margin-top:18px;display:inline-flex;align-items:center;gap:8px;border:1px solid #25452f;background:#0c1710;color:#86efac;border-radius:999px;padding:8px 12px;font-size:13px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
 .stat small{color:var(--muted);display:block;margin-bottom:7px}.stat strong{font-size:28px}.stat .accent{color:var(--purple2)}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
@@ -46,8 +46,6 @@ tr:hover td{background:rgba(139,92,246,.035)}
 .user{display:flex;align-items:center;gap:11px}.uavatar{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#292433}
 .uname{font-weight:700}.email{color:var(--muted);font-size:12px;margin-top:2px}
 .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:700}
-.free{background:#1b1b24;color:#c4bfce}
-.vip{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
 .online{background:rgba(34,197,94,.12);color:#86efac}
 .offline{background:#1b1b24;color:#8f8a98}
 .detail{background:#191923;color:#ddd6fe;border:1px solid #312d46;border-radius:10px;padding:8px 10px;cursor:pointer}
@@ -143,7 +141,7 @@ tr:hover td{background:rgba(139,92,246,.035)}
     <input
       id="search"
       class="search"
-      placeholder="Cari nama, email, UID, atau status..."
+      placeholder="Cari nama, email, atau UID..."
       autocomplete="off"
     >
 
@@ -165,8 +163,7 @@ tr:hover td{background:rgba(139,92,246,.035)}
         <tr>
           <th>Pengguna</th>
           <th>Status</th>
-          <th>Membership</th>
-          <th>Terakhir Aktif</th>
+                    <th>Terakhir Aktif</th>
           <th>Bergabung</th>
           <th>Aksi</th>
         </tr>
@@ -435,28 +432,6 @@ function isOnline(v){
 
 
 /* ==========================================
-   MEMBERSHIP
-========================================== */
-
-function membership(u){
-
-  const s =
-    String(
-      u.vip_status || ""
-    ).toLowerCase();
-
-  return [
-    "active",
-    "vip",
-    "premium"
-  ].includes(s)
-    ? "VIP"
-    : "FREE";
-
-}
-
-
-/* ==========================================
    RENDER
 ========================================== */
 
@@ -475,9 +450,7 @@ function render(){
       const hay = [
         u.name,
         u.email,
-        u.google_uid,
-        u.vip_status,
-        u.payment_status
+        u.google_uid
       ]
       .join(" ")
       .toLowerCase();
@@ -511,8 +484,7 @@ function render(){
       const online =
         isOnline(u.last_seen);
 
-      const vip =
-        membership(u);
+      
 
       const avatar =
         u.photo_url
@@ -547,14 +519,6 @@ function render(){
 
             <span class="badge ${online ? "online" : "offline"}">
               ${online ? "● Online" : "○ Offline"}
-            </span>
-
-          </td>
-
-          <td>
-
-            <span class="badge ${vip === "VIP" ? "vip" : "free"}">
-              ${vip === "VIP" ? "◆ VIP" : "FREE"}
             </span>
 
           </td>
@@ -596,11 +560,6 @@ function updateStats(){
   const total =
     allUsers.length;
 
-  const vip =
-    allUsers.filter(
-      u => membership(u) === "VIP"
-    ).length;
-
   const online =
     allUsers.filter(
       u => isOnline(u.last_seen)
@@ -610,15 +569,8 @@ function updateStats(){
   document.getElementById("total")
     .textContent = total;
 
-  document.getElementById("vip")
-    .textContent = vip;
-
   document.getElementById("online")
     .textContent = online;
-
-  document.getElementById("free")
-    .textContent =
-      Math.max(0,total-vip);
 
 }
 
@@ -644,16 +596,6 @@ function showDetail(i){
     ["Nama",u.name],
 
     ["Email",u.email],
-
-    ["Membership",membership(u)],
-
-    ["VIP Mulai",date(u.vip_start)],
-
-    ["VIP Berakhir",date(u.vip_expired)],
-
-    ["Payment Status",u.payment_status],
-
-    ["Payment ID",u.payment_id],
 
     ["Last Seen",date(u.last_seen)],
 
@@ -852,21 +794,7 @@ function exportCSV(){
   }
 
 
-  const cols = [
-
-    "id",
-    "google_uid",
-    "name",
-    "email",
-    "vip_status",
-    "vip_start",
-    "vip_expired",
-    "payment_status",
-    "payment_id",
-    "last_seen",
-    "created_at"
-
-  ];
+  const cols = ["id","google_uid","name","email","last_seen","created_at"];
 
 
   const q =

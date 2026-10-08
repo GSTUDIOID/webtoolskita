@@ -1,1229 +1,160 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>iPay Management — WebToolsKita</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-html,body{
-    min-height:100%;
-    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    color:#f7f3ff;
-    background:#06040d;
-}
-
-body{
-    overflow-x:hidden;
-}
-
-body:before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:-3;
-    background:
-        radial-gradient(circle at 12% 8%,rgba(124,58,237,.24),transparent 30%),
-        radial-gradient(circle at 88% 15%,rgba(168,85,247,.18),transparent 28%),
-        radial-gradient(circle at 50% 100%,rgba(79,70,229,.15),transparent 38%);
-}
-
-body:after{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:-2;
-    opacity:.18;
-    background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-    background-size:48px 48px;
-}
-
-.bg{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    pointer-events:none;
-    z-index:-1;
-}
-
-.orb{
-    position:absolute;
-    border-radius:50%;
-    filter:blur(85px);
-    opacity:.24;
-    animation:float 12s ease-in-out infinite;
-}
-
-.o1{
-    width:350px;
-    height:350px;
-    background:#7c3aed;
-    left:-130px;
-    top:70px;
-}
-
-.o2{
-    width:310px;
-    height:310px;
-    background:#a855f7;
-    right:-120px;
-    top:280px;
-    animation-delay:-4s;
-}
-
-.o3{
-    width:250px;
-    height:250px;
-    background:#4f46e5;
-    left:45%;
-    bottom:-150px;
-    animation-delay:-7s;
-}
-
-@keyframes float{
-    0%,100%{
-        transform:translate3d(0,0,0) scale(1);
-    }
-    50%{
-        transform:translate3d(0,-25px,0) scale(1.06);
-    }
-}
-
-.wrap{
-    position:relative;
-    z-index:1;
-    width:min(1240px,92%);
-    margin:auto;
-    padding:34px 0 70px;
-}
-
-.back{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:11px 18px;
-    border:1px solid rgba(168,85,247,.32);
-    border-radius:14px;
-    background:rgba(18,13,31,.76);
-    color:#ddd6fe;
-    text-decoration:none;
-    font-size:13px;
-    font-weight:700;
-    backdrop-filter:blur(18px);
-    transition:.25s;
-}
-
-.back:hover{
-    transform:translateX(-4px);
-    border-color:rgba(168,85,247,.75);
-    background:rgba(124,58,237,.18);
-}
-
-.top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:20px;
-    margin:28px 0 22px;
-}
-
-.brand{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    font-size:25px;
-    font-weight:850;
-}
-
-.brand-icon{
-    width:48px;
-    height:48px;
-    display:grid;
-    place-items:center;
-    border-radius:16px;
-    background:linear-gradient(145deg,#7c3aed,#a855f7);
-    box-shadow:0 0 30px rgba(124,58,237,.25);
-    font-size:24px;
-}
-
-.sub{
-    color:#aaa5bc;
-    font-size:13px;
-    margin-top:4px;
-}
-
-.live{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:9px 13px;
-    border:1px solid rgba(34,197,94,.22);
-    border-radius:999px;
-    background:rgba(34,197,94,.06);
-    color:#86efac;
-    font-size:11px;
-    font-weight:800;
-}
-
-.live-dot{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:#22c55e;
-    box-shadow:0 0 12px rgba(34,197,94,.8);
-}
-
-.hero,
-.panel,
-.stat,
-.card{
-    border:1px solid rgba(255,255,255,.09);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124,58,237,.14),
-            rgba(255,255,255,.035)
-        );
-    backdrop-filter:blur(20px);
-    box-shadow:
-        0 20px 70px rgba(0,0,0,.28),
-        inset 0 1px rgba(255,255,255,.045);
-}
-
-.hero{
-    position:relative;
-    overflow:hidden;
-    padding:34px;
-    border-radius:28px;
-    margin-bottom:18px;
-}
-
-.hero:after{
-    content:"";
-    position:absolute;
-    width:260px;
-    height:260px;
-    right:-100px;
-    top:-120px;
-    border-radius:50%;
-    background:rgba(168,85,247,.10);
-    filter:blur(4px);
-}
-
-.badge{
-    display:inline-flex;
-    padding:7px 11px;
-    border-radius:999px;
-    border:1px solid rgba(168,85,247,.32);
-    background:rgba(168,85,247,.10);
-    color:#c4b5fd;
-    font-size:11px;
-    font-weight:850;
-    letter-spacing:.07em;
-    margin-bottom:14px;
-}
-
-h1{
-    font-size:38px;
-    line-height:1.1;
-    letter-spacing:-1.2px;
-    margin-bottom:10px;
-}
-
-.hero p{
-    max-width:820px;
-    color:#aaa5b8;
-    line-height:1.75;
-    font-size:14px;
-}
-
-.notice{
-    margin-top:19px;
-    padding:14px 16px;
-    border-radius:15px;
-    border:1px solid rgba(34,197,94,.2);
-    background:rgba(34,197,94,.055);
-    color:#a7f3d0;
-    font-size:12px;
-    line-height:1.6;
-}
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-    margin-top:15px;
-}
-
-.stat{
-    padding:20px;
-    border-radius:21px;
-}
-
-.stat-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-}
-
-.stat-label{
-    color:#9892a9;
-    font-size:12px;
-}
-
-.stat-icon{
-    width:35px;
-    height:35px;
-    display:grid;
-    place-items:center;
-    border-radius:11px;
-    background:rgba(124,58,237,.12);
-    border:1px solid rgba(168,85,247,.2);
-}
-
-.stat strong{
-    display:block;
-    margin-top:9px;
-    font-size:25px;
-}
-
-.stat small{
-    display:block;
-    margin-top:5px;
-    color:#777185;
-    font-size:11px;
-}
-
-.panel{
-    padding:24px;
-    border-radius:23px;
-    margin-top:15px;
-}
-
-.panel-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:20px;
-    margin-bottom:18px;
-}
-
-.panel h2{
-    font-size:19px;
-}
-
-.panel-head p{
-    margin-top:5px;
-    color:#8f899d;
-    font-size:12px;
-    line-height:1.6;
-}
-
-.secure-label{
-    padding:8px 11px;
-    border-radius:10px;
-    background:rgba(34,197,94,.07);
-    border:1px solid rgba(34,197,94,.17);
-    color:#86efac;
-    font-size:10px;
-    font-weight:800;
-    white-space:nowrap;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-}
-
-.card{
-    position:relative;
-    min-height:230px;
-    padding:22px;
-    border-radius:22px;
-    overflow:hidden;
-    transition:.25s;
-}
-
-.card:hover{
-    transform:translateY(-4px);
-    border-color:rgba(168,85,247,.34);
-    box-shadow:
-        0 25px 70px rgba(0,0,0,.34),
-        0 0 35px rgba(124,58,237,.07);
-}
-
-.card:after{
-    content:"";
-    position:absolute;
-    width:130px;
-    height:130px;
-    right:-70px;
-    top:-65px;
-    border-radius:50%;
-    background:rgba(168,85,247,.08);
-}
-
-.icon{
-    width:50px;
-    height:50px;
-    display:grid;
-    place-items:center;
-    border-radius:15px;
-    background:rgba(124,58,237,.12);
-    border:1px solid rgba(168,85,247,.22);
-    font-size:25px;
-    margin-bottom:16px;
-}
-
-.card h3{
-    font-size:17px;
-    margin-bottom:8px;
-}
-
-.card p{
-    color:#8f899d;
-    font-size:12px;
-    line-height:1.7;
-    min-height:61px;
-}
-
-.tag{
-    display:inline-flex;
-    margin-top:14px;
-    padding:5px 8px;
-    border-radius:8px;
-    background:rgba(255,255,255,.04);
-    border:1px solid rgba(255,255,255,.07);
-    color:#928ca0;
-    font-size:10px;
-    font-weight:700;
-}
-
-.row{
-    display:flex;
-    gap:9px;
-    flex-wrap:wrap;
-    margin-top:16px;
-}
-
-.btn{
-    border:1px solid rgba(168,85,247,.3);
-    background:rgba(124,58,237,.14);
-    color:#ddd6fe;
-    border-radius:11px;
-    padding:10px 13px;
-    text-decoration:none;
-    font-size:12px;
-    font-weight:700;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.btn:hover{
-    background:rgba(124,58,237,.27);
-    border-color:rgba(168,85,247,.55);
-    transform:translateY(-1px);
-}
-
-.btn.secondary{
-    background:rgba(255,255,255,.035);
-    border-color:rgba(255,255,255,.1);
-    color:#bcb6c8;
-}
-
-.btn.disabled{
-    opacity:.55;
-    cursor:not-allowed;
-}
-
-.access{
-    margin-top:18px;
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:13px;
-}
-
-.access-item{
-    padding:17px;
-    border:1px solid rgba(255,255,255,.07);
-    border-radius:16px;
-    background:rgba(0,0,0,.12);
-}
-
-.access-item strong{
-    display:block;
-    font-size:13px;
-    margin-bottom:5px;
-}
-
-.access-item span{
-    color:#898294;
-    font-size:11px;
-    line-height:1.55;
-}
-
-.control-list{
-    display:grid;
-    gap:10px;
-    margin-top:16px;
-}
-
-.control{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:20px;
-    padding:14px 16px;
-    border:1px solid rgba(255,255,255,.07);
-    border-radius:14px;
-    background:rgba(0,0,0,.12);
-}
-
-.control-left{
-    display:flex;
-    align-items:center;
-    gap:11px;
-}
-
-.control-icon{
-    width:35px;
-    height:35px;
-    display:grid;
-    place-items:center;
-    border-radius:10px;
-    background:rgba(124,58,237,.1);
-}
-
-.control strong{
-    display:block;
-    font-size:12px;
-}
-
-.control span{
-    display:block;
-    margin-top:3px;
-    color:#777185;
-    font-size:10px;
-}
-
-.status{
-    padding:6px 9px;
-    border-radius:999px;
-    font-size:10px;
-    font-weight:800;
-}
-
-.status.ready{
-    color:#86efac;
-    background:rgba(34,197,94,.07);
-    border:1px solid rgba(34,197,94,.17);
-}
-
-.status.pending{
-    color:#fcd34d;
-    background:rgba(245,158,11,.07);
-    border:1px solid rgba(245,158,11,.17);
-}
-
-.footer{
-    text-align:center;
-    color:#514b5b;
-    margin-top:28px;
-    font-size:11px;
-}
-
-@media(max-width:900px){
-
-    .grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-}
-
-@media(max-width:650px){
-
-    .wrap{
-        width:94%;
-        padding-top:22px;
-    }
-
-    .top{
-        align-items:flex-start;
-    }
-
-    .live{
-        display:none;
-    }
-
-    h1{
-        font-size:29px;
-    }
-
-    .hero{
-        padding:24px;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-    .grid{
-        grid-template-columns:1fr;
-    }
-
-    .access{
-        grid-template-columns:1fr;
-    }
-
-    .panel-head{
-        flex-direction:column;
-    }
-
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WebToolsKita - Index40</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0f172a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 18px;
+            padding: 35px 25px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .icon {
+            font-size: 58px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .bridge-box {
+            background: #0b1220;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .bridge-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .bridge-text {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .button-main {
+            background: #2563eb;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .button-main:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .button-back {
+            background: #334155;
+            color: #ffffff;
+        }
+
+        .button-back:hover {
+            background: #475569;
+        }
+
+        .footer {
+            margin-top: 25px;
+            color: #64748b;
+            font-size: 12px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="bg">
-    <div class="orb o1"></div>
-    <div class="orb o2"></div>
-    <div class="orb o3"></div>
-</div>
+    <div class="container">
 
-<main class="wrap">
+        <div class="icon">🔗</div>
 
-    <a class="back" href="index18.html">
-        ← Kembali ke Admin Web
-    </a>
+        <h1>WebToolsKita</h1>
 
-
-    <div class="top">
-
-        <div>
-
-            <div class="brand">
-                <div class="brand-icon">💳</div>
-                <div>WebToolsKita</div>
-            </div>
-
-            <div class="sub">
-                Administrator • iPay Management
-            </div>
-
-        </div>
-
-
-        <div class="live">
-            <span class="live-dot"></span>
-            ADMIN EXCLUSIVE
-        </div>
-
-    </div>
-
-
-    <section class="hero">
-
-        <div class="badge">
-            ADMIN EXCLUSIVE • IPAY
-        </div>
-
-        <h1>
-            iPay Management
-        </h1>
-
-        <p>
-            Pusat pengelolaan modul iPay WebToolsKita.
-            Halaman ini menjadi pusat navigasi untuk modul iPay,
-            CEO Management, dan iPay Edu.
+        <p class="subtitle">
+            Jembatan menuju halaman Index40
         </p>
 
+        <div class="bridge-box">
 
-        <div class="notice">
-            🔒 <strong>Mode Aman:</strong>
-            koneksi finansial nyata tidak dilakukan langsung dari halaman ini.
-            Integrasi finansial harus menggunakan API resmi, autentikasi yang sah,
-            permission yang jelas, dan perlindungan data sensitif.
-        </div>
-
-    </section>
-
-
-    <section class="stats">
-
-        <div class="stat">
-
-            <div class="stat-top">
-
-                <span class="stat-label">
-                    Modul iPay
-                </span>
-
-                <span class="stat-icon">
-                    💳
-                </span>
-
+            <div class="bridge-title">
+                Menu Index40
             </div>
 
-            <strong>
-                3
-            </strong>
-
-            <small>
-                Modul tersedia di pusat iPay
-            </small>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-top">
-
-                <span class="stat-label">
-                    Akses
-                </span>
-
-                <span class="stat-icon">
-                    🔐
-                </span>
-
-            </div>
-
-            <strong>
-                ADMIN
-            </strong>
-
-            <small>
-                Administrator WebToolsKita
-            </small>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-top">
-
-                <span class="stat-label">
-                    Integrasi Finansial
-                </span>
-
-                <span class="stat-icon">
-                    🛡️
-                </span>
-
-            </div>
-
-            <strong>
-                SAFE
-            </strong>
-
-            <small>
-                Tidak melakukan akses rekening langsung
-            </small>
-
-        </div>
-
-    </section>
-
-
-    <section class="panel">
-
-        <div class="panel-head">
-
-            <div>
-
-                <h2>
-                    iPay Modules
-                </h2>
-
-                <p>
-                    Pilih modul yang ingin dibuka atau dikelola.
-                </p>
-
-            </div>
-
-            <div class="secure-label">
-                🔒 SECURE ACCESS
+            <div class="bridge-text">
+                Silakan lanjut ke Index40 untuk membuka
+                halaman tujuan WebToolsKita.
             </div>
 
         </div>
 
+        <a
+            href="index40.html"
+            class="button button-main"
+        >
+            🚀 Buka Index40
+        </a>
 
-        <div class="grid">
+        <a
+            href="javascript:history.back()"
+            class="button button-back"
+        >
+            ← Kembali
+        </a>
 
-
-            <!-- iPay Asli -->
-
-            <article class="card">
-
-                <div class="icon">
-                    💳
-                </div>
-
-                <h3>
-                    iPay Asli
-                </h3>
-
-                <p>
-                    Ruang untuk koneksi iPay resmi.
-                    Koneksi nyata nantinya hanya dapat dilakukan
-                    melalui sumber resmi dengan otorisasi pemilik akun.
-                </p>
-
-                <span class="tag">
-                    OFFICIAL API ONLY
-                </span>
-
-                <div class="row">
-
-                    <button
-                        class="btn"
-                        type="button"
-                        onclick="showConnectionInfo()"
-                    >
-                        Kelola Koneksi
-                    </button>
-
-                </div>
-
-            </article>
-
-
-            <!-- CEO -->
-
-            <article class="card">
-
-                <div class="icon">
-                    👑
-                </div>
-
-                <h3>
-                    CEO Management
-                </h3>
-
-                <p>
-                    Pusat pengelolaan operasional,
-                    KPI, proyek, keputusan dan kontrol
-                    bisnis administrator.
-                </p>
-
-                <span class="tag">
-                    MANAGEMENT CENTER
-                </span>
-
-                <div class="row">
-
-                    <a
-                        class="btn"
-                        href="index48.html"
-                    >
-                        Buka CEO Center →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <!-- iPay Edu -->
-
-            <article class="card">
-
-                <div class="icon">
-                    🎓
-                </div>
-
-                <h3>
-                    iPay Edu
-                </h3>
-
-                <p>
-                    Modul edukasi dan simulasi finansial
-                    tanpa akses terhadap uang atau rekening
-                    nyata.
-                </p>
-
-                <span class="tag">
-                    EDUCATION
-                </span>
-
-                <div class="row">
-
-                    <a
-                        class="btn"
-                        href="index45.html"
-                    >
-                        Buka iPay Edu →
-                    </a>
-
-                </div>
-
-            </article>
-
-
+        <div class="footer">
+            WebToolsKita • Index38
         </div>
 
-    </section>
-
-
-    <section class="panel">
-
-        <div class="panel-head">
-
-            <div>
-
-                <h2>
-                    Kontrol Akses Finansial
-                </h2>
-
-                <p>
-                    Prinsip keamanan yang harus digunakan
-                    ketika integrasi finansial nyata ditambahkan.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="access">
-
-            <div class="access-item">
-
-                <strong>
-                    🔑 API Resmi
-                </strong>
-
-                <span>
-                    Gunakan API resmi penyedia layanan,
-                    bukan scraping halaman atau bypass autentikasi.
-                </span>
-
-            </div>
-
-
-            <div class="access-item">
-
-                <strong>
-                    👤 Otorisasi
-                </strong>
-
-                <span>
-                    Token dan credential hanya berasal
-                    dari akun yang memang memiliki hak akses.
-                </span>
-
-            </div>
-
-
-            <div class="access-item">
-
-                <strong>
-                    📝 Logging
-                </strong>
-
-                <span>
-                    Aktivitas administratif harus dapat
-                    dicatat untuk audit dan troubleshooting.
-                </span>
-
-            </div>
-
-
-            <div class="access-item">
-
-                <strong>
-                    🛡️ Data Masking
-                </strong>
-
-                <span>
-                    Informasi sensitif tidak boleh ditampilkan
-                    secara penuh pada dashboard.
-                </span>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <section class="panel">
-
-        <div class="panel-head">
-
-            <div>
-
-                <h2>
-                    Status Integrasi
-                </h2>
-
-                <p>
-                    Status berikut menunjukkan kondisi frontend saat ini.
-                    Verifikasi backend akan dilakukan pada tahap integrasi server.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="control-list">
-
-
-            <div class="control">
-
-                <div class="control-left">
-
-                    <div class="control-icon">
-                        💳
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            iPay Official Connection
-                        </strong>
-
-                        <span>
-                            Menunggu API resmi dan credential yang sah
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="status pending">
-                    PENDING
-                </div>
-
-            </div>
-
-
-            <div class="control">
-
-                <div class="control-left">
-
-                    <div class="control-icon">
-                        👑
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            CEO Management
-                        </strong>
-
-                        <span>
-                            Modul navigasi tersedia
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="status ready">
-                    READY
-                </div>
-
-            </div>
-
-
-            <div class="control">
-
-                <div class="control-left">
-
-                    <div class="control-icon">
-                        🎓
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            iPay Edu
-                        </strong>
-
-                        <span>
-                            Modul edukasi dan simulasi
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="status ready">
-                    READY
-                </div>
-
-            </div>
-
-
-            <div class="control">
-
-                <div class="control-left">
-
-                    <div class="control-icon">
-                        🛡️
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Financial API Security
-                        </strong>
-
-                        <span>
-                            Backend integration akan ditambahkan kemudian
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="status pending">
-                    PENDING
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </section>
-
-
-    <div class="footer">
-        WebToolsKita • iPay Management • Admin Exclusive
     </div>
-
-</main>
-
-
-<script>
-
-const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyDzy3RyDI97j_tZFQHBLNookXDyLh18Yf8",
-
-    authDomain:
-        "webtoolskita.firebaseapp.com",
-
-    projectId:
-        "webtoolskita",
-
-    storageBucket:
-        "webtoolskita.firebasestorage.app",
-
-    messagingSenderId:
-        "593680487717",
-
-    appId:
-        "1:593680487717:web:33ef7a4bc9be02f99276cc",
-
-    measurementId:
-        "G-YVEJ90678G"
-};
-
-
-const ADMIN_EMAIL =
-    "ganreffafk@gmail.com";
-
-
-if(!firebase.apps.length){
-
-    firebase.initializeApp(
-        firebaseConfig
-    );
-
-}
-
-
-const auth =
-    firebase.auth();
-
-
-auth.setPersistence(
-    firebase.auth.Auth.Persistence.LOCAL
-).catch(
-    () => {}
-);
-
-
-function showConnectionInfo(){
-
-    alert(
-        "Koneksi iPay resmi belum dikonfigurasi.\n\n" +
-
-        "Pada tahap backend nanti, modul ini dapat " +
-        "dihubungkan menggunakan API resmi, " +
-        "credential yang sah, permission terbatas, " +
-        "logging, dan masking data sensitif."
-    );
-
-}
-
-
-auth.onAuthStateChanged(
-    user => {
-
-        if(!user){
-
-            location.replace(
-                "index2.html"
-            );
-
-            return;
-
-        }
-
-
-        const email =
-            String(
-                user.email || ""
-            )
-            .trim()
-            .toLowerCase();
-
-
-        if(
-            email !==
-            ADMIN_EMAIL.toLowerCase()
-        ){
-
-            alert(
-                "Akses administrator ditolak."
-            );
-
-
-            location.replace(
-                "index3.html"
-            );
-
-        }
-
-    }
-);
-
-</script>
 
 </body>
 </html>
